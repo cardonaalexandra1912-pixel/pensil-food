@@ -1,7 +1,7 @@
 .footer {
   background-color: var(--color-verde-oscuro);
   background-image: linear-gradient(rgba(20, 22, 14, 0.55), rgba(20, 22, 14, 0.78)),
-    url('/imagenes/footer-fondo.jpg');
+    url('/pensil-food/imagenes/footer-fondo.jpg');
   background-size: cover;
   background-position: center;
   color: var(--color-crema);

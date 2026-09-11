@@ -5,7 +5,7 @@
   overflow: hidden;
   /* Foto real de fondo + degradado encima para que el texto blanco siga siendo legible */
   background-image: linear-gradient(135deg, rgba(233, 118, 43, 0.78) 0%, rgba(200, 95, 24, 0.6) 45%, rgba(67, 90, 42, 0.82) 100%),
-    url('/imagenes/recetas/4.jpg');
+    url('/pensil-food/imagenes/recetas/4.jpg');
   background-size: cover;
   background-position: center 35%;
   color: var(--color-blanco);
