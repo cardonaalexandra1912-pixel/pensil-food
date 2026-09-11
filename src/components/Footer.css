@@ -1,0 +1,112 @@
+.footer {
+  background-color: var(--color-verde-oscuro);
+  background-image: linear-gradient(rgba(20, 22, 14, 0.55), rgba(20, 22, 14, 0.78)),
+    url('/imagenes/footer-fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  color: var(--color-crema);
+  padding: 44px 0 28px;
+  margin-top: 40px;
+}
+
+.footer-interior {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  align-items: center;
+  gap: 32px;
+}
+
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.footer-logo {
+  height: 44px;
+  width: auto;
+  background-color: var(--color-crema);
+  padding: 8px 14px;
+  border-radius: var(--radio-borde-chico);
+  margin-bottom: 6px;
+}
+
+.footer-marca {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.footer-nota {
+  opacity: 0.75;
+}
+
+.footer-ubicacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-weight: 700;
+  color: var(--color-crema);
+  width: fit-content;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.footer-ubicacion:hover {
+  border-color: currentColor;
+}
+
+.footer-mapa {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radio-borde);
+  overflow: hidden;
+  box-shadow: var(--sombra-media);
+  border: 3px solid rgba(253, 248, 240, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.footer-mapa:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.footer-mapa iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.footer-mapa-etiqueta {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: var(--color-crema);
+  color: var(--color-verde-oscuro);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  box-shadow: var(--sombra-suave);
+}
+
+.footer-mapa-enlace {
+  position: absolute;
+  inset: 0;
+}
+
+@media (max-width: 780px) {
+  .footer-interior {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-mapa {
+    order: -1;
+    aspect-ratio: 16 / 9;
+  }
+}

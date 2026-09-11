@@ -1,0 +1,151 @@
+.detalle-volver {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: var(--color-verde-oscuro);
+}
+
+.detalle-volver:hover {
+  text-decoration: underline;
+}
+
+.detalle-volver-contenedor {
+  margin-top: 20px;
+}
+
+.detalle-receta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.detalle-imagen-contenedor {
+  position: relative;
+  border-radius: var(--radio-borde);
+  overflow: hidden;
+  box-shadow: var(--sombra-media);
+}
+
+.detalle-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detalle-imagen-fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  background-color: var(--color-crema-oscuro);
+}
+
+.detalle-categoria {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: var(--color-blanco);
+}
+
+.detalle-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.detalle-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.detalle-favorito {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--color-borde);
+  background-color: var(--color-blanco);
+  color: var(--color-texto-suave);
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.detalle-favorito:hover {
+  transform: scale(1.08);
+}
+
+.detalle-favorito.es-favorito {
+  color: var(--color-favorito);
+  border-color: var(--color-favorito);
+}
+
+.detalle-descripcion {
+  color: var(--color-texto-suave);
+  font-size: 1.05rem;
+}
+
+.detalle-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-weight: 700;
+  color: var(--color-texto-suave);
+}
+
+.detalle-cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 48px;
+}
+
+.detalle-ingredientes h2,
+.detalle-pasos h2 {
+  margin-bottom: 18px;
+}
+
+.detalle-ingredientes ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.detalle-pasos ol li {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.detalle-paso-numero {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--color-terracota);
+  color: var(--color-blanco);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  .detalle-receta {
+    grid-template-columns: 1fr;
+  }
+
+  .detalle-cuerpo {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

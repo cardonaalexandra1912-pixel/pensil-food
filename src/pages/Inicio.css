@@ -1,0 +1,67 @@
+/* --- Hero --- */
+.hero {
+  position: relative;
+  padding: 100px 0 80px;
+  overflow: hidden;
+  /* Foto real de fondo + degradado encima para que el texto blanco siga siendo legible */
+  background-image: linear-gradient(135deg, rgba(233, 118, 43, 0.78) 0%, rgba(200, 95, 24, 0.6) 45%, rgba(67, 90, 42, 0.82) 100%),
+    url('/imagenes/recetas/4.jpg');
+  background-size: cover;
+  background-position: center 35%;
+  color: var(--color-blanco);
+  text-align: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14) 0, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.12) 0, transparent 45%);
+  pointer-events: none;
+}
+
+.hero-contenido {
+  position: relative;
+  max-width: 720px;
+}
+
+.hero h1 {
+  color: var(--color-blanco);
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+}
+
+.hero-subtitulo {
+  font-size: 1.1rem;
+  opacity: 0.94;
+  margin-bottom: 36px;
+}
+
+.hero-buscador {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr auto;
+  gap: 10px;
+  background-color: var(--color-blanco);
+  padding: 10px;
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-media);
+}
+
+.hero-buscador .campo-formulario {
+  border-color: transparent;
+  background-color: var(--color-crema-oscuro);
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding: 70px 0 56px;
+  }
+
+  .hero h1 {
+    font-size: 2.1rem;
+  }
+
+  .hero-buscador {
+    grid-template-columns: 1fr;
+  }
+}

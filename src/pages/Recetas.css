@@ -1,0 +1,24 @@
+.filtros-recetas {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filtros-resultados {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .filtros-recetas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .filtros-recetas {
+    grid-template-columns: 1fr;
+  }
+}

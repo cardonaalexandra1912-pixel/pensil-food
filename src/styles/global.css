@@ -1,0 +1,264 @@
+/* ============================================================================
+   ESTILOS GLOBALES
+   ----------------------------------------------------------------------------
+   Aquí viven las variables de color, tipografía y espaciado que usa todo el
+   sitio, más un reset básico y algunas clases reutilizables (botones,
+   etiquetas, grid de recetas, formularios). Cada componente/página tiene
+   además su propio archivo .css para sus estilos particulares.
+   ========================================================================= */
+
+:root {
+  /* --- Colores --- */
+  --color-crema: #fdf8f0;
+  --color-crema-oscuro: #f3e9d7;
+  --color-blanco: #ffffff;
+
+  --color-verde: #5f7a3d;
+  --color-verde-oscuro: #435a2a;
+  --color-verde-claro: #eef2e3;
+
+  --color-terracota: #e9762b;
+  --color-terracota-oscuro: #c85f18;
+
+  --color-texto: #3a3229;
+  --color-texto-suave: #7a6f5f;
+  --color-borde: #e8dfcd;
+
+  --color-favorito: #e0553e;
+
+  /* --- Tipografía --- */
+  --fuente-titulos: 'Fraunces', Georgia, serif;
+  --fuente-texto: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+
+  /* --- Otros --- */
+  --radio-borde: 14px;
+  --radio-borde-chico: 8px;
+  --sombra-suave: 0 4px 16px rgba(58, 50, 41, 0.08);
+  --sombra-media: 0 8px 28px rgba(58, 50, 41, 0.14);
+  --ancho-maximo: 1180px;
+}
+
+/* --- Reset básico --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  color: var(--color-texto);
+  background-color: var(--color-crema);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* --- Tipografía --- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--fuente-titulos);
+  color: var(--color-texto);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* --- Layout: contenedor centrado con ancho máximo --- */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Deja espacio debajo del header fijo para que no tape el contenido */
+.contenido-pagina {
+  padding-top: 88px;
+  min-height: 70vh;
+}
+
+/* En móvil el header crece porque la navegación pasa a una segunda fila */
+@media (max-width: 780px) {
+  .contenido-pagina {
+    padding-top: 128px;
+  }
+}
+
+/* --- Botones reutilizables --- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radio-borde-chico);
+  border: none;
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.boton:hover {
+  transform: translateY(-1px);
+}
+
+.boton-primario {
+  background-color: var(--color-terracota);
+  color: var(--color-blanco);
+}
+
+.boton-primario:hover {
+  background-color: var(--color-terracota-oscuro);
+}
+
+.boton-secundario {
+  background-color: var(--color-verde);
+  color: var(--color-blanco);
+}
+
+.boton-secundario:hover {
+  background-color: var(--color-verde-oscuro);
+}
+
+.boton-contorno {
+  background-color: transparent;
+  color: var(--color-verde-oscuro);
+  border: 2px solid var(--color-verde);
+}
+
+.boton-contorno:hover {
+  background-color: var(--color-verde-claro);
+}
+
+/* --- Etiquetas / badges (categoría, dificultad) --- */
+.etiqueta {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.etiqueta-categoria {
+  background-color: var(--color-verde-claro);
+  color: var(--color-verde-oscuro);
+}
+
+.etiqueta-dificultad-facil {
+  background-color: #e7f3e1;
+  color: #3d7a2d;
+}
+
+.etiqueta-dificultad-media {
+  background-color: #fdf0d9;
+  color: #b8791a;
+}
+
+.etiqueta-dificultad-dificil {
+  background-color: #fbe3df;
+  color: #c1432a;
+}
+
+/* --- Campos de formulario (inputs y selects) reutilizados en varias páginas --- */
+.campo-formulario {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--fuente-texto);
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  background-color: var(--color-blanco);
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-borde-chico);
+  transition: border-color 0.15s ease;
+}
+
+.campo-formulario:focus {
+  outline: none;
+  border-color: var(--color-verde);
+}
+
+/* --- Grid de tarjetas de recetas: 3 columnas desktop / 2 tablet / 1 móvil --- */
+.grid-recetas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 900px) {
+  .grid-recetas {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid-recetas {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Sección genérica de página (espaciado vertical consistente) --- */
+.seccion {
+  padding: 56px 0;
+}
+
+.encabezado-seccion {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.enlace-ver-todas {
+  color: var(--color-verde-oscuro);
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.enlace-ver-todas:hover {
+  text-decoration: underline;
+}
