@@ -66,6 +66,11 @@ function Inicio() {
         </div>
         <div className="hero-degradado" />
         <div className="hero-overlay" />
+        <div className="hero-ola" aria-hidden="true">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,50 C 360,100 1080,0 1440,50 L1440,120 L0,120 Z" />
+          </svg>
+        </div>
         <div className="contenedor hero-contenido">
           <h1>Encuentra tu próxima receta favorita</h1>
           <p className="hero-subtitulo">

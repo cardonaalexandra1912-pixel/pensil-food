@@ -51,6 +51,30 @@
   pointer-events: none;
 }
 
+/* Ola decorativa en el borde inferior del hero, para suavizar la transición
+   hacia la siguiente sección. Va encima del carrusel/degradado/overlay pero
+   siempre por debajo del contenido (z-index 3), y su altura se mantiene menor
+   al padding-bottom del hero para no tapar nunca el buscador ni los dots. */
+.hero-ola {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 2;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.hero-ola svg {
+  display: block;
+  width: 100%;
+  height: 70px;
+}
+
+.hero-ola path {
+  fill: var(--color-crema);
+}
+
 .hero-contenido {
   position: relative;
   z-index: 3;
@@ -123,5 +147,9 @@
 
   .hero-buscador {
     grid-template-columns: 1fr;
+  }
+
+  .hero-ola svg {
+    height: 36px;
   }
 }
