@@ -36,7 +36,7 @@ function Recetas() {
       const coincideTexto =
         !textoBusqueda ||
         receta.nombre.toLowerCase().includes(textoBusqueda) ||
-        receta.ingredientes.some((ing) => ing.toLowerCase().includes(textoBusqueda))
+        receta.ingredientes.some((ing) => ing.nombre.toLowerCase().includes(textoBusqueda))
 
       const coincideCategoria = !categoria || receta.categoria === categoria
       const coincideDificultad = !dificultad || receta.dificultad === dificultad

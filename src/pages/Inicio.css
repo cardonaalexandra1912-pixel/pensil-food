@@ -3,18 +3,49 @@
   position: relative;
   padding: 100px 0 80px;
   overflow: hidden;
-  /* Foto real de fondo + degradado encima para que el texto blanco siga siendo legible */
-  background-image: linear-gradient(135deg, rgba(233, 118, 43, 0.78) 0%, rgba(200, 95, 24, 0.6) 45%, rgba(67, 90, 42, 0.82) 100%),
-    url('/pensil-food/imagenes/recetas/4.jpg');
-  background-size: cover;
-  background-position: center 35%;
   color: var(--color-blanco);
   text-align: center;
+}
+
+/* Carrusel de fondo: 3 capas apiladas, la activa se muestra con un fundido. */
+.hero-fondos {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-fondo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 35%;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.hero-fondo.activo {
+  opacity: 1;
+}
+
+/* Degradado cálido de marca, siempre encima de cualquiera de las fotos del
+   carrusel, para que el texto blanco se siga leyendo bien. */
+.hero-degradado {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: linear-gradient(
+    135deg,
+    rgba(233, 118, 43, 0.78) 0%,
+    rgba(200, 95, 24, 0.6) 45%,
+    rgba(67, 90, 42, 0.82) 100%
+  );
+  pointer-events: none;
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background-image: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14) 0, transparent 40%),
     radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.12) 0, transparent 45%);
   pointer-events: none;
@@ -22,6 +53,7 @@
 
 .hero-contenido {
   position: relative;
+  z-index: 3;
   max-width: 720px;
 }
 
@@ -50,6 +82,34 @@
 .hero-buscador .campo-formulario {
   border-color: transparent;
   background-color: var(--color-crema-oscuro);
+}
+
+.hero-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.hero-dot {
+  box-sizing: content-box;
+  width: 8px;
+  height: 8px;
+  padding: 7px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.45);
+  background-clip: content-box;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-dot:hover {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-dot.activo {
+  background-color: var(--color-blanco);
+  transform: scale(1.25);
 }
 
 @media (max-width: 700px) {

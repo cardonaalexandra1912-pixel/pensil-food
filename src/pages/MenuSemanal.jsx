@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { CATEGORIAS, recetas } from '../data/recetas'
 import { DIAS_SEMANA, useMenuSemanal } from '../hooks/useMenuSemanal'
+import { agruparIngredientes } from '../utils/ingredientes'
 import EstadoVacio from '../components/EstadoVacio'
 import './MenuSemanal.css'
 
@@ -30,16 +31,12 @@ function MenuSemanal() {
     return ids.map((id) => recetas.find((r) => r.id === id)).filter(Boolean)
   }, [menu])
 
-  // Lista de mercado: junta todos los ingredientes de las recetas seleccionadas
-  // y agrupa los que están repetidos (mismo texto exacto) mostrando cuántas veces se repite.
+  // Lista de mercado: junta todos los ingredientes (a su cantidad base) de las
+  // recetas seleccionadas y los agrupa por nombre + unidad, sumando cantidades
+  // cuando corresponde (ver agruparIngredientes en utils/ingredientes.js).
   const listaMercado = useMemo(() => {
-    const conteoIngredientes = new Map()
-    recetasSeleccionadas.forEach((receta) => {
-      receta.ingredientes.forEach((ingrediente) => {
-        conteoIngredientes.set(ingrediente, (conteoIngredientes.get(ingrediente) || 0) + 1)
-      })
-    })
-    return Array.from(conteoIngredientes.entries())
+    const todosLosIngredientes = recetasSeleccionadas.flatMap((receta) => receta.ingredientes)
+    return agruparIngredientes(todosLosIngredientes)
   }, [recetasSeleccionadas])
 
   return (
@@ -119,10 +116,12 @@ function MenuSemanal() {
             />
           ) : (
             <ul className="lista-mercado-items">
-              {listaMercado.map(([ingrediente, cantidad]) => (
-                <li key={ingrediente}>
-                  <span>{ingrediente}</span>
-                  {cantidad > 1 && <span className="lista-mercado-cantidad">×{cantidad}</span>}
+              {listaMercado.map((item) => (
+                <li key={`${item.claveNombre}|${item.texto}`}>
+                  <span>{item.texto}</span>
+                  {!item.esNumerico && item.veces > 1 && (
+                    <span className="lista-mercado-cantidad">×{item.veces}</span>
+                  )}
                 </li>
               ))}
             </ul>

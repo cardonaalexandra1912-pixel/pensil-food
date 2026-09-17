@@ -97,9 +97,52 @@
 .detalle-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 14px;
   font-weight: 700;
   color: var(--color-texto-suave);
+}
+
+.detalle-porciones {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+  border-radius: 999px;
+  background-color: var(--color-crema-oscuro);
+}
+
+.detalle-porciones-valor {
+  min-width: 92px;
+  text-align: center;
+}
+
+.detalle-porciones-boton {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-blanco);
+  color: var(--color-verde-oscuro);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sombra-suave);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.detalle-porciones-boton:hover:not(:disabled) {
+  transform: scale(1.1);
+  background-color: var(--color-verde-claro);
+}
+
+.detalle-porciones-boton:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .detalle-cuerpo {
@@ -116,6 +159,21 @@
 .detalle-ingredientes ul li {
   padding: 10px 0;
   border-bottom: 1px solid var(--color-borde);
+}
+
+.detalle-ingredientes-lista {
+  animation: detalle-ingredientes-fade 0.25s ease;
+}
+
+@keyframes detalle-ingredientes-fade {
+  from {
+    opacity: 0.3;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detalle-pasos ol li {

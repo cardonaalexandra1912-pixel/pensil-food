@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ICONOS_CATEGORIA, recetas } from '../data/recetas'
 import { useFavoritos } from '../hooks/useFavoritos'
+import { formatIngrediente } from '../utils/ingredientes'
 import EstadoVacio from '../components/EstadoVacio'
 import './DetalleReceta.css'
+
+// Límites razonables para el selector de porciones.
+const PORCIONES_MIN = 1
+const PORCIONES_MAX = 12
 
 function claseDificultad(dificultad) {
   if (dificultad === 'Fácil') return 'etiqueta-dificultad-facil'
@@ -17,6 +22,13 @@ function DetalleReceta() {
   const receta = recetas.find((r) => r.id === Number(id))
   const { esFavorito, alternarFavorito } = useFavoritos()
   const [faltaImagen, setFaltaImagen] = useState(false)
+  const [porciones, setPorciones] = useState(receta ? receta.porciones : PORCIONES_MIN)
+
+  // Si se navega directo a otra receta (cambia el id), reinicia el selector
+  // a las porciones base de la receta nueva.
+  useEffect(() => {
+    if (receta) setPorciones(receta.porciones)
+  }, [receta?.id])
 
   if (!receta) {
     return (
@@ -38,6 +50,14 @@ function DetalleReceta() {
   }
 
   const favorita = esFavorito(receta.id)
+
+  function disminuirPorciones() {
+    setPorciones((actual) => Math.max(PORCIONES_MIN, actual - 1))
+  }
+
+  function aumentarPorciones() {
+    setPorciones((actual) => Math.min(PORCIONES_MAX, actual + 1))
+  }
 
   return (
     <div className="contenido-pagina">
@@ -82,7 +102,29 @@ function DetalleReceta() {
 
             <div className="detalle-meta">
               <span>⏱ {receta.tiempoPreparacion} min</span>
-              <span>🍽 {receta.porciones} porciones</span>
+              <div className="detalle-porciones" role="group" aria-label="Ajustar número de porciones">
+                <button
+                  type="button"
+                  className="detalle-porciones-boton"
+                  onClick={disminuirPorciones}
+                  disabled={porciones <= PORCIONES_MIN}
+                  aria-label="Quitar una porción"
+                >
+                  −
+                </button>
+                <span className="detalle-porciones-valor">
+                  🍽 {porciones} {porciones === 1 ? 'porción' : 'porciones'}
+                </span>
+                <button
+                  type="button"
+                  className="detalle-porciones-boton"
+                  onClick={aumentarPorciones}
+                  disabled={porciones >= PORCIONES_MAX}
+                  aria-label="Agregar una porción"
+                >
+                  +
+                </button>
+              </div>
               <span className={`etiqueta ${claseDificultad(receta.dificultad)}`}>
                 {receta.dificultad}
               </span>
@@ -93,9 +135,11 @@ function DetalleReceta() {
         <div className="detalle-cuerpo">
           <div className="detalle-ingredientes">
             <h2>Ingredientes</h2>
-            <ul>
+            <ul key={porciones} className="detalle-ingredientes-lista">
               {receta.ingredientes.map((ingrediente, indice) => (
-                <li key={indice}>{ingrediente}</li>
+                <li key={indice}>
+                  {formatIngrediente(ingrediente, receta.porciones, porciones)}
+                </li>
               ))}
             </ul>
           </div>

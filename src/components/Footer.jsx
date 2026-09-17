@@ -1,42 +1,70 @@
+import { Link } from 'react-router-dom'
 import logo from '../assets/logo.jpg'
+import { CATEGORIAS, ICONOS_CATEGORIA } from '../data/recetas'
 import './Footer.css'
 
+// Las primeras 4 categorías del catálogo son las que mostramos como "populares".
+const CATEGORIAS_POPULARES = CATEGORIAS.slice(0, 4)
+
 function Footer() {
+  const anioActual = new Date().getFullYear()
+
+  function volverArriba() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <footer className="footer">
-      <div className="contenedor footer-interior">
-        <div className="footer-info">
-          <img src={logo} alt="Alexandra's Kitchen" className="footer-logo" />
-          <p className="footer-marca">Cocina casera, bien organizada</p>
-          <p className="footer-nota">Recetario personal hecho con React</p>
-          <a
-            className="footer-ubicacion"
-            href="https://www.google.com/maps/search/?api=1&query=Pensilvania,+Caldas,+Colombia"
-            target="_blank"
-            rel="noreferrer"
-          >
-            📍 Pensilvania, Caldas, Colombia
-          </a>
-          <a className="footer-ubicacion" href="tel:+573224302480">
-            📞 322 430 2480
-          </a>
+      {/* Ola decorativa: el relleno es transparente por encima del trazo,
+          así se ve el fondo crema de la página asomando detrás. */}
+      <svg className="footer-ola" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,60 L0,60 Z" />
+      </svg>
+
+      <div className="footer-cuerpo">
+        <span className="footer-decoracion" aria-hidden="true">
+          🍃
+        </span>
+
+        <div className="contenedor footer-interior">
+          <div className="footer-columna footer-marca">
+            <Link to="/" className="footer-logo-enlace">
+              <span className="footer-logo-marco">
+                <img src={logo} alt="" className="footer-logo" />
+              </span>
+              <span className="footer-nombre">Mis Recetas</span>
+            </Link>
+            <p className="footer-frase">Cocina casera, bien organizada</p>
+          </div>
+
+          <div className="footer-columna">
+            <h4 className="footer-titulo">Links rápidos</h4>
+            <nav className="footer-enlaces">
+              <Link to="/">Inicio</Link>
+              <Link to="/recetas">Recetas</Link>
+              <Link to="/menu-semanal">Menú Semanal</Link>
+              <Link to="/favoritos">Favoritos</Link>
+            </nav>
+          </div>
+
+          <div className="footer-columna">
+            <h4 className="footer-titulo">Categorías populares</h4>
+            <nav className="footer-enlaces">
+              {CATEGORIAS_POPULARES.map((categoria) => (
+                <Link key={categoria} to={`/recetas?categoria=${encodeURIComponent(categoria)}`}>
+                  <span className="footer-enlace-icono">{ICONOS_CATEGORIA[categoria]}</span>
+                  {categoria}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div className="footer-mapa">
-          <iframe
-            title="Mapa de Pensilvania, Caldas"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=-75.2233%2C5.3236%2C-75.1033%2C5.4436&marker=5.38361%2C-75.16333&layer=mapnik"
-            loading="lazy"
-            tabIndex="-1"
-          />
-          <span className="footer-mapa-etiqueta">☕ Pensilvania, Caldas</span>
-          <a
-            className="footer-mapa-enlace"
-            href="https://www.google.com/maps/search/?api=1&query=Pensilvania,+Caldas,+Colombia"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Ver Pensilvania, Caldas en Google Maps"
-          />
+        <div className="contenedor footer-creditos">
+          <p>© {anioActual} Mis Recetas. Hecho con cariño en la cocina. 💚</p>
+          <button type="button" className="footer-arriba" onClick={volverArriba}>
+            Volver arriba ↑
+          </button>
         </div>
       </div>
     </footer>
