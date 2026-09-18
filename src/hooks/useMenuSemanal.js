@@ -12,11 +12,11 @@ export const DIAS_SEMANA = [
   'Domingo',
 ]
 
-// Estructura inicial: cada día empieza sin receta seleccionada para almuerzo ni cena
+// Estructura inicial: cada día empieza sin receta seleccionada para desayuno, almuerzo ni cena
 function menuVacio() {
   const menu = {}
   DIAS_SEMANA.forEach((dia) => {
-    menu[dia] = { almuerzo: '', cena: '' }
+    menu[dia] = { desayuno: '', almuerzo: '', cena: '' }
   })
   return menu
 }
@@ -27,7 +27,18 @@ export function useMenuSemanal() {
   const [menu, setMenu] = useState(() => {
     try {
       const guardado = localStorage.getItem(CLAVE_STORAGE)
-      return guardado ? { ...menuVacio(), ...JSON.parse(guardado) } : menuVacio()
+      const datosGuardados = guardado ? JSON.parse(guardado) : null
+      const base = menuVacio()
+      if (datosGuardados) {
+        // Merge por día (no reemplazo directo) para no perder el campo "desayuno"
+        // en planes guardados antes de que existiera esta opción.
+        DIAS_SEMANA.forEach((dia) => {
+          if (datosGuardados[dia]) {
+            base[dia] = { ...base[dia], ...datosGuardados[dia] }
+          }
+        })
+      }
+      return base
     } catch {
       return menuVacio()
     }
@@ -37,7 +48,7 @@ export function useMenuSemanal() {
     localStorage.setItem(CLAVE_STORAGE, JSON.stringify(menu))
   }, [menu])
 
-  // tipoComida es 'almuerzo' o 'cena', recetaId es el id elegido (string del <select>)
+  // tipoComida es 'desayuno', 'almuerzo' o 'cena', recetaId es el id elegido (string del <select>)
   function seleccionarReceta(dia, tipoComida, recetaId) {
     setMenu((actual) => ({
       ...actual,

@@ -67,15 +67,18 @@
   border-radius: 50%;
   border: 2px solid var(--color-borde);
   background-color: var(--color-blanco);
-  font-size: 1.05rem;
+  color: var(--color-texto);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 }
 
 .header-busqueda-boton:hover {
   border-color: var(--color-verde);
+  color: var(--color-verde-oscuro);
+  background-color: var(--color-verde-claro);
 }
 
 .header-busqueda-form input {

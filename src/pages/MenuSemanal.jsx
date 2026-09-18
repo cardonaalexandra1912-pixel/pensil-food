@@ -5,26 +5,33 @@ import { agruparIngredientes } from '../utils/ingredientes'
 import EstadoVacio from '../components/EstadoVacio'
 import './MenuSemanal.css'
 
-// Página de Menú Semanal: 7 tarjetas (una por día) para elegir almuerzo y cena,
-// más una lista de mercado que se arma sola con los ingredientes de lo elegido.
+// Página de Menú Semanal: 7 tarjetas (una por día) para elegir desayuno, almuerzo
+// y cena, más una lista de mercado que se arma sola con los ingredientes de lo elegido.
 function MenuSemanal() {
   const { menu, seleccionarReceta, limpiarMenu } = useMenuSemanal()
 
-  // Agrupamos las recetas por categoría una sola vez, para usarlas como <optgroup>
-  // en los selects de Almuerzo y Cena (así son más fáciles de recorrer visualmente).
+  // El select de Desayuno solo muestra recetas de categoría "Desayunos".
+  const recetasDesayuno = useMemo(() => recetas.filter((receta) => receta.categoria === 'Desayunos'), [])
+
+  // Agrupamos el resto de categorías (todo menos Desayunos) una sola vez, para
+  // usarlas como <optgroup> en los selects de Almuerzo y Cena (así son más
+  // fáciles de recorrer visualmente y no repiten las opciones de desayuno).
   const recetasPorCategoria = useMemo(
     () =>
-      CATEGORIAS.map((categoria) => ({
-        categoria,
-        items: recetas.filter((receta) => receta.categoria === categoria),
-      })).filter((grupo) => grupo.items.length > 0),
+      CATEGORIAS.filter((categoria) => categoria !== 'Desayunos')
+        .map((categoria) => ({
+          categoria,
+          items: recetas.filter((receta) => receta.categoria === categoria),
+        }))
+        .filter((grupo) => grupo.items.length > 0),
     []
   )
 
-  // Todas las recetas seleccionadas en la semana (almuerzos + cenas de los 7 días)
+  // Todas las recetas seleccionadas en la semana (desayunos + almuerzos + cenas de los 7 días)
   const recetasSeleccionadas = useMemo(() => {
     const ids = []
     DIAS_SEMANA.forEach((dia) => {
+      if (menu[dia].desayuno) ids.push(Number(menu[dia].desayuno))
       if (menu[dia].almuerzo) ids.push(Number(menu[dia].almuerzo))
       if (menu[dia].cena) ids.push(Number(menu[dia].cena))
     })
@@ -49,8 +56,8 @@ function MenuSemanal() {
           </button>
         </div>
         <p className="menu-semanal-intro">
-          Elige el almuerzo y la cena de cada día. La lista de mercado se arma sola con lo que
-          selecciones.
+          Elige el desayuno, el almuerzo y la cena de cada día. La lista de mercado se arma sola
+          con lo que selecciones.
         </p>
 
         {/* --- Grid de 7 días --- */}
@@ -58,6 +65,23 @@ function MenuSemanal() {
           {DIAS_SEMANA.map((dia) => (
             <div key={dia} className="dia-card">
               <h3>{dia}</h3>
+
+              <label className="dia-card-label" htmlFor={`${dia}-desayuno`}>
+                Desayuno
+              </label>
+              <select
+                id={`${dia}-desayuno`}
+                className="campo-formulario"
+                value={menu[dia].desayuno}
+                onChange={(e) => seleccionarReceta(dia, 'desayuno', e.target.value)}
+              >
+                <option value="">Sin seleccionar</option>
+                {recetasDesayuno.map((receta) => (
+                  <option key={receta.id} value={receta.id}>
+                    {receta.nombre}
+                  </option>
+                ))}
+              </select>
 
               <label className="dia-card-label" htmlFor={`${dia}-almuerzo`}>
                 Almuerzo

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import logo from '../assets/logo.jpg'
 import './Header.css'
 
@@ -58,7 +59,7 @@ function Header() {
             onClick={() => setBusquedaAbierta((abierto) => !abierto)}
             aria-label="Buscar receta"
           >
-            🔍
+            <Search size={18} strokeWidth={2.25} />
           </button>
         </div>
       </div>
