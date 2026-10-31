@@ -37,8 +37,24 @@
   margin-top: 0;
 }
 
-.lista-mercado h2 {
+/* Título y botón de PDF en una fila, del mismo ancho que la lista. */
+.lista-mercado-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 520px;
   margin-bottom: 20px;
+}
+
+.lista-mercado-pdf {
+  padding: 10px 18px;
+}
+
+.lista-mercado-pdf:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 
 .lista-mercado-items {

@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { Download } from 'lucide-react'
 import { CATEGORIAS, recetas } from '../data/recetas'
 import { DIAS_SEMANA, useMenuSemanal } from '../hooks/useMenuSemanal'
 import { agruparIngredientes } from '../utils/ingredientes'
+import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import EstadoVacio from '../components/EstadoVacio'
 import './MenuSemanal.css'
 
@@ -45,6 +47,27 @@ function MenuSemanal() {
     const todosLosIngredientes = recetasSeleccionadas.flatMap((receta) => receta.ingredientes)
     return agruparIngredientes(todosLosIngredientes)
   }, [recetasSeleccionadas])
+
+  const [generandoPdf, setGenerandoPdf] = useState(false)
+
+  async function descargarPdf() {
+    const nombreDe = (id) => recetas.find((r) => r.id === Number(id))?.nombre
+    const diasConRecetas = DIAS_SEMANA.map((dia) => ({
+      dia,
+      comidas: [
+        { momento: 'Desayuno', nombre: nombreDe(menu[dia].desayuno) },
+        { momento: 'Almuerzo', nombre: nombreDe(menu[dia].almuerzo) },
+        { momento: 'Cena', nombre: nombreDe(menu[dia].cena) },
+      ].filter((comida) => comida.nombre),
+    })).filter((dia) => dia.comidas.length > 0)
+
+    setGenerandoPdf(true)
+    try {
+      await descargarListaMercadoPdf(diasConRecetas, listaMercado)
+    } finally {
+      setGenerandoPdf(false)
+    }
+  }
 
   return (
     <div className="contenido-pagina">
@@ -130,7 +153,20 @@ function MenuSemanal() {
 
         {/* --- Lista de mercado --- */}
         <section className="lista-mercado">
-          <h2>🛒 Lista de Mercado</h2>
+          <div className="lista-mercado-encabezado">
+            <h2>🛒 Lista de Mercado</h2>
+            {listaMercado.length > 0 && (
+              <button
+                type="button"
+                className="boton boton-primario lista-mercado-pdf"
+                onClick={descargarPdf}
+                disabled={generandoPdf}
+              >
+                <Download size={18} aria-hidden="true" />
+                {generandoPdf ? 'Preparando PDF…' : 'Descargar PDF'}
+              </button>
+            )}
+          </div>
 
           {listaMercado.length === 0 ? (
             <EstadoVacio

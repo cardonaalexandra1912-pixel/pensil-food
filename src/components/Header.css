@@ -85,6 +85,23 @@
   width: 200px;
 }
 
+/* En pantallas grandes el logo va pegado a la navegación y los dos quedan
+   centrados juntos; la búsqueda se queda sola a la derecha. */
+@media (min-width: 781px) {
+  .header-interior {
+    position: relative;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .header-busqueda {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 @media (max-width: 780px) {
   .header-logo-imagen {
     height: 32px;
