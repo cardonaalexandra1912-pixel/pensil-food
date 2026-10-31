@@ -1,7 +1,14 @@
 /* --- Hero --- */
+/* El hero sube hasta el borde del header (compensa el padding-top de
+   .contenido-pagina) para que no quede una franja vacía arriba, y ocupa casi
+   toda la pantalla para que las fotos luzcan grandes. */
 .hero {
   position: relative;
-  padding: 100px 0 80px;
+  display: flex;
+  align-items: center;
+  min-height: 82vh;
+  margin-top: -88px;
+  padding: 150px 0 110px;
   overflow: hidden;
   color: var(--color-blanco);
   text-align: center;
@@ -18,26 +25,26 @@
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center 35%;
+  background-position: center;
   opacity: 0;
-  transition: opacity 1.4s ease;
+  transition: opacity 0.9s ease;
 }
 
 .hero-fondo.activo {
   opacity: 1;
 }
 
-/* Degradado cálido de marca, siempre encima de cualquiera de las fotos del
-   carrusel, para que el texto blanco se siga leyendo bien. */
+/* Sombra suave y neutra encima de las fotos: oscurece lo justo para que el
+   texto blanco se lea, sin teñir ni apagar los colores de la comida. */
 .hero-degradado {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background-image: linear-gradient(
-    135deg,
-    rgba(233, 118, 43, 0.78) 0%,
-    rgba(200, 95, 24, 0.6) 45%,
-    rgba(67, 90, 42, 0.82) 100%
+  background-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.42) 0%,
+    rgba(0, 0, 0, 0.22) 60%,
+    rgba(0, 0, 0, 0.12) 100%
   );
   pointer-events: none;
 }
@@ -83,14 +90,16 @@
 
 .hero h1 {
   color: var(--color-blanco);
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   margin-bottom: 16px;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
 .hero-subtitulo {
-  font-size: 1.1rem;
-  opacity: 0.94;
+  font-size: 1.15rem;
+  opacity: 0.96;
   margin-bottom: 36px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buscador {
@@ -136,9 +145,17 @@
   transform: scale(1.25);
 }
 
+@media (max-width: 780px) {
+  .hero {
+    margin-top: -128px;
+    padding-top: 170px;
+  }
+}
+
 @media (max-width: 700px) {
   .hero {
-    padding: 70px 0 56px;
+    min-height: 72vh;
+    padding-bottom: 64px;
   }
 
   .hero h1 {

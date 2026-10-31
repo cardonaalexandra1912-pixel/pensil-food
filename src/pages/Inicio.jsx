@@ -11,14 +11,14 @@ import './Inicio.css'
 // Van en orden: un desayuno, una crema y un almuerzo del recetario.
 const heroImages = [
   // Desayuno: Parfait de Yogur Griego con Fresas y Granola
-  'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=2000&q=80',
   // Crema: Cazuela de Mariscos
-  'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=2000&q=80',
   // Almuerzo: Salmón Dorado con Salsa Fresca de Pepino
-  'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=2000&q=80',
 ]
 
-const HERO_INTERVALO_MS = 3500
+const HERO_INTERVALO_MS = 2500
 
 // Página principal: hero con carrusel de fondo + buscador, y secciones de
 // recetas destacadas por categoría.
