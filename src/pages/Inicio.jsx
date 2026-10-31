@@ -9,9 +9,9 @@ import './Inicio.css'
 // cuando quieras (misma URL de estilo `${BASE_URL}imagenes/...` o cualquier
 // URL externa) — el carrusel se adapta automáticamente a cuantas pongas aquí.
 const heroImages = [
-  'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=1600&q=80',
 ]
 
 const HERO_INTERVALO_MS = 5500
@@ -121,7 +121,7 @@ function Inicio() {
       {/* --- Recetas destacadas por categoría --- */}
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
-          <h2>Recetas por categoría</h2>
+          <h2>Cocina con amor, sirve felicidad</h2>
         </div>
 
         {CATEGORIAS.map((cat) => (

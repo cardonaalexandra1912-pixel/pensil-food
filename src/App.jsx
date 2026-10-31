@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import WhatsappFlotante from './components/WhatsappFlotante'
 import Inicio from './pages/Inicio'
 import Recetas from './pages/Recetas'
 import DetalleReceta from './pages/DetalleReceta'
@@ -21,6 +22,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <WhatsappFlotante />
     </>
   )
 }
