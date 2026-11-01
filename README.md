@@ -8,7 +8,8 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
 
 - **Recetas**: catálogo público (cualquiera puede verlo sin cuenta) y recetas
   propias de cada familia (crear, editar y borrar).
-- **Cuentas**: ingreso con Google o con correo y contraseña.
+- **Cuentas**: ingreso con correo y contraseña. El ingreso con Google ya está
+  programado pero apagado (ver más abajo).
 - **Familias**: cada usuario pertenece a una familia; quien la crea queda como
   administrador e invita a los demás con un código de 6 letras o un enlace.
 - **Menú semanal compartido**: un plan por familia y por semana (lunes a
@@ -63,8 +64,12 @@ en el panel del proyecto:
    - *Redirect URLs*: agrega
      `https://cardonaalexandra1912-pixel.github.io/pensil-food/**` y
      `http://localhost:5173/pensil-food/**`
-2. **Authentication → Sign In / Providers → Google**: actívalo con un
+2. **(Más adelante, con el dominio definitivo) Ingreso con Google.** El código
+   ya está listo pero el botón está oculto. Para encenderlo:
+   activa el proveedor en **Authentication → Sign In / Providers → Google** con un
    *Client ID* y *Client Secret* de Google Cloud (APIs y servicios →
    Credenciales → ID de cliente OAuth, tipo “Aplicación web”). En Google, la
    *URI de redireccionamiento autorizada* debe ser
-   `https://nredvzzxzgsckyyhfnqk.supabase.co/auth/v1/callback`.
+   `https://nredvzzxzgsckyyhfnqk.supabase.co/auth/v1/callback`. Luego construye
+   con `VITE_GOOGLE_HABILITADO=true` (o cambia `GOOGLE_HABILITADO` en
+   `src/lib/supabase.js`).

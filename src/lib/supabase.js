@@ -8,6 +8,11 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://nredvzzxzgsck
 const SUPABASE_PUBLISHABLE_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_ozrX-V04a7wQ54qPLRRl-w_fBDgN21a'
 
+// El ingreso con Google ya está programado, pero queda apagado hasta activar
+// el proveedor en Supabase (cuando exista el dominio definitivo). Para
+// encenderlo: VITE_GOOGLE_HABILITADO=true en el build, o cambiar este valor.
+export const GOOGLE_HABILITADO = import.meta.env.VITE_GOOGLE_HABILITADO === 'true'
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     flowType: 'pkce',

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { mensajeError } from '../lib/supabase'
+import { GOOGLE_HABILITADO, mensajeError } from '../lib/supabase'
 import logo from '../assets/logo.jpg'
 import './Ingresar.css'
 
@@ -80,14 +80,18 @@ function Ingresar() {
             recetas.
           </p>
 
-          <button type="button" className="boton ingresar-google" onClick={conGoogle} disabled={enviando}>
-            <LogoGoogle />
-            Continuar con Google
-          </button>
+          {GOOGLE_HABILITADO && (
+            <>
+              <button type="button" className="boton ingresar-google" onClick={conGoogle} disabled={enviando}>
+                <LogoGoogle />
+                Continuar con Google
+              </button>
 
-          <div className="ingresar-separador">
-            <span>o con tu correo</span>
-          </div>
+              <div className="ingresar-separador">
+                <span>o con tu correo</span>
+              </div>
+            </>
+          )}
 
           <form className="ingresar-form" onSubmit={conCorreo}>
             {modo === 'registro' && (
