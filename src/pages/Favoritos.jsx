@@ -1,3 +1,4 @@
+import { Heart } from 'lucide-react'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import RecetaCard from '../components/RecetaCard'
@@ -13,7 +14,10 @@ function Favoritos() {
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
-          <h1>Mis Favoritos</h1>
+          <div>
+            <span className="etiqueta-seccion">Guardadas por ti</span>
+            <h1>Mis favoritos</h1>
+          </div>
         </div>
 
         {recetasFavoritas.length > 0 ? (
@@ -29,7 +33,7 @@ function Favoritos() {
           </div>
         ) : (
           <EstadoVacio
-            icono="♡"
+            icono={Heart}
             titulo="Aún no tienes recetas favoritas"
             mensaje="Marca el corazón de cualquier receta para guardarla aquí y encontrarla rápido después."
           />

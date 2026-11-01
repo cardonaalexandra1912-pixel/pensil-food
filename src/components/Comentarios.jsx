@@ -38,7 +38,8 @@ function Comentarios({ tipo, objetivoId, titulo, descripcion }) {
     <section className="comentarios">
       <div className="comentarios-encabezado">
         <h2>
-          <MessageCircle size={22} aria-hidden="true" /> {titulo}
+          <span className="mosaico"><MessageCircle aria-hidden="true" /></span>
+          {titulo}
         </h2>
         {familia && <span className="comentarios-familia">Solo lo ve {familia.nombre}</span>}
       </div>
@@ -59,7 +60,7 @@ function Comentarios({ tipo, objetivoId, titulo, descripcion }) {
             {cargando && comentarios.length === 0 ? (
               <p className="comentarios-aviso">Cargando comentarios…</p>
             ) : comentarios.length === 0 ? (
-              <p className="comentarios-aviso">Nadie ha comentado todavía. ¡Sé el primero!</p>
+              <p className="comentarios-aviso">Nadie ha comentado todavía. Escribe el primer comentario.</p>
             ) : (
               <ul className="comentarios-lista">
                 {comentarios.map((comentario) => {
@@ -105,7 +106,7 @@ function Comentarios({ tipo, objetivoId, titulo, descripcion }) {
                 }}
                 aria-label="Nuevo comentario"
               />
-              <button type="submit" className="boton boton-secundario" disabled={enviando || !texto.trim()}>
+              <button type="submit" className="boton boton-primario" disabled={enviando || !texto.trim()}>
                 <Send size={17} aria-hidden="true" />
                 {enviando ? 'Enviando…' : 'Comentar'}
               </button>

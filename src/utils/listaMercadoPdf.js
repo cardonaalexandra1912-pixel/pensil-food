@@ -10,10 +10,13 @@
 const MARGEN = 18
 const ANCHO_PAGINA = 210
 const ALTO_PAGINA = 297
-const VERDE_BOSQUE = [48, 65, 30]
-const TERRACOTA = [233, 118, 43]
-const TEXTO = [58, 50, 41]
-const TEXTO_SUAVE = [122, 111, 95]
+// Colores de Pensil.Devs: grafito, lápiz, tomate de Pensil.Food y tinta.
+const GRAFITO = [22, 24, 29]
+const LAPIZ = [246, 184, 28]
+const TOMATE = [176, 54, 27]
+const VERDE = [23, 112, 75]
+const TEXTO = [22, 24, 29]
+const TEXTO_SUAVE = [84, 90, 102]
 
 // diasConRecetas: [{ dia, comidas: [{ momento: 'Desayuno', nombre }] }]
 // listaMercado: el resultado de agruparIngredientes()
@@ -23,8 +26,10 @@ export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
   let y = 0
 
   // Encabezado con franja de color de la marca
-  doc.setFillColor(...VERDE_BOSQUE)
+  doc.setFillColor(...GRAFITO)
   doc.rect(0, 0, ANCHO_PAGINA, 30, 'F')
+  doc.setFillColor(...LAPIZ)
+  doc.rect(0, 30, ANCHO_PAGINA, 1.6, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(22)
@@ -32,7 +37,7 @@ export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   const fecha = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
-  doc.text(`Mis Recetas  ·  ${fecha}`, ANCHO_PAGINA - MARGEN, 19, { align: 'right' })
+  doc.text(`Pensil.Food  ·  ${fecha}`, ANCHO_PAGINA - MARGEN, 19, { align: 'right' })
   y = 42
 
   // Pasa a una página nueva cuando lo siguiente ya no cabe.
@@ -45,11 +50,11 @@ export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
 
   function tituloSeccion(texto) {
     asegurarEspacio(16)
-    doc.setTextColor(...TERRACOTA)
+    doc.setTextColor(...TOMATE)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(14)
     doc.text(texto, MARGEN, y)
-    doc.setDrawColor(...TERRACOTA)
+    doc.setDrawColor(...LAPIZ)
     doc.setLineWidth(0.4)
     doc.line(MARGEN, y + 2, ANCHO_PAGINA - MARGEN, y + 2)
     y += 10
@@ -60,7 +65,7 @@ export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
     tituloSeccion('Menú de la semana')
     diasConRecetas.forEach(({ dia, comidas }) => {
       asegurarEspacio(6 + comidas.length * 5.5)
-      doc.setTextColor(...VERDE_BOSQUE)
+      doc.setTextColor(...VERDE)
       doc.setFont('helvetica', 'bold')
       doc.setFontSize(11)
       doc.text(dia, MARGEN, y)

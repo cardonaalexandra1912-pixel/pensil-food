@@ -1,10 +1,10 @@
 .comentarios {
-  margin-top: 48px;
-  padding: 28px;
-  background-color: var(--color-blanco);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-suave);
+  margin-top: 64px;
+  padding: 24px;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
 .comentarios-encabezado {
@@ -13,41 +13,45 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .comentarios-encabezado h2 {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   font-size: 1.5rem;
 }
 
 .comentarios-familia {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-verde-oscuro);
-  background-color: var(--color-verde-claro);
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
+  background-color: var(--tomato-soft);
+  color: var(--tomato-text);
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .comentarios-descripcion,
 .comentarios-aviso {
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
   margin-bottom: 16px;
 }
 
 .comentarios-enlace {
-  color: var(--color-terracota);
-  font-weight: 800;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .comentarios-lista {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin: 16px 0 20px;
+  margin: 20px 0 24px;
 }
 
 .comentario {
@@ -58,15 +62,14 @@
 
 .comentario-cuerpo {
   flex: 1;
-  background-color: var(--color-crema);
-  border: 1px solid var(--color-borde);
-  border-radius: 4px var(--radio-borde) var(--radio-borde) var(--radio-borde);
-  padding: 10px 14px;
   min-width: 0;
+  padding: 12px 16px;
+  background-color: var(--paper-sunken);
+  border-radius: 4px var(--radius-tile) var(--radius-tile) var(--radius-tile);
 }
 
 .comentario.es-mio .comentario-cuerpo {
-  background-color: var(--color-verde-claro);
+  background-color: var(--leaf-soft);
 }
 
 .comentario-cuerpo p {
@@ -78,26 +81,29 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.85rem;
   margin-bottom: 2px;
+  font-size: 0.875rem;
 }
 
 .comentario-meta span {
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
 }
 
 .comentario-borrar {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   margin-left: auto;
   border: none;
+  border-radius: 50%;
   background: none;
-  color: var(--color-texto-suave);
-  display: inline-flex;
-  padding: 2px;
-  border-radius: 4px;
+  color: var(--ink-muted);
 }
 
 .comentario-borrar:hover {
-  color: #c1432a;
+  color: var(--danger);
+  background-color: var(--danger-soft);
 }
 
 .comentarios-form {
@@ -108,15 +114,17 @@
 }
 
 .comentarios-form textarea {
+  min-height: var(--control-min);
   resize: vertical;
-  min-height: 48px;
 }
 
-@media (max-width: 560px) {
+@media (min-width: 768px) {
   .comentarios {
-    padding: 20px;
+    padding: 32px;
   }
+}
 
+@media (max-width: 559px) {
   .comentarios-form {
     flex-direction: column;
     align-items: stretch;

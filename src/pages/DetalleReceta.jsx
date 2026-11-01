@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2 } from 'lucide-react'
-import { ICONOS_CATEGORIA } from '../data/catalogo'
+import { ArrowLeft, ChefHat, Clock, Heart, Minus, Pencil, Plus, Trash2 } from 'lucide-react'
+import { iconoDeCategoria } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import { mensajeError, supabase } from '../lib/supabase'
 import { formatIngrediente } from '../utils/ingredientes'
+import { claseDificultad } from '../utils/dificultad'
 import Cargando from '../components/Cargando'
 import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
@@ -15,12 +16,6 @@ import './DetalleReceta.css'
 // Límites razonables para el selector de porciones.
 const PORCIONES_MIN = 1
 const PORCIONES_MAX = 12
-
-function claseDificultad(dificultad) {
-  if (dificultad === 'Fácil') return 'etiqueta-dificultad-facil'
-  if (dificultad === 'Media') return 'etiqueta-dificultad-media'
-  return 'etiqueta-dificultad-dificil'
-}
 
 // Página de detalle: muestra toda la información de una receta según su id en la URL.
 function DetalleReceta() {
@@ -31,6 +26,8 @@ function DetalleReceta() {
   const navigate = useNavigate()
   const { esFavorito, alternarFavorito } = useFavoritos()
   const [errorBorrar, setErrorBorrar] = useState('')
+  // Ingredientes marcados mientras se cocina (solo en esta pantalla).
+  const [listos, setListos] = useState(() => new Set())
   const [faltaImagen, setFaltaImagen] = useState(false)
   const [porciones, setPorciones] = useState(receta ? receta.porciones : PORCIONES_MIN)
 
@@ -38,6 +35,7 @@ function DetalleReceta() {
   // a las porciones base de la receta nueva.
   useEffect(() => {
     if (receta) setPorciones(receta.porciones)
+    setListos(new Set())
   }, [receta?.id])
 
   if (!receta && cargando) {
@@ -53,15 +51,14 @@ function DetalleReceta() {
       <div className="contenido-pagina">
         <div className="contenedor seccion">
           <EstadoVacio
-            icono="🍳"
+            icono={ChefHat}
             titulo="No encontramos esta receta"
-            mensaje="Puede que el enlace esté roto o la receta ya no exista."
-          />
-          <div className="detalle-volver-contenedor">
+            mensaje="Puede que el enlace esté roto o que la receta ya no exista."
+          >
             <Link to="/recetas" className="boton boton-secundario">
-              ← Volver a recetas
+              <ArrowLeft aria-hidden="true" /> Ver todas las recetas
             </Link>
-          </div>
+          </EstadoVacio>
         </div>
       </div>
     )
@@ -92,115 +89,150 @@ function DetalleReceta() {
     setPorciones((actual) => Math.min(PORCIONES_MAX, actual + 1))
   }
 
+  function alternarListo(indice) {
+    setListos((actuales) => {
+      const nuevos = new Set(actuales)
+      if (nuevos.has(indice)) nuevos.delete(indice)
+      else nuevos.add(indice)
+      return nuevos
+    })
+  }
+
+  const IconoCategoria = iconoDeCategoria(receta.categoria)
+
   return (
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <Link to="/recetas" className="detalle-volver">
-          ← Volver a recetas
+          <ArrowLeft size={18} aria-hidden="true" /> Todas las recetas
         </Link>
 
         <div className="detalle-receta">
           <div className="detalle-imagen-contenedor">
             {faltaImagen || !receta.imagen ? (
-              <div className="detalle-imagen-fallback" aria-hidden="true">
-                {ICONOS_CATEGORIA[receta.categoria] || '🍽️'}
+              <div className="detalle-imagen-fallback ficha-receta" aria-hidden="true">
+                <span className="mosaico">
+                  <IconoCategoria />
+                </span>
               </div>
             ) : (
-              <img
-                src={receta.imagen}
-                alt={receta.nombre}
-                className="detalle-imagen"
-                onError={() => setFaltaImagen(true)}
-              />
+              <img src={receta.imagen} alt={receta.nombre} className="detalle-imagen" onError={() => setFaltaImagen(true)} />
             )}
-            <span className="etiqueta etiqueta-categoria detalle-categoria">
-              {receta.categoria}
-            </span>
           </div>
 
           <div className="detalle-info">
-            <div className="detalle-encabezado">
-              <h1>{receta.nombre}</h1>
+            <div className="detalle-etiquetas">
+              <Link to={`/recetas?categoria=${encodeURIComponent(receta.categoria)}`} className="detalle-categoria">
+                <IconoCategoria size={18} aria-hidden="true" />
+                {receta.categoria}
+              </Link>
+              {esDeMiFamilia && <span className="etiqueta etiqueta-familia">Receta de {familia.nombre}</span>}
+            </div>
+
+            <h1>{receta.nombre}</h1>
+            <p className="texto-intro">{receta.descripcion}</p>
+
+            <dl className="detalle-meta">
+              <div>
+                <dt>Tiempo</dt>
+                <dd>
+                  <Clock size={18} aria-hidden="true" /> {receta.tiempoPreparacion} min
+                </dd>
+              </div>
+              <div>
+                <dt>Dificultad</dt>
+                <dd>
+                  <span className={`etiqueta ${claseDificultad(receta.dificultad)}`}>{receta.dificultad}</span>
+                </dd>
+              </div>
+              <div>
+                <dt id="porciones-titulo">Porciones</dt>
+                <dd className="detalle-porciones" role="group" aria-labelledby="porciones-titulo">
+                  <button
+                    type="button"
+                    className="detalle-porciones-boton"
+                    onClick={disminuirPorciones}
+                    disabled={porciones <= PORCIONES_MIN}
+                    aria-label="Quitar una porción"
+                  >
+                    <Minus size={18} aria-hidden="true" />
+                  </button>
+                  <span className="detalle-porciones-valor" aria-live="polite">
+                    {porciones}
+                  </span>
+                  <button
+                    type="button"
+                    className="detalle-porciones-boton"
+                    onClick={aumentarPorciones}
+                    disabled={porciones >= PORCIONES_MAX}
+                    aria-label="Agregar una porción"
+                  >
+                    <Plus size={18} aria-hidden="true" />
+                  </button>
+                </dd>
+              </div>
+            </dl>
+
+            <div className="detalle-acciones">
               <button
                 type="button"
-                className={`detalle-favorito ${favorita ? 'es-favorito' : ''}`}
+                className={`boton boton-secundario detalle-favorito ${favorita ? 'es-favorito' : ''}`}
                 onClick={() => alternarFavorito(receta.id)}
-                aria-label={favorita ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                aria-pressed={favorita}
               >
-                {favorita ? '♥' : '♡'}
+                <Heart aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+                {favorita ? 'En tus favoritos' : 'Guardar en favoritos'}
               </button>
+              {esDeMiFamilia && (
+                <>
+                  <Link to={`/recetas/${receta.id}/editar`} className="boton boton-secundario">
+                    <Pencil aria-hidden="true" /> Editar
+                  </Link>
+                  <button type="button" className="boton boton-peligro" onClick={borrarReceta}>
+                    <Trash2 aria-hidden="true" /> Borrar
+                  </button>
+                </>
+              )}
             </div>
-
-            <p className="detalle-descripcion">{receta.descripcion}</p>
-
-            <div className="detalle-meta">
-              <span>⏱ {receta.tiempoPreparacion} min</span>
-              <div className="detalle-porciones" role="group" aria-label="Ajustar número de porciones">
-                <button
-                  type="button"
-                  className="detalle-porciones-boton"
-                  onClick={disminuirPorciones}
-                  disabled={porciones <= PORCIONES_MIN}
-                  aria-label="Quitar una porción"
-                >
-                  −
-                </button>
-                <span className="detalle-porciones-valor">
-                  🍽 {porciones} {porciones === 1 ? 'porción' : 'porciones'}
-                </span>
-                <button
-                  type="button"
-                  className="detalle-porciones-boton"
-                  onClick={aumentarPorciones}
-                  disabled={porciones >= PORCIONES_MAX}
-                  aria-label="Agregar una porción"
-                >
-                  +
-                </button>
-              </div>
-              <span className={`etiqueta ${claseDificultad(receta.dificultad)}`}>
-                {receta.dificultad}
-              </span>
-            </div>
-
-            {esDeMiFamilia && (
-              <div className="detalle-acciones-familia">
-                <span className="etiqueta receta-card-familia-inline">Receta de {familia.nombre}</span>
-                <Link to={`/recetas/${receta.id}/editar`} className="boton boton-contorno">
-                  <Pencil size={16} aria-hidden="true" /> Editar
-                </Link>
-                <button type="button" className="boton boton-peligro" onClick={borrarReceta}>
-                  <Trash2 size={16} aria-hidden="true" /> Borrar
-                </button>
-              </div>
-            )}
             {errorBorrar && <p className="mensaje-error">{errorBorrar}</p>}
           </div>
         </div>
 
         <div className="detalle-cuerpo">
-          <div className="detalle-ingredientes">
-            <h2>Ingredientes</h2>
+          {/* Los ingredientes van en una ficha de receta: renglones y margen tomate. */}
+          <section className="detalle-ingredientes ficha-receta" aria-labelledby="titulo-ingredientes">
+            <h2 id="titulo-ingredientes">Ingredientes</h2>
+            <p className="detalle-ingredientes-nota">
+              Para {porciones} {porciones === 1 ? 'porción' : 'porciones'}. Márcalos mientras cocinas.
+            </p>
             <ul key={porciones} className="detalle-ingredientes-lista">
               {receta.ingredientes.map((ingrediente, indice) => (
                 <li key={indice}>
-                  {formatIngrediente(ingrediente, receta.porciones, porciones)}
+                  <label className={listos.has(indice) ? 'listo' : ''}>
+                    <input type="checkbox" checked={listos.has(indice)} onChange={() => alternarListo(indice)} />
+                    <span>{formatIngrediente(ingrediente, receta.porciones, porciones)}</span>
+                  </label>
                 </li>
               ))}
             </ul>
-          </div>
+          </section>
 
-          <div className="detalle-pasos">
-            <h2>Preparación</h2>
+          <section className="detalle-pasos" aria-labelledby="titulo-preparacion">
+            <h2 id="titulo-preparacion">Preparación</h2>
             <ol>
               {receta.pasos.map((paso, indice) => (
                 <li key={indice}>
-                  <span className="detalle-paso-numero">{indice + 1}</span>
-                  <span>{paso}</span>
+                  <span
+                    className={`detalle-paso-numero ${indice === receta.pasos.length - 1 ? 'ultimo' : ''}`}
+                    aria-hidden="true"
+                  >
+                    {indice + 1}
+                  </span>
+                  <p>{paso}</p>
                 </li>
               ))}
             </ol>
-          </div>
+          </section>
         </div>
 
         <Comentarios

@@ -3,7 +3,7 @@
 }
 
 .formulario-intro {
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
   margin-bottom: 24px;
 }
 
@@ -44,14 +44,14 @@
 }
 
 .formulario-lista legend {
-  font-family: var(--fuente-titulos);
+  font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 .formulario-ayuda {
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
   font-size: 0.88rem;
 }
 
@@ -81,8 +81,8 @@
 .formulario-quitar {
   border: none;
   background: none;
-  color: var(--color-texto-suave);
-  border-radius: var(--radio-borde-chico);
+  color: var(--ink-muted);
+  border-radius: var(--radius-control);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -90,8 +90,8 @@
 }
 
 .formulario-quitar:hover:not(:disabled) {
-  color: #c1432a;
-  background-color: #fbe3df;
+  color: var(--danger);
+  background-color: var(--danger-soft);
 }
 
 .formulario-quitar:disabled {

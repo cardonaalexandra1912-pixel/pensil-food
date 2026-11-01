@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Download, Radio } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Moon, ShoppingBasket, Sun, Sunrise } from 'lucide-react'
 import { CATEGORIAS, MOMENTOS } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { useRecetas } from '../context/RecetasContext'
@@ -14,6 +14,8 @@ import Cargando from '../components/Cargando'
 import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
 import './MenuSemanal.css'
+
+const ICONOS_MOMENTO = { desayuno: Sunrise, almuerzo: Sun, cena: Moon }
 
 // Página de Menú Semanal: el plan de la familia para una semana (lunes a
 // domingo). Cualquier integrante elige desayuno, almuerzo y cena de cada día;
@@ -39,8 +41,10 @@ function MenuSemanal() {
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
-          <h1>Menú Semanal</h1>
-          {familia && <span className="menu-semanal-familia">Plan de {familia.nombre}</span>}
+          <div>
+            <span className="etiqueta-seccion">{familia ? `Plan de ${familia.nombre}` : 'Menú en familia'}</span>
+            <h1>Menú semanal</h1>
+          </div>
         </div>
 
         {!familia ? (
@@ -54,7 +58,7 @@ function MenuSemanal() {
                 onClick={() => irASemana(sumarDias(lunes, -7))}
                 aria-label="Semana anterior"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={22} aria-hidden="true" />
               </button>
               <div className="menu-semanal-semana">
                 <strong>{textoSemana(lunes)}</strong>
@@ -72,7 +76,7 @@ function MenuSemanal() {
                 onClick={() => irASemana(sumarDias(lunes, 7))}
                 aria-label="Semana siguiente"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={22} aria-hidden="true" />
               </button>
             </div>
             <PlanSemana key={fechaISO(lunes)} lunes={lunes} />
@@ -165,12 +169,15 @@ function PlanSemana({ lunes }) {
     <>
       <div className="menu-semanal-barra">
         <p className="menu-semanal-intro">
-          <Radio size={16} aria-hidden="true" className="menu-semanal-envivo" />
+          <span className="en-vivo">
+            <span className="en-vivo-punto" aria-hidden="true" />
+            En vivo
+          </span>
           Lo que elija cualquier integrante de la familia aparece aquí al instante.
         </p>
         <button
           type="button"
-          className="boton boton-contorno"
+          className="boton boton-secundario boton-chico"
           onClick={() => {
             if (window.confirm('¿Quitar todas las comidas de esta semana para toda la familia?')) limpiarMenu()
           }}
@@ -194,12 +201,14 @@ function PlanSemana({ lunes }) {
               </h3>
 
               {MOMENTOS.map(({ clave, etiqueta }) => {
+                const IconoMomento = ICONOS_MOMENTO[clave]
                 const item = menu[indiceDia][clave]
                 const elegidoPorMi = item && item.elegido_por === usuario?.id
                 const nombreQuien = elegidoPorMi ? 'ti' : item?.elegido?.nombre
                 return (
                   <div key={clave} className="dia-card-comida">
                     <label className="dia-card-label" htmlFor={`${dia}-${clave}`}>
+                      <IconoMomento size={16} aria-hidden="true" />
                       {etiqueta}
                     </label>
                     <select
@@ -216,7 +225,7 @@ function PlanSemana({ lunes }) {
                         <Avatar
                           nombre={item.elegido?.nombre}
                           url={item.elegido?.avatar_url}
-                          tamano={18}
+                          tamano={20}
                         />
                         Elegido por {nombreQuien}
                         <Link to={`/recetas/${item.receta_id}`} className="dia-card-ver">
@@ -235,7 +244,10 @@ function PlanSemana({ lunes }) {
       {/* --- Lista de mercado --- */}
       <section className="lista-mercado">
         <div className="lista-mercado-encabezado">
-          <h2>🛒 Lista de Mercado</h2>
+          <div>
+            <span className="etiqueta-seccion">Para llevar al mercado</span>
+            <h2>Lista de mercado</h2>
+          </div>
           {listaMercado.length > 0 && (
             <button
               type="button"
@@ -251,7 +263,7 @@ function PlanSemana({ lunes }) {
 
         {listaMercado.length === 0 ? (
           <EstadoVacio
-            icono="🛒"
+            icono={ShoppingBasket}
             titulo="Aún no hay nada en la lista"
             mensaje="Elijan las comidas de la semana y aquí aparecerán automáticamente los ingredientes que necesitan comprar."
           />
@@ -259,7 +271,8 @@ function PlanSemana({ lunes }) {
           <ul className="lista-mercado-items">
             {listaMercado.map((item) => (
               <li key={`${item.claveNombre}|${item.texto}`}>
-                <span>{item.texto}</span>
+                <span className="lista-mercado-casilla" aria-hidden="true" />
+                <span className="lista-mercado-texto">{item.texto}</span>
                 {!item.esNumerico && item.veces > 1 && <span className="lista-mercado-cantidad">×{item.veces}</span>}
               </li>
             ))}

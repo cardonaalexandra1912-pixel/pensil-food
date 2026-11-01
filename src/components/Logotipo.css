@@ -1,0 +1,60 @@
+.logotipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.logotipo-marca {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  overflow: hidden;
+  /* La marca tiene colores fijos: siempre sobre blanco. */
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+}
+
+.logotipo-marca img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.35);
+}
+
+.logotipo-texto {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.logotipo-producto {
+  color: var(--pencil-text);
+}
+
+.logotipo-grande .logotipo-marca {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.logotipo-grande .logotipo-texto {
+  font-size: 1.5rem;
+}
+
+.logotipo-grafito .logotipo-marca {
+  border-color: transparent;
+}
+
+.logotipo-grafito .logotipo-texto {
+  color: var(--on-graphite);
+}
+
+.logotipo-grafito .logotipo-producto {
+  color: var(--pencil);
+}

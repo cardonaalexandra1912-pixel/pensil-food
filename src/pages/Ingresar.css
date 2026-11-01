@@ -1,50 +1,63 @@
 .ingresar-pagina {
-  background: radial-gradient(circle at 20% 10%, var(--color-verde-claro), transparent 55%),
-    radial-gradient(circle at 85% 80%, #fbe6d4, transparent 50%);
+  display: flex;
+  align-items: center;
 }
 
 .ingresar-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   max-width: 440px;
   margin: 0 auto;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
 }
 
 .ingresar-logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
   height: 64px;
-  width: auto;
   margin: 0 auto 4px;
+  overflow: hidden;
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--line);
+  /* La marca tiene colores fijos: siempre sobre blanco. */
+  background-color: #ffffff;
+}
+
+.ingresar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.35);
 }
 
 .ingresar-tarjeta h1 {
-  font-size: 1.9rem;
+  font-size: 2rem;
 }
 
 .ingresar-subtitulo {
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
   margin-bottom: 8px;
 }
 
 .ingresar-google {
   width: 100%;
-  background-color: var(--color-blanco);
-  color: var(--color-texto);
-  border: 2px solid var(--color-borde);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  border-color: var(--line);
 }
 
 .ingresar-google:hover {
-  border-color: var(--color-verde);
-  background-color: var(--color-crema);
+  border-color: var(--ink);
 }
 
 .ingresar-separador {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--color-texto-suave);
-  font-size: 0.85rem;
+  color: var(--ink-muted);
+  font-size: 0.875rem;
 }
 
 .ingresar-separador::before,
@@ -52,39 +65,54 @@
   content: '';
   flex: 1;
   height: 1px;
-  background-color: var(--color-borde);
+  background-color: var(--line);
 }
 
 .ingresar-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   text-align: left;
 }
 
 .ingresar-form label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-weight: 700;
-  font-size: 0.9rem;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.ingresar-form .boton {
+  width: 100%;
 }
 
 .ingresar-cambiar {
-  color: var(--color-texto-suave);
-  font-size: 0.92rem;
+  color: var(--ink-muted);
 }
 
 .ingresar-cambiar button {
+  min-height: 40px;
   border: none;
   background: none;
-  color: var(--color-terracota);
-  font-weight: 800;
   font-size: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .ingresar-volver {
-  color: var(--color-verde-oscuro);
-  font-weight: 700;
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.ingresar-volver:hover {
+  color: var(--ink);
 }

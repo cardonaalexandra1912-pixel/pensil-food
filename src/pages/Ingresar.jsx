@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { GOOGLE_HABILITADO, mensajeError } from '../lib/supabase'
+import { ArrowLeft } from 'lucide-react'
 import logo from '../assets/logo.jpg'
 import './Ingresar.css'
 
@@ -58,7 +59,7 @@ function Ingresar() {
       } else {
         const conSesion = await registrarse(nombre, correo, contrasena)
         if (!conSesion) {
-          setAviso('¡Listo! Te enviamos un correo para confirmar tu cuenta. Ábrelo y luego vuelve a ingresar.')
+          setAviso('Listo. Te enviamos un correo para confirmar tu cuenta. Ábrelo y luego vuelve a ingresar.')
           setModo('ingresar')
         }
       }
@@ -70,11 +71,13 @@ function Ingresar() {
   }
 
   return (
-    <div className="contenido-pagina ingresar-pagina">
+    <div className="contenido-pagina ingresar-pagina ficha-receta">
       <div className="contenedor seccion">
         <div className="tarjeta ingresar-tarjeta">
-          <img src={logo} alt="" className="ingresar-logo" />
-          <h1>{modo === 'ingresar' ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}</h1>
+          <span className="ingresar-logo">
+            <img src={logo} alt="" />
+          </span>
+          <h1>{modo === 'ingresar' ? 'Qué bueno verte de nuevo' : 'Crea tu cuenta'}</h1>
           <p className="ingresar-subtitulo">
             Guarda tus favoritas, planea el menú de la semana con tu familia y comenten juntos las
             recetas.
@@ -153,7 +156,7 @@ function Ingresar() {
           </p>
 
           <Link to="/" className="ingresar-volver">
-            ← Seguir viendo recetas sin cuenta
+            <ArrowLeft size={18} aria-hidden="true" /> Seguir viendo recetas sin cuenta
           </Link>
         </div>
       </div>

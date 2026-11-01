@@ -3,7 +3,7 @@ import './WhatsappFlotante.css'
 // Número en formato internacional, solo dígitos (código de país + número, sin "+" ni espacios),
 // ej. '573001234567'. Mientras esté vacío, el botón no se muestra.
 const NUMERO_WHATSAPP = ''
-const MENSAJE_INICIAL = '¡Hola! Vengo de la página Mis Recetas 🍃'
+const MENSAJE_INICIAL = 'Hola, vengo de Pensil.Food.'
 
 function WhatsappFlotante() {
   if (!NUMERO_WHATSAPP) return null

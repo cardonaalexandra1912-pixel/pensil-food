@@ -8,8 +8,8 @@
 }
 
 .avatar-inicial {
-  background-color: var(--color-verde-claro);
-  color: var(--color-verde-oscuro);
+  background-color: var(--leaf-soft);
+  color: var(--leaf-text);
   font-weight: 800;
-  border: 2px solid var(--color-borde);
+  border: 1px solid var(--line);
 }

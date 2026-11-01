@@ -1,41 +1,111 @@
 .filtros-recetas {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr auto auto;
-  align-items: center;
+  grid-template-columns: 1fr;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.filtros-resultados {
-  color: var(--color-texto-suave);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
+.filtro-busqueda {
+  position: relative;
 }
 
-@media (max-width: 900px) {
+.filtro-busqueda .lucide {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.filtro-busqueda input {
+  padding-left: 46px;
+}
+
+.filtros-recetas .campo-formulario {
+  border-radius: var(--radius-pill);
+}
+
+@media (min-width: 768px) {
   .filtros-recetas {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
   }
 }
 
-@media (max-width: 560px) {
-  .filtros-recetas {
-    grid-template-columns: 1fr;
-  }
+/* Filtros en píldoras (patrón de Pensil.Devs Academy). */
+.filtros-categorias {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
-.filtro-familia {
+.filtro-pildora {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  font-size: 0.92rem;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-weight: 500;
   white-space: nowrap;
-  cursor: pointer;
+  transition: border-color var(--duration) var(--ease-out);
 }
 
-.filtro-familia input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-verde);
+.filtro-pildora:hover {
+  border-color: var(--ink);
+}
+
+.filtro-pildora[aria-pressed='true'] {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.filtro-pildora-cuenta {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.filtro-pildora[aria-pressed='true'] .filtro-pildora-cuenta {
+  color: color-mix(in oklab, var(--paper) 75%, transparent);
+}
+
+.filtro-pildora-familia[aria-pressed='false'] {
+  color: var(--tomato-text);
+  border-color: color-mix(in oklab, var(--tomato) 40%, transparent);
+}
+
+.filtros-resultados {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  margin-bottom: 20px;
+  color: var(--ink-muted);
+  font-size: 0.9375rem;
+}
+
+.filtros-limpiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }

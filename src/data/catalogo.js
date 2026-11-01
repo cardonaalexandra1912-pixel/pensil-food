@@ -1,3 +1,5 @@
+import { CookingPot, Croissant, CupSoda, Egg, Moon, Salad, Soup, Utensils, UtensilsCrossed } from 'lucide-react'
+
 // ============================================================================
 // CATÁLOGO: CATEGORÍAS, DIFICULTADES Y FORMA DE UNA RECETA
 // ----------------------------------------------------------------------------
@@ -29,17 +31,22 @@ export const CATEGORIAS = [
 // Niveles de dificultad posibles para una receta.
 export const DIFICULTADES = ['Fácil', 'Media', 'Difícil']
 
-// Ícono por categoría, usado como fallback cuando a una receta todavía
-// no le hemos puesto una foto real en public/imagenes/recetas/.
+// Ícono de trazo por categoría (lucide, 1.8px como los íconos de Pensil.Devs).
+// Se usa en los mosaicos de categoría y como respaldo cuando una receta
+// todavía no tiene foto.
 export const ICONOS_CATEGORIA = {
-  Desayunos: '🥐',
-  Almuerzos: '🍛',
-  Cenas: '🌙',
-  'Sopas y Cremas': '🍲',
-  Huevos: '🥚',
-  Ensaladas: '🥗',
-  'Comidas Caseras': '🏠',
-  'Jugos y Bebidas': '🥤',
+  Desayunos: Croissant,
+  Almuerzos: Utensils,
+  Cenas: Moon,
+  'Sopas y Cremas': Soup,
+  Huevos: Egg,
+  Ensaladas: Salad,
+  'Comidas Caseras': CookingPot,
+  'Jugos y Bebidas': CupSoda,
+}
+
+export function iconoDeCategoria(categoria) {
+  return ICONOS_CATEGORIA[categoria] || UtensilsCrossed
 }
 
 // Momentos del día que se planean en el menú semanal.

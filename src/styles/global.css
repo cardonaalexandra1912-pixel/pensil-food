@@ -1,42 +1,111 @@
 /* ============================================================================
-   ESTILOS GLOBALES
+   PENSIL.FOOD — ESTILOS GLOBALES
    ----------------------------------------------------------------------------
-   Aquí viven las variables de color, tipografía y espaciado que usa todo el
-   sitio, más un reset básico y algunas clases reutilizables (botones,
-   etiquetas, grid de recetas, formularios). Cada componente/página tiene
-   además su propio archivo .css para sus estilos particulares.
+   Design system «Pensil.Devs» (el mismo de Pensil.Pos y Pensil.Devs Academy):
+   mismos nombres y valores de tokens, tipografía, píldoras y reglas.
+
+   Cada color tiene un trabajo fijo:
+   - paper: fondo de toda página. paper-sunken: secciones alternas y chips.
+   - pencil: la acción (botón primario, subrayado a mano). Nunca como texto
+     sobre paper: para eso, pencil-text.
+   - leaf: lo que sale bien y las etiquetas de sección. Piezas pequeñas.
+   - graphite: el pie y, como mucho, una banda oscura por pantalla.
+
+   Lo propio de Pensil.Food (como el cohete en Pensil.Pos o la píldora verde en
+   Academy) es el TOMATE: el acento de cocina. Va en el corazón de favoritos,
+   en lo que es de tu familia, en el «En vivo» y en el margen de la ficha de
+   receta. Nunca como fondo de sección ni en el botón principal.
+
+   Modo oscuro: los mismos nombres cambian de valor (prefers-color-scheme).
+   No escribas colores literales: usa siempre los tokens.
    ========================================================================= */
 
 :root {
-  /* --- Colores --- */
-  --color-crema: #fdf8f0;
-  --color-crema-oscuro: #f3e9d7;
-  --color-blanco: #ffffff;
+  color-scheme: light;
 
-  --color-verde: #5f7a3d;
-  --color-verde-oscuro: #435a2a;
-  --color-verde-claro: #eef2e3;
-  --color-verde-bosque: #30411e;
+  /* --- Pensil.Devs --- */
+  --paper: #ffffff;
+  --paper-raised: #ffffff;
+  --paper-sunken: #f4f2ed;
+  --ink: #16181d;
+  --ink-muted: #545a66;
+  --line: #e3ddcf;
+  --graphite: #16181d;
+  --on-graphite: #f5f3ee;
+  --leaf: #1d7a52;
+  --on-leaf: #ffffff;
+  --leaf-soft: #e3f2e8;
+  --leaf-text: #17704b;
+  --leaf-bright: #6fdca6;
+  --pencil: #f6b81c;
+  --pencil-strong: #e5a400;
+  --on-pencil: #16181d;
+  --pencil-text: #8a5800;
+  --focus: #1f5fd1;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
 
-  --color-terracota: #e9762b;
-  --color-terracota-oscuro: #c85f18;
+  /* --- Pensil.Food: acento de cocina --- */
+  --tomato: #d9482b; /* corazón de favoritos, íconos de acento (3.9:1 sobre paper) */
+  --tomato-text: #b0361b; /* tomate como texto sobre paper y tomato-soft (6.2:1) */
+  --tomato-soft: #fdebe5; /* fondo de etiquetas «De mi familia» */
+  --pencil-soft: #fdf2d3; /* fondo de la dificultad media */
 
-  --color-texto: #3a3229;
-  --color-texto-suave: #7a6f5f;
-  --color-borde: #e8dfcd;
-
-  --color-favorito: #e0553e;
+  /* --- Forma y profundidad --- */
+  --shadow-card: 0 1px 0 rgb(22 24 29 / 0.04), 0 8px 24px -12px rgb(22 24 29 / 0.18);
+  --shadow-raised: 0 2px 0 rgb(22 24 29 / 0.04), 0 18px 40px -18px rgb(22 24 29 / 0.32);
+  --shadow-pencil: 0 2px 0 var(--pencil-strong);
+  --radius-control: 12px;
+  --radius-tile: 16px;
+  --radius-card: 20px;
+  --radius-band: 32px;
+  --radius-pill: 9999px;
+  --control-min: 48px;
+  --container-max: 1152px;
+  --header-height: 72px;
 
   /* --- Tipografía --- */
-  --fuente-titulos: 'Fraunces', Georgia, serif;
-  --fuente-texto: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  /* --- Otros --- */
-  --radio-borde: 14px;
-  --radio-borde-chico: 8px;
-  --sombra-suave: 0 4px 16px rgba(58, 50, 41, 0.08);
-  --sombra-media: 0 8px 28px rgba(58, 50, 41, 0.14);
-  --ancho-maximo: 1180px;
+  /* --- Movimiento --- */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration: 200ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --paper: #121419;
+    --paper-raised: #1a1d24;
+    --paper-sunken: #0d0f13;
+    --ink: #f2efe8;
+    --ink-muted: #a9aeb9;
+    --line: #2b2f38;
+    --graphite: #1f232b;
+    --on-graphite: #f5f3ee;
+    --leaf: #4cc38a;
+    --on-leaf: #0f1713;
+    --leaf-soft: #16291f;
+    --leaf-text: #6fd6a2;
+    --leaf-bright: #6fdca6;
+    --pencil: #f8c444;
+    --pencil-strong: #ffd166;
+    --on-pencil: #16181d;
+    --pencil-text: #f8c444;
+    --focus: #8ab4ff;
+    --danger: #ff9b8f;
+    --danger-soft: #3a1714;
+
+    --tomato: #ff7f5c;
+    --tomato-text: #ff9b7f;
+    --tomato-soft: #3a1c14;
+    --pencil-soft: #2e2610;
+
+    --shadow-card: none;
+    --shadow-raised: 0 18px 40px -18px rgb(0 0 0 / 0.7);
+  }
 }
 
 /* --- Reset básico --- */
@@ -48,12 +117,14 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 16px);
 }
 
 body {
-  font-family: var(--fuente-texto);
-  color: var(--color-texto);
-  background-color: var(--color-crema);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--ink);
+  background-color: var(--paper);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -71,6 +142,13 @@ a {
 button {
   font-family: inherit;
   cursor: pointer;
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 ul,
@@ -78,238 +156,450 @@ ol {
   list-style: none;
 }
 
+/* Íconos de trazo (lucide): 1.8px como los de Pensil.Devs; heredan el color. */
+.lucide {
+  stroke-width: 1.8;
+  flex-shrink: 0;
+}
+
+/* --- Foco: anillo sólido de 3 px; amarillo sobre grafito --- */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
 /* --- Tipografía --- */
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--fuente-titulos);
-  color: var(--color-texto);
-  line-height: 1.2;
+  font-family: var(--font-display);
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 h1 {
   font-size: 2.5rem;
-  font-weight: 600;
+  font-weight: 800;
+  line-height: 1.05;
 }
 
 h2 {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.15;
 }
 
 h3 {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+}
+
+/* Etiqueta de sección: verde, en minúsculas normales. */
+.etiqueta-seccion {
+  display: inline-block;
   font-weight: 600;
+  color: var(--leaf-text);
+  margin-bottom: 8px;
+}
+
+.texto-intro {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}
+
+/* Subrayado a mano en lápiz: una sola palabra por página. */
+.subrayado {
+  position: relative;
+  white-space: nowrap;
+  isolation: isolate;
+}
+
+.subrayado::after {
+  content: '';
+  position: absolute;
+  inset: auto -0.08em -0.1em -0.08em;
+  height: 0.42em;
+  z-index: -1;
+  background: var(--pencil);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M2 14 C 40 4, 90 6, 120 9 S 180 12, 198 6' fill='none' stroke='black' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M2 14 C 40 4, 90 6, 120 9 S 180 12, 198 6' fill='none' stroke='black' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
 }
 
 /* --- Layout: contenedor centrado con ancho máximo --- */
 .contenedor {
   width: 100%;
-  max-width: var(--ancho-maximo);
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .contenedor {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contenedor {
+    padding: 0 32px;
+  }
 }
 
 /* Deja espacio debajo del header fijo para que no tape el contenido */
 .contenido-pagina {
-  padding-top: 88px;
+  padding-top: var(--header-height);
   min-height: 70vh;
 }
 
-/* En móvil el header crece porque la navegación pasa a una segunda fila */
-@media (max-width: 780px) {
-  .contenido-pagina {
-    padding-top: 128px;
+/* --- Sección genérica de página --- */
+.seccion {
+  padding: 48px 0 64px;
+}
+
+@media (min-width: 1024px) {
+  .seccion {
+    padding: 64px 0 96px;
   }
 }
 
-/* --- Botones reutilizables --- */
+.encabezado-seccion {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.enlace-ver-todas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.enlace-ver-todas:hover {
+  text-decoration-color: var(--ink);
+}
+
+.enlace-ver-todas .lucide {
+  transition: transform var(--duration) var(--ease-out);
+}
+
+.enlace-ver-todas:hover .lucide {
+  transform: translateX(4px);
+}
+
+/* --- Botones: todo lo que se presiona es una píldora de 48 px --- */
 .boton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-height: var(--control-min);
   padding: 12px 24px;
-  border-radius: var(--radio-borde-chico);
-  border: none;
-  font-family: var(--fuente-texto);
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-out);
 }
 
-.boton:hover {
-  transform: translateY(-1px);
+.boton .lucide {
+  width: 20px;
+  height: 20px;
 }
 
+.boton:active {
+  transform: translateY(1px);
+}
+
+/* Acción principal: amarillo lápiz con su canto. Una por pantalla. */
 .boton-primario {
-  background-color: var(--color-terracota);
-  color: var(--color-blanco);
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  box-shadow: var(--shadow-pencil);
 }
 
 .boton-primario:hover {
-  background-color: var(--color-terracota-oscuro);
+  background-color: var(--pencil-strong);
+  transform: translateY(-1px);
 }
 
-.boton-secundario {
-  background-color: var(--color-verde);
-  color: var(--color-blanco);
-}
-
-.boton-secundario:hover {
-  background-color: var(--color-verde-oscuro);
-}
-
+/* Alternativa junto al primario. */
+.boton-secundario,
 .boton-contorno {
-  background-color: transparent;
-  color: var(--color-verde-oscuro);
-  border: 2px solid var(--color-verde);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  border-color: var(--line);
 }
 
+.boton-secundario:hover,
 .boton-contorno:hover {
-  background-color: var(--color-verde-claro);
+  border-color: var(--ink);
+  transform: translateY(-1px);
 }
 
-/* --- Etiquetas / badges (categoría, dificultad) --- */
-.etiqueta {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  white-space: nowrap;
+.boton-peligro {
+  background-color: var(--paper-raised);
+  color: var(--danger);
+  border-color: var(--line);
 }
 
-.etiqueta-categoria {
-  background-color: var(--color-verde-claro);
-  color: var(--color-verde-oscuro);
+.boton-peligro:hover {
+  border-color: var(--danger);
 }
 
-.etiqueta-dificultad-facil {
-  background-color: #e7f3e1;
-  color: #3d7a2d;
-}
-
-.etiqueta-dificultad-media {
-  background-color: #fdf0d9;
-  color: #b8791a;
-}
-
-.etiqueta-dificultad-dificil {
-  background-color: #fbe3df;
-  color: #c1432a;
-}
-
-/* --- Campos de formulario (inputs y selects) reutilizados en varias páginas --- */
-.campo-formulario {
-  width: 100%;
-  padding: 12px 16px;
-  font-family: var(--fuente-texto);
-  font-size: 0.95rem;
-  color: var(--color-texto);
-  background-color: var(--color-blanco);
-  border: 2px solid var(--color-borde);
-  border-radius: var(--radio-borde-chico);
-  transition: border-color 0.15s ease;
-}
-
-.campo-formulario:focus {
-  outline: none;
-  border-color: var(--color-verde);
-}
-
-/* --- Grid de tarjetas de recetas: 3 columnas desktop / 2 tablet / 1 móvil --- */
-.grid-recetas {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-}
-
-@media (max-width: 900px) {
-  .grid-recetas {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-@media (max-width: 560px) {
-  .grid-recetas {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* --- Sección genérica de página (espaciado vertical consistente) --- */
-.seccion {
-  padding: 56px 0;
-}
-
-.encabezado-seccion {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.enlace-ver-todas {
-  color: var(--color-verde-oscuro);
-  font-weight: 700;
-  font-size: 0.95rem;
-  white-space: nowrap;
-}
-
-.enlace-ver-todas:hover {
-  text-decoration: underline;
+.boton-chico {
+  min-height: 40px;
+  padding: 8px 16px;
+  font-size: 0.9375rem;
 }
 
 .boton:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none;
 }
 
-.boton-peligro {
-  background-color: transparent;
-  color: #c1432a;
-  border: 2px solid #f0c4bb;
+/* --- Etiquetas / chips (categoría, dificultad) --- */
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
-.boton-peligro:hover {
-  background-color: #fbe3df;
+.etiqueta .lucide {
+  width: 14px;
+  height: 14px;
 }
 
-/* --- Mensajes de estado (errores y confirmaciones) --- */
+.etiqueta-categoria {
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.etiqueta-dificultad-facil {
+  background-color: var(--leaf-soft);
+  color: var(--leaf-text);
+}
+
+.etiqueta-dificultad-media {
+  background-color: var(--pencil-soft);
+  color: var(--pencil-text);
+}
+
+.etiqueta-dificultad-dificil {
+  background-color: var(--tomato-soft);
+  color: var(--tomato-text);
+}
+
+.etiqueta-familia {
+  background-color: var(--tomato-soft);
+  color: var(--tomato-text);
+}
+
+/* Mosaico de ícono: verde suave con ícono verde (servicios en Pensil.Devs). */
+.mosaico {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-tile);
+  background-color: var(--leaf-soft);
+  color: var(--leaf-text);
+}
+
+.mosaico .lucide {
+  width: 24px;
+  height: 24px;
+}
+
+/* --- Campos de formulario --- */
+.campo-formulario {
+  width: 100%;
+  min-height: var(--control-min);
+  padding: 12px 16px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  transition: border-color var(--duration) var(--ease-out);
+}
+
+.campo-formulario::placeholder {
+  color: var(--ink-muted);
+}
+
+.campo-formulario:hover {
+  border-color: var(--ink-muted);
+}
+
+.campo-formulario:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-color: var(--ink);
+}
+
+select.campo-formulario {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23545a66' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+/* --- Grid de tarjetas de recetas: 3 columnas escritorio / 2 tablet / 1 móvil --- */
+.grid-recetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .grid-recetas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-recetas {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- Mensajes de estado (errores y confirmaciones): siempre con texto --- */
 .mensaje-error,
 .mensaje-exito {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 12px 16px;
-  border-radius: var(--radio-borde-chico);
-  font-weight: 600;
-  font-size: 0.92rem;
+  border-radius: var(--radius-control);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
 .mensaje-error {
-  background-color: #fbe3df;
-  color: #a33a24;
+  background-color: var(--danger-soft);
+  color: var(--danger);
 }
 
 .mensaje-exito {
-  background-color: #e7f3e1;
-  color: #3d7a2d;
+  background-color: var(--leaf-soft);
+  color: var(--leaf-text);
 }
 
-/* --- Tarjeta blanca genérica --- */
+/* --- Tarjeta genérica --- */
 .tarjeta {
-  background-color: var(--color-blanco);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-suave);
-  padding: 28px;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
 }
 
-@media (max-width: 560px) {
+@media (min-width: 768px) {
   .tarjeta {
-    padding: 20px;
+    padding: 32px;
+  }
+}
+
+/* --- Ficha de receta: el detalle de marca de Pensil.Food ---
+   La cuadrícula de cuaderno de Pensil.Devs se vuelve la ficha de una receta
+   escrita a mano: renglones finos y el margen en tomate. */
+.ficha-receta {
+  position: relative;
+  isolation: isolate;
+}
+
+.ficha-receta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, transparent 55px, color-mix(in oklab, var(--tomato) 45%, transparent) 55px, color-mix(in oklab, var(--tomato) 45%, transparent) 57px, transparent 57px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 31px, color-mix(in oklab, var(--line) 75%, transparent) 31px, color-mix(in oklab, var(--line) 75%, transparent) 32px);
+  -webkit-mask-image: radial-gradient(ellipse at 40% 35%, black 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse at 40% 35%, black 30%, transparent 78%);
+  pointer-events: none;
+}
+
+/* En pantallas angostas el contenido llega al borde: sin margen tomate. */
+@media (max-width: 1023px) {
+  .ficha-receta:not(.detalle-ingredientes)::before {
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, color-mix(in oklab, var(--line) 75%, transparent) 31px, color-mix(in oklab, var(--line) 75%, transparent) 32px);
+  }
+}
+
+/* --- Accesibilidad --- */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,17 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { LogOut, Plus, Search, Users } from 'lucide-react'
+import { LogOut, Menu, Plus, Search, Users, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import logo from '../assets/logo.jpg'
 import Avatar from './Avatar'
+import Logotipo from './Logotipo'
 import './Header.css'
 
-// Header fijo con logo, navegación principal y una búsqueda rápida.
-// La búsqueda rápida simplemente te lleva a /recetas con el término ya aplicado.
+const ENLACES = [
+  { ruta: '/', etiqueta: 'Inicio', exacta: true },
+  { ruta: '/recetas', etiqueta: 'Recetas', exacta: true },
+  { ruta: '/menu-semanal', etiqueta: 'Menú semanal' },
+  { ruta: '/favoritos', etiqueta: 'Favoritos' },
+]
+
+// Encabezado fijo (72 px) al estilo de Pensil.Devs: logotipo, navegación en
+// píldoras, búsqueda rápida y la cuenta. En móvil la navegación se despliega.
 function Header() {
   const [busquedaAbierta, setBusquedaAbierta] = useState(false)
+  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
   const [texto, setTexto] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Al cambiar de página se cierran la búsqueda y el menú móvil.
+  useEffect(() => {
+    setMenuMovilAbierto(false)
+    setBusquedaAbierta(false)
+  }, [location.pathname])
 
   function manejarBusqueda(evento) {
     evento.preventDefault()
@@ -20,36 +35,34 @@ function Header() {
     setBusquedaAbierta(false)
   }
 
+  const claseEnlace = ({ isActive }) => `header-enlace ${isActive ? 'activo' : ''}`
+
   return (
     <header className="header">
-      <div className="contenedor header-interior">
-        <NavLink to="/" className="header-logo">
-          <img src={logo} alt="Alexandra's Kitchen" className="header-logo-imagen" />
-        </NavLink>
+      <nav className="contenedor header-interior" aria-label="Principal">
+        <Logotipo />
 
-        <nav className="header-nav">
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'activo' : '')}>
-            Inicio
-          </NavLink>
-          <NavLink to="/recetas" className={({ isActive }) => (isActive ? 'activo' : '')}>
-            Recetas
-          </NavLink>
-          <NavLink to="/menu-semanal" className={({ isActive }) => (isActive ? 'activo' : '')}>
-            Menú Semanal
-          </NavLink>
-          <NavLink to="/favoritos" className={({ isActive }) => (isActive ? 'activo' : '')}>
-            Favoritos
-          </NavLink>
-        </nav>
+        <ul className="header-nav">
+          {ENLACES.map((enlace) => (
+            <li key={enlace.ruta}>
+              <NavLink to={enlace.ruta} end={enlace.exacta} className={claseEnlace}>
+                {enlace.etiqueta}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
 
         <div className="header-acciones">
-        <div className="header-busqueda">
           {busquedaAbierta && (
-            <form onSubmit={manejarBusqueda} className="header-busqueda-form">
+            <form onSubmit={manejarBusqueda} className="header-busqueda-form" role="search">
+              <label htmlFor="busqueda-rapida" className="solo-lectores">
+                Buscar receta
+              </label>
               <input
-                type="text"
+                id="busqueda-rapida"
+                type="search"
                 className="campo-formulario"
-                placeholder="Buscar receta..."
+                placeholder="Buscar receta"
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 autoFocus
@@ -58,43 +71,76 @@ function Header() {
           )}
           <button
             type="button"
-            className="header-busqueda-boton"
+            className="header-icono"
             onClick={() => setBusquedaAbierta((abierto) => !abierto)}
-            aria-label="Buscar receta"
+            aria-expanded={busquedaAbierta}
+            aria-label={busquedaAbierta ? 'Cerrar búsqueda' : 'Buscar receta'}
           >
-            <Search size={18} strokeWidth={2.25} />
+            {busquedaAbierta ? <X size={20} aria-hidden="true" /> : <Search size={20} aria-hidden="true" />}
+          </button>
+          <MenuUsuario />
+          <button
+            type="button"
+            className="header-icono header-menu-movil-boton"
+            aria-controls="menu-movil"
+            aria-expanded={menuMovilAbierto}
+            aria-label={menuMovilAbierto ? 'Cerrar menú' : 'Abrir menú'}
+            onClick={() => setMenuMovilAbierto((abierto) => !abierto)}
+          >
+            {menuMovilAbierto ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
           </button>
         </div>
-        <MenuUsuario />
-        </div>
+      </nav>
+
+      <div id="menu-movil" className="header-menu-movil" hidden={!menuMovilAbierto}>
+        <ul className="contenedor">
+          {ENLACES.map((enlace) => (
+            <li key={enlace.ruta}>
+              <NavLink to={enlace.ruta} end={enlace.exacta} className={claseEnlace}>
+                {enlace.etiqueta}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </div>
     </header>
   )
 }
 
-// Avatar con menú desplegable (con sesión) o botón "Ingresar" (sin sesión).
+// Avatar con menú desplegable (con sesión) o botón «Ingresar» (sin sesión).
 function MenuUsuario() {
   const { usuario, perfil, familia, cargando, cerrarSesion } = useAuth()
   const [abierto, setAbierto] = useState(false)
   const contenedorRef = useRef(null)
   const location = useLocation()
 
-  // Se cierra al cambiar de página o al hacer clic afuera.
+  // Se cierra al cambiar de página, al hacer clic afuera o con Escape.
   useEffect(() => setAbierto(false), [location.pathname])
   useEffect(() => {
     if (!abierto) return
     function alHacerClic(evento) {
       if (!contenedorRef.current?.contains(evento.target)) setAbierto(false)
     }
+    function alPresionarTecla(evento) {
+      if (evento.key === 'Escape') setAbierto(false)
+    }
     document.addEventListener('mousedown', alHacerClic)
-    return () => document.removeEventListener('mousedown', alHacerClic)
+    document.addEventListener('keydown', alPresionarTecla)
+    return () => {
+      document.removeEventListener('mousedown', alHacerClic)
+      document.removeEventListener('keydown', alPresionarTecla)
+    }
   }, [abierto])
 
   if (cargando) return <span className="header-usuario-espacio" aria-hidden="true" />
 
   if (!usuario) {
     return (
-      <Link to="/ingresar" state={{ desde: location.pathname + location.search }} className="boton boton-primario header-ingresar">
+      <Link
+        to="/ingresar"
+        state={{ desde: location.pathname + location.search }}
+        className="boton boton-primario boton-chico"
+      >
         Ingresar
       </Link>
     )
@@ -110,7 +156,7 @@ function MenuUsuario() {
         onClick={() => setAbierto((actual) => !actual)}
         aria-expanded={abierto}
         aria-haspopup="menu"
-        aria-label={`Menú de ${nombre}`}
+        aria-label={`Tu cuenta: ${nombre}`}
       >
         <Avatar nombre={nombre} url={perfil?.avatar_url} tamano={36} />
       </button>
@@ -121,13 +167,13 @@ function MenuUsuario() {
             <span>{familia ? familia.nombre : 'Sin familia todavía'}</span>
           </div>
           <Link to="/familia" role="menuitem">
-            <Users size={16} aria-hidden="true" /> Mi familia
+            <Users size={18} aria-hidden="true" /> Mi familia
           </Link>
           <Link to="/recetas/nueva" role="menuitem">
-            <Plus size={16} aria-hidden="true" /> Nueva receta
+            <Plus size={18} aria-hidden="true" /> Nueva receta
           </Link>
           <button type="button" role="menuitem" onClick={cerrarSesion}>
-            <LogOut size={16} aria-hidden="true" /> Cerrar sesión
+            <LogOut size={18} aria-hidden="true" /> Cerrar sesión
           </button>
         </div>
       )}

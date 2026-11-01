@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Lock, Plus, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useRecetas } from '../context/RecetasContext'
 import { CATEGORIAS, DIFICULTADES, recetaHaciaDb } from '../data/catalogo'
@@ -88,7 +88,7 @@ function FormularioReceta() {
       <div className="contenido-pagina">
         <div className="contenedor seccion">
           <EstadoVacio
-            icono="🔒"
+            icono={Lock}
             titulo="No puedes editar esta receta"
             mensaje="Solo se pueden editar las recetas que agregó tu familia."
           />
@@ -170,7 +170,7 @@ function FormularioReceta() {
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <Link to={esEdicion ? `/recetas/${id}` : '/recetas'} className="detalle-volver">
-          ← Volver
+          <ArrowLeft size={18} aria-hidden="true" /> Volver
         </Link>
         <h1 className="formulario-titulo">{esEdicion ? 'Editar receta' : 'Nueva receta'}</h1>
         <p className="formulario-intro">

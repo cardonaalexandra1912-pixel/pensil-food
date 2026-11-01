@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 12px;
   padding: 48px 16px;
-  color: var(--color-texto-suave);
+  color: var(--ink-muted);
   font-weight: 600;
 }
 
@@ -12,8 +12,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 3px solid var(--color-borde);
-  border-top-color: var(--color-terracota);
+  border: 3px solid var(--line);
+  border-top-color: var(--pencil);
   animation: cargando-girar 0.8s linear infinite;
 }
 

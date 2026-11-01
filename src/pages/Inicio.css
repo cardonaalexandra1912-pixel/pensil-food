@@ -1,172 +1,281 @@
-/* --- Hero --- */
-/* El hero sube hasta el borde del header (compensa el padding-top de
-   .contenido-pagina) para que no quede una franja vacía arriba, y ocupa casi
-   toda la pantalla para que las fotos luzcan grandes. */
+/* --- Hero: la ficha de receta con el carrusel de fotos al lado --- */
 .hero {
-  position: relative;
-  display: flex;
+  padding: 40px 0 56px;
+}
+
+.hero-interior {
+  display: grid;
+  gap: 40px;
   align-items: center;
-  min-height: 82vh;
-  margin-top: -88px;
-  padding: 150px 0 110px;
-  overflow: hidden;
-  color: var(--color-blanco);
-  text-align: center;
 }
 
-/* Carrusel de fondo: 3 capas apiladas, la activa se muestra con un fundido. */
-.hero-fondos {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-fondo {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 0.9s ease;
-}
-
-.hero-fondo.activo {
-  opacity: 1;
-}
-
-/* Sombra suave y neutra encima de las fotos: oscurece lo justo para que el
-   texto blanco se lea, sin teñir ni apagar los colores de la comida. */
-.hero-degradado {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-image: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0.42) 0%,
-    rgba(0, 0, 0, 0.22) 60%,
-    rgba(0, 0, 0, 0.12) 100%
-  );
-  pointer-events: none;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background-image: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14) 0, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.12) 0, transparent 45%);
-  pointer-events: none;
-}
-
-/* Ola decorativa en el borde inferior del hero, para suavizar la transición
-   hacia la siguiente sección. Va encima del carrusel/degradado/overlay pero
-   siempre por debajo del contenido (z-index 3), y su altura se mantiene menor
-   al padding-bottom del hero para no tapar nunca el buscador ni los dots. */
-.hero-ola {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  z-index: 2;
-  line-height: 0;
-  pointer-events: none;
-}
-
-.hero-ola svg {
-  display: block;
-  width: 100%;
-  height: 70px;
-}
-
-.hero-ola path {
-  fill: var(--color-crema);
-}
-
-.hero-contenido {
-  position: relative;
-  z-index: 3;
-  max-width: 720px;
-}
-
-.hero h1 {
-  color: var(--color-blanco);
-  font-size: 3.2rem;
+.hero-texto h1 {
+  font-size: 2.75rem;
   margin-bottom: 16px;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
-.hero-subtitulo {
-  font-size: 1.15rem;
-  opacity: 0.96;
-  margin-bottom: 36px;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+.hero-texto .texto-intro {
+  margin-bottom: 28px;
 }
 
 .hero-buscador {
   display: grid;
-  grid-template-columns: 2fr 1.3fr auto;
   gap: 10px;
-  background-color: var(--color-blanco);
   padding: 10px;
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-media);
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow-card);
 }
 
 .hero-buscador .campo-formulario {
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-sunken);
   border-color: transparent;
-  background-color: var(--color-crema-oscuro);
+}
+
+.hero-buscador .campo-formulario:hover {
+  border-color: var(--line);
+}
+
+.hero-fotos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-foto-marco {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-band);
+  background-color: var(--paper-sunken);
+  box-shadow: var(--shadow-raised);
+}
+
+.hero-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 3500ms linear;
+}
+
+.hero-foto.activo {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Nombre del plato en una píldora sobre la foto. */
+.hero-foto-nombre {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  max-width: calc(100% - 32px);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  box-shadow: var(--shadow-card);
+}
+
+.hero-foto-nombre .lucide {
+  transition: transform var(--duration) var(--ease-out);
+}
+
+.hero-foto-nombre:hover .lucide {
+  transform: translateX(4px);
 }
 
 .hero-dots {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-top: 28px;
+  gap: 4px;
 }
 
 .hero-dot {
   box-sizing: content-box;
   width: 8px;
   height: 8px;
-  padding: 7px;
+  padding: 10px;
   border: none;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-pill);
+  background-color: var(--line);
   background-clip: content-box;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.hero-dot:hover {
-  background-color: rgba(255, 255, 255, 0.75);
+  transition:
+    width var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
 }
 
 .hero-dot.activo {
-  background-color: var(--color-blanco);
-  transform: scale(1.25);
+  width: 24px;
+  background-color: var(--pencil);
 }
 
-@media (max-width: 780px) {
-  .hero {
-    margin-top: -128px;
-    padding-top: 170px;
-  }
-}
-
-@media (max-width: 700px) {
-  .hero {
-    min-height: 72vh;
-    padding-bottom: 64px;
-  }
-
-  .hero h1 {
-    font-size: 2.1rem;
-  }
-
+@media (min-width: 640px) {
   .hero-buscador {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
   }
 
-  .hero-ola svg {
-    height: 36px;
+  .hero-buscador input {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    padding: 64px 0 80px;
+  }
+
+  .hero-interior {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+  }
+
+  .hero-texto h1 {
+    font-size: 3.75rem;
+  }
+}
+
+/* --- Categorías: mosaicos de comida --- */
+.inicio-categorias {
+  padding-bottom: 56px;
+}
+
+.categorias-lista {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.categoria-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  min-height: 72px;
+  padding: 12px;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  transition:
+    transform var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+}
+
+.categoria-chip:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--leaf) 50%, transparent);
+}
+
+/* Al pasar el cursor, el mosaico pasa a lápiz (como en ServiceCard). */
+.categoria-chip:hover .mosaico {
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+}
+
+.categoria-chip .mosaico {
+  transition:
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.categoria-chip strong {
+  display: block;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.categoria-chip small {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+@media (min-width: 768px) {
+  .categorias-lista {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --- Banda grafito: el menú en familia (una por pantalla) --- */
+.banda-familia {
+  display: grid;
+  gap: 32px;
+  padding: 40px 24px;
+  border-radius: var(--radius-band);
+  background-color: var(--graphite);
+  color: var(--on-graphite);
+}
+
+.banda-familia :focus-visible {
+  outline-color: var(--pencil);
+}
+
+.banda-familia .etiqueta-seccion {
+  color: var(--leaf-bright);
+}
+
+.banda-familia h2 {
+  color: var(--on-graphite);
+  margin-bottom: 12px;
+}
+
+.banda-familia p {
+  max-width: 34rem;
+  margin-bottom: 24px;
+  color: color-mix(in oklab, var(--on-graphite) 80%, transparent);
+}
+
+.banda-familia-pasos {
+  display: grid;
+  gap: 16px;
+  align-content: center;
+}
+
+.banda-familia-pasos li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: color-mix(in oklab, var(--on-graphite) 90%, transparent);
+}
+
+/* Pasos en lápiz; el último en verde (Pensil.Devs, DeliveryProcess). */
+.banda-paso-numero {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-tile);
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+}
+
+.banda-paso-numero.ultimo {
+  background-color: var(--leaf);
+  color: var(--on-leaf);
+}
+
+.banda-paso-numero .lucide {
+  width: 24px;
+  height: 24px;
+}
+
+@media (min-width: 1024px) {
+  .banda-familia {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 56px;
+    padding: 64px;
   }
 }

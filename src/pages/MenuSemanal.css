@@ -1,75 +1,61 @@
-.menu-semanal-intro {
-  color: var(--color-texto-suave);
-  max-width: 640px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.menu-semanal-envivo {
-  color: var(--color-terracota);
-  flex-shrink: 0;
-}
-
-.menu-semanal-familia {
-  font-weight: 700;
-  color: var(--color-verde-oscuro);
-  background-color: var(--color-verde-claro);
-  padding: 6px 14px;
-  border-radius: 999px;
-}
-
+/* --- Navegación entre semanas --- */
 .menu-semanal-navegacion {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 24px;
+  padding: 8px;
+  background-color: var(--paper-sunken);
+  border-radius: var(--radius-pill);
 }
 
 .menu-semanal-flecha {
-  width: 42px;
-  height: 42px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--control-min);
+  height: var(--control-min);
   border-radius: 50%;
-  border: 2px solid var(--color-borde);
-  background-color: var(--color-blanco);
-  color: var(--color-texto);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.15s ease;
+  border: 1px solid var(--line);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  transition: border-color var(--duration) var(--ease-out);
 }
 
 .menu-semanal-flecha:hover {
-  border-color: var(--color-verde);
+  border-color: var(--ink);
 }
 
 .menu-semanal-semana {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 220px;
   text-align: center;
 }
 
 .menu-semanal-semana strong {
-  font-family: var(--fuente-titulos);
-  font-size: 1.35rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
 }
 
 .menu-semanal-semana span,
 .menu-semanal-semana button {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-terracota);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--leaf-text);
   border: none;
   background: none;
 }
 
-.menu-semanal-semana button:hover {
+.menu-semanal-semana button {
+  min-height: 32px;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
+/* --- Barra: «En vivo» y limpiar --- */
 .menu-semanal-barra {
   display: flex;
   align-items: center;
@@ -79,151 +65,222 @@
   margin-bottom: 24px;
 }
 
+.menu-semanal-intro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 640px;
+  color: var(--ink-muted);
+}
+
+/* «En vivo»: el acento tomate de Pensil.Food (como el cohete en Pensil.Pos). */
+.en-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background-color: var(--tomato-soft);
+  color: var(--tomato-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.en-vivo-punto {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--tomato);
+}
+
+.en-vivo-punto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--tomato);
+  animation: latido 1.8s ease-out infinite;
+}
+
+@keyframes latido {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
 .menu-semanal-error {
   margin-bottom: 20px;
 }
 
+/* --- Los 7 días --- */
 .menu-semanal-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 48px;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 64px;
 }
 
 .dia-card {
-  background-color: var(--color-blanco);
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-suave);
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 20px;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
 .dia-card.es-hoy {
-  outline: 2px solid var(--color-terracota);
+  border-color: var(--ink);
 }
 
 .dia-card h3 {
-  margin-bottom: 4px;
-  color: var(--color-verde-oscuro);
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
 .dia-card-fecha {
-  font-size: 0.95rem;
-  color: var(--color-texto-suave);
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-muted);
 }
 
 .dia-card-hoy {
   margin-left: auto;
-  font-family: var(--fuente-texto);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--color-blanco);
-  background-color: var(--color-terracota);
-  padding: 2px 8px;
-  border-radius: 999px;
+  align-self: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .dia-card-comida {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+}
+
+.dia-card-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.dia-card-comida select {
+  font-size: 0.9375rem;
 }
 
 .dia-card-quien {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.76rem;
-  color: var(--color-texto-suave);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
 }
 
 .dia-card-ver {
   margin-left: auto;
-  font-weight: 700;
-  color: var(--color-verde-oscuro);
-}
-
-.dia-card-ver:hover {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 4px;
+  font-weight: 600;
+  color: var(--ink);
   text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
-.dia-card-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-texto-suave);
-  margin-top: 8px;
+@media (min-width: 640px) {
+  .menu-semanal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.dia-card-comida:first-of-type .dia-card-label {
-  margin-top: 0;
+@media (min-width: 1024px) {
+  .menu-semanal-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .menu-semanal-navegacion {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-/* Título y botón de PDF en una fila, del mismo ancho que la lista. */
+/* --- Lista de mercado: renglones con casilla --- */
 .lista-mercado-encabezado {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
-  max-width: 520px;
+  gap: 16px;
+  max-width: 640px;
   margin-bottom: 20px;
 }
 
-.lista-mercado-pdf {
-  padding: 10px 18px;
-}
-
 .lista-mercado-pdf:disabled {
-  opacity: 0.7;
   cursor: wait;
 }
 
 .lista-mercado-items {
-  background-color: var(--color-blanco);
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-suave);
-  max-width: 520px;
+  max-width: 640px;
   overflow: hidden;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
 .lista-mercado-items li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--color-borde);
+  gap: 14px;
+  min-height: 52px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
 }
 
 .lista-mercado-items li:last-child {
   border-bottom: none;
 }
 
+.lista-mercado-casilla {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1.8px solid var(--ink-muted);
+  border-radius: 5px;
+}
+
+.lista-mercado-texto {
+  flex: 1;
+}
+
 .lista-mercado-cantidad {
   flex-shrink: 0;
-  font-weight: 700;
-  font-size: 0.82rem;
-  color: var(--color-verde-oscuro);
-  background-color: var(--color-verde-claro);
   padding: 2px 10px;
-  border-radius: 999px;
-}
-
-@media (max-width: 1000px) {
-  .menu-semanal-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 560px) {
-  .menu-semanal-grid {
-    grid-template-columns: 1fr;
-  }
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-sunken);
+  color: var(--ink-muted);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
 }

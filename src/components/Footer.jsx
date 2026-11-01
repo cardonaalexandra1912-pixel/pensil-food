@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
-import logo from '../assets/logo.jpg'
-import { CATEGORIAS, ICONOS_CATEGORIA } from '../data/catalogo'
+import { ArrowUp } from 'lucide-react'
+import { CATEGORIAS, iconoDeCategoria } from '../data/catalogo'
+import Logotipo from './Logotipo'
 import './Footer.css'
 
 // Las primeras 4 categorías del catálogo son las que mostramos como "populares".
 const CATEGORIAS_POPULARES = CATEGORIAS.slice(0, 4)
 
+// Pie en grafito, como el de Pensil.Devs y Pensil.Pos.
 function Footer() {
   const anioActual = new Date().getFullYear()
 
@@ -15,55 +17,60 @@ function Footer() {
 
   return (
     <footer className="footer">
-      {/* Ola decorativa: el relleno es transparente por encima del trazo,
-          así se ve el fondo crema de la página asomando detrás. */}
-      <svg className="footer-ola" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,60 L0,60 Z" />
-      </svg>
-
-      <div className="footer-cuerpo">
-        <span className="footer-decoracion" aria-hidden="true">
-          🍃
-        </span>
-
-        <div className="contenedor footer-interior">
-          <div className="footer-columna footer-marca">
-            <Link to="/" className="footer-logo-enlace">
-              <span className="footer-logo-marco">
-                <img src={logo} alt="" className="footer-logo" />
-              </span>
-              <span className="footer-nombre">Mis Recetas</span>
-            </Link>
-            <p className="footer-frase">Cocina casera, bien organizada</p>
-          </div>
-
-          <div className="footer-columna">
-            <h4 className="footer-titulo">Links rápidos</h4>
-            <nav className="footer-enlaces">
-              <Link to="/">Inicio</Link>
-              <Link to="/recetas">Recetas</Link>
-              <Link to="/menu-semanal">Menú Semanal</Link>
-              <Link to="/favoritos">Favoritos</Link>
-            </nav>
-          </div>
-
-          <div className="footer-columna">
-            <h4 className="footer-titulo">Categorías populares</h4>
-            <nav className="footer-enlaces">
-              {CATEGORIAS_POPULARES.map((categoria) => (
-                <Link key={categoria} to={`/recetas?categoria=${encodeURIComponent(categoria)}`}>
-                  <span className="footer-enlace-icono">{ICONOS_CATEGORIA[categoria]}</span>
-                  {categoria}
-                </Link>
-              ))}
-            </nav>
-          </div>
+      <div className="contenedor footer-interior">
+        <div className="footer-marca">
+          <Logotipo sobreGrafito tamano="grande" />
+          <p>
+            Recetas caseras, el menú de la semana en familia y la lista de mercado lista para llevar.
+          </p>
         </div>
 
-        <div className="contenedor footer-creditos">
-          <p>© {anioActual} Mis Recetas. Hecho con cariño en la cocina. 💚</p>
+        <nav aria-labelledby="footer-titulo-navegacion">
+          <h2 id="footer-titulo-navegacion" className="footer-titulo">
+            Pensil.Food
+          </h2>
+          <ul className="footer-enlaces">
+            <li>
+              <Link to="/recetas">Todas las recetas</Link>
+            </li>
+            <li>
+              <Link to="/menu-semanal">Menú semanal</Link>
+            </li>
+            <li>
+              <Link to="/favoritos">Favoritos</Link>
+            </li>
+            <li>
+              <Link to="/familia">Mi familia</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <nav aria-labelledby="footer-titulo-categorias">
+          <h2 id="footer-titulo-categorias" className="footer-titulo">
+            Categorías
+          </h2>
+          <ul className="footer-enlaces">
+            {CATEGORIAS_POPULARES.map((categoria) => {
+              const Icono = iconoDeCategoria(categoria)
+              return (
+                <li key={categoria}>
+                  <Link to={`/recetas?categoria=${encodeURIComponent(categoria)}`}>
+                    <Icono size={18} aria-hidden="true" />
+                    {categoria}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
+      </div>
+
+      <div className="footer-creditos">
+        <div className="contenedor footer-creditos-interior">
+          <p>© {anioActual} Pensil.Devs. Hecho en Pensilvania, Caldas.</p>
           <button type="button" className="footer-arriba" onClick={volverArriba}>
-            Volver arriba ↑
+            Volver arriba
+            <ArrowUp size={16} aria-hidden="true" />
           </button>
         </div>
       </div>

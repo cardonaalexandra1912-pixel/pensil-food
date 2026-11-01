@@ -16,7 +16,10 @@ function Familia() {
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
-          <h1>Mi familia</h1>
+          <div>
+            <span className="etiqueta-seccion">Tu cuenta</span>
+            <h1>Mi familia</h1>
+          </div>
         </div>
         {familia ? <PanelFamilia /> : <SinFamilia />}
         <MiPerfil />
@@ -61,7 +64,9 @@ function SinFamilia() {
             ejecutar(() => crearFamilia(nombre))
           }}
         >
-          <Users size={30} className="familia-opcion-icono" aria-hidden="true" />
+          <span className="mosaico" aria-hidden="true">
+            <Users />
+          </span>
           <h2>Crear una familia</h2>
           <p>Quedarás como administrador y podrás invitar a los demás.</p>
           <input
@@ -86,7 +91,9 @@ function SinFamilia() {
             ejecutar(() => unirseAFamilia(codigo))
           }}
         >
-          <UserPlus size={30} className="familia-opcion-icono" aria-hidden="true" />
+          <span className="mosaico" aria-hidden="true">
+            <UserPlus />
+          </span>
           <h2>Unirme con un código</h2>
           <p>Pídele el código de 6 letras a alguien de tu familia.</p>
           <input
@@ -213,7 +220,7 @@ function PanelFamilia() {
             <button
               type="button"
               className="boton boton-primario"
-              onClick={() => copiar(enlaceInvitacion, 'Enlace de invitación copiado. ¡Compártelo con tu familia!')}
+              onClick={() => copiar(enlaceInvitacion, 'Enlace copiado. Compártelo con tu familia por WhatsApp o donde quieras.')}
             >
               <UserPlus size={16} aria-hidden="true" /> Copiar enlace de invitación
             </button>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Plus } from 'lucide-react'
-import { CATEGORIAS, DIFICULTADES } from '../data/catalogo'
+import { Plus, Search, SearchX, X } from 'lucide-react'
+import { CATEGORIAS, DIFICULTADES, iconoDeCategoria } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
@@ -71,40 +71,56 @@ function Recetas() {
     setSoloFamilia(false)
   }
 
+  // Cuántas recetas hay por categoría (respetando los demás filtros).
+  const conteoPorCategoria = useMemo(() => {
+    const conteo = {}
+    recetas.forEach((receta) => {
+      conteo[receta.categoria] = (conteo[receta.categoria] || 0) + 1
+    })
+    return conteo
+  }, [recetas])
+
+  const hayFiltros = busqueda || categoria || dificultad || tiempo || soloFamilia
+
   return (
     <div className="contenido-pagina">
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
-          <h1>Todas las Recetas</h1>
-          <Link to={usuario ? '/recetas/nueva' : '/ingresar'} state={{ desde: '/recetas/nueva' }} className="boton boton-primario">
-            <Plus size={18} aria-hidden="true" /> Nueva receta
+          <div>
+            <span className="etiqueta-seccion">Recetario</span>
+            <h1>Todas las recetas</h1>
+          </div>
+          <Link
+            to={usuario ? '/recetas/nueva' : '/ingresar'}
+            state={{ desde: '/recetas/nueva' }}
+            className="boton boton-primario"
+          >
+            <Plus aria-hidden="true" /> Nueva receta
           </Link>
         </div>
 
-        {/* --- Barra de filtros --- */}
+        {/* --- Filtros --- */}
         <div className="filtros-recetas">
-          <input
-            type="text"
-            className="campo-formulario"
-            placeholder="Buscar por nombre o ingrediente..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+          <div className="filtro-busqueda">
+            <label htmlFor="filtro-texto" className="solo-lectores">
+              Buscar por nombre o ingrediente
+            </label>
+            <Search size={20} aria-hidden="true" />
+            <input
+              id="filtro-texto"
+              type="search"
+              className="campo-formulario"
+              placeholder="Buscar por nombre o ingrediente"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
 
+          <label htmlFor="filtro-dificultad" className="solo-lectores">
+            Dificultad
+          </label>
           <select
-            className="campo-formulario"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-          >
-            <option value="">Todas las categorías</option>
-            {CATEGORIAS.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-
-          <select
+            id="filtro-dificultad"
             className="campo-formulario"
             value={dificultad}
             onChange={(e) => setDificultad(e.target.value)}
@@ -117,7 +133,11 @@ function Recetas() {
             ))}
           </select>
 
+          <label htmlFor="filtro-tiempo" className="solo-lectores">
+            Tiempo de preparación
+          </label>
           <select
+            id="filtro-tiempo"
             className="campo-formulario"
             value={tiempo}
             onChange={(e) => setTiempo(e.target.value)}
@@ -128,50 +148,78 @@ function Recetas() {
               </option>
             ))}
           </select>
+        </div>
 
-          {hayRecetasFamilia && (
-            <label className="filtro-familia">
-              <input type="checkbox" checked={soloFamilia} onChange={(e) => setSoloFamilia(e.target.checked)} />
-              Solo de mi familia
-            </label>
-          )}
-
-          <button type="button" className="boton boton-contorno" onClick={limpiarFiltros}>
-            Limpiar filtros
+        {/* Categorías en píldoras: la elegida en tinta, las demás con borde. */}
+        <div className="filtros-categorias" role="group" aria-label="Categoría">
+          <button
+            type="button"
+            className="filtro-pildora"
+            aria-pressed={!categoria}
+            onClick={() => setCategoria('')}
+          >
+            Todas <span className="filtro-pildora-cuenta">{recetas.length}</span>
           </button>
+          {CATEGORIAS.map((cat) => {
+            const Icono = iconoDeCategoria(cat)
+            return (
+              <button
+                key={cat}
+                type="button"
+                className="filtro-pildora"
+                aria-pressed={categoria === cat}
+                onClick={() => setCategoria(categoria === cat ? '' : cat)}
+              >
+                <Icono size={18} aria-hidden="true" />
+                {cat} <span className="filtro-pildora-cuenta">{conteoPorCategoria[cat] || 0}</span>
+              </button>
+            )
+          })}
+          {hayRecetasFamilia && (
+            <button
+              type="button"
+              className="filtro-pildora filtro-pildora-familia"
+              aria-pressed={soloFamilia}
+              onClick={() => setSoloFamilia((actual) => !actual)}
+            >
+              De mi familia
+            </button>
+          )}
+        </div>
+
+        <div className="filtros-resultados">
+          <p aria-live="polite">
+            {cargando
+              ? 'Cargando recetas…'
+              : `${recetasFiltradas.length} ${recetasFiltradas.length === 1 ? 'receta' : 'recetas'}`}
+          </p>
+          {hayFiltros && (
+            <button type="button" className="filtros-limpiar" onClick={limpiarFiltros}>
+              <X size={16} aria-hidden="true" /> Quitar filtros
+            </button>
+          )}
         </div>
 
         {error && <p className="mensaje-error">{error}</p>}
 
         {cargando ? (
           <Cargando texto="Cargando recetas…" />
-        ) : (
-          <>
-        <p className="filtros-resultados">
-          {recetasFiltradas.length}{' '}
-          {recetasFiltradas.length === 1 ? 'receta encontrada' : 'recetas encontradas'}
-        </p>
-
-        {/* --- Resultado --- */}
-        {recetasFiltradas.length > 0 ? (
+        ) : recetasFiltradas.length > 0 ? (
           <div className="grid-recetas">
             {recetasFiltradas.map((receta) => (
-              <RecetaCard
-                key={receta.id}
-                receta={receta}
-                esFavorito={esFavorito}
-                alFavorito={alternarFavorito}
-              />
+              <RecetaCard key={receta.id} receta={receta} esFavorito={esFavorito} alFavorito={alternarFavorito} />
             ))}
           </div>
         ) : (
           <EstadoVacio
-            icono="🔎"
+            icono={SearchX}
             titulo="No encontramos recetas con esos filtros"
-            mensaje="Intenta con otro término de búsqueda o quita algunos filtros."
-          />
-        )}
-          </>
+            mensaje="Prueba con otra palabra o quita algunos filtros."
+          >
+            <button type="button" className="boton boton-secundario" onClick={limpiarFiltros}>
+              Quitar filtros
+            </button>
+          </EstadoVacio>
         )}
       </div>
     </div>

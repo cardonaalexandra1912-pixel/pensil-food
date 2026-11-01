@@ -1,24 +1,24 @@
 .aviso-sin-familia {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px 20px;
   flex-wrap: wrap;
-  padding: 22px 24px;
-  border-radius: var(--radio-borde);
-  background-color: var(--color-verde-claro);
-  color: var(--color-verde-oscuro);
-  border: 1px solid var(--color-borde);
+  padding: 24px;
+  background-color: var(--paper-raised);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card);
 }
 
 .aviso-sin-familia > div {
   flex: 1 1 260px;
-}
-
-.aviso-sin-familia p {
-  color: var(--color-texto);
+  color: var(--ink-muted);
 }
 
 .aviso-sin-familia-titulo {
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ink);
   margin-bottom: 2px;
 }

@@ -20,6 +20,23 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
 - **Favoritos** por usuario (los que estaban guardados en el navegador se suben
   a la cuenta al ingresar por primera vez).
 
+## Diseño
+
+Pensil.Food usa el design system **Pensil.Devs**, el mismo de Pensil.Pos y
+Pensil.Devs Academy: papel blanco, tinta grafito, amarillo lápiz para la acción
+principal, verde para etiquetas y confirmaciones, pie en grafito, Bricolage
+Grotesque para títulos e Inter para el texto, botones en píldora de 48 px y modo
+oscuro automático. Todos los colores son tokens en `src/styles/global.css`.
+
+Lo propio de Pensil.Food (como el cohete en Pensil.Pos):
+
+- **Tomate** como acento de cocina: favoritos, «En vivo», lo que es de tu
+  familia y el margen de la ficha de receta. Nunca en el botón principal ni como
+  fondo de sección.
+- **Ficha de receta**: renglones de cuaderno con el margen en tomate, detrás del
+  inicio y en la lista de ingredientes.
+- **Íconos de comida** por categoría (trazo de 1.8 px) en lugar de emojis.
+
 ## Desarrollo
 
 ```bash
