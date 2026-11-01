@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { ICONOS_CATEGORIA, recetas } from '../data/recetas'
-import { useFavoritos } from '../hooks/useFavoritos'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Pencil, Trash2 } from 'lucide-react'
+import { ICONOS_CATEGORIA } from '../data/catalogo'
+import { useAuth } from '../context/AuthContext'
+import { useFavoritos } from '../context/FavoritosContext'
+import { useRecetas } from '../context/RecetasContext'
+import { mensajeError, supabase } from '../lib/supabase'
 import { formatIngrediente } from '../utils/ingredientes'
+import Cargando from '../components/Cargando'
+import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
 import './DetalleReceta.css'
 
@@ -19,8 +25,12 @@ function claseDificultad(dificultad) {
 // Página de detalle: muestra toda la información de una receta según su id en la URL.
 function DetalleReceta() {
   const { id } = useParams()
-  const receta = recetas.find((r) => r.id === Number(id))
+  const { recetaPorId, cargando, recargar } = useRecetas()
+  const receta = recetaPorId(id)
+  const { familia } = useAuth()
+  const navigate = useNavigate()
   const { esFavorito, alternarFavorito } = useFavoritos()
+  const [errorBorrar, setErrorBorrar] = useState('')
   const [faltaImagen, setFaltaImagen] = useState(false)
   const [porciones, setPorciones] = useState(receta ? receta.porciones : PORCIONES_MIN)
 
@@ -29,6 +39,14 @@ function DetalleReceta() {
   useEffect(() => {
     if (receta) setPorciones(receta.porciones)
   }, [receta?.id])
+
+  if (!receta && cargando) {
+    return (
+      <div className="contenido-pagina">
+        <Cargando texto="Cargando receta…" />
+      </div>
+    )
+  }
 
   if (!receta) {
     return (
@@ -50,6 +68,21 @@ function DetalleReceta() {
   }
 
   const favorita = esFavorito(receta.id)
+  const esDeMiFamilia = Boolean(familia && receta.familiaId === familia.id)
+
+  async function borrarReceta() {
+    if (!window.confirm(`¿Borrar "${receta.nombre}"? También se quitará de los menús y se borrarán sus comentarios.`)) {
+      return
+    }
+    setErrorBorrar('')
+    const { error } = await supabase.from('recetas').delete().eq('id', receta.id)
+    if (error) {
+      setErrorBorrar(mensajeError(error))
+      return
+    }
+    await recargar()
+    navigate('/recetas', { replace: true })
+  }
 
   function disminuirPorciones() {
     setPorciones((actual) => Math.max(PORCIONES_MIN, actual - 1))
@@ -68,7 +101,7 @@ function DetalleReceta() {
 
         <div className="detalle-receta">
           <div className="detalle-imagen-contenedor">
-            {faltaImagen ? (
+            {faltaImagen || !receta.imagen ? (
               <div className="detalle-imagen-fallback" aria-hidden="true">
                 {ICONOS_CATEGORIA[receta.categoria] || '🍽️'}
               </div>
@@ -129,6 +162,19 @@ function DetalleReceta() {
                 {receta.dificultad}
               </span>
             </div>
+
+            {esDeMiFamilia && (
+              <div className="detalle-acciones-familia">
+                <span className="etiqueta receta-card-familia-inline">Receta de {familia.nombre}</span>
+                <Link to={`/recetas/${receta.id}/editar`} className="boton boton-contorno">
+                  <Pencil size={16} aria-hidden="true" /> Editar
+                </Link>
+                <button type="button" className="boton boton-peligro" onClick={borrarReceta}>
+                  <Trash2 size={16} aria-hidden="true" /> Borrar
+                </button>
+              </div>
+            )}
+            {errorBorrar && <p className="mensaje-error">{errorBorrar}</p>}
           </div>
         </div>
 
@@ -156,6 +202,13 @@ function DetalleReceta() {
             </ol>
           </div>
         </div>
+
+        <Comentarios
+          tipo="receta"
+          objetivoId={receta.id}
+          titulo="Comentarios de la familia"
+          descripcion="¿La prepararon? ¿Qué le cambiarían? Déjenlo anotado aquí."
+        />
       </div>
     </div>
   )

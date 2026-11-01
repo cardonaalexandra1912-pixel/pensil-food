@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ICONOS_CATEGORIA } from '../data/recetas'
+import { ICONOS_CATEGORIA } from '../data/catalogo'
 import './RecetaCard.css'
 
 // Convierte "Fácil" / "Media" / "Difícil" en el nombre de clase CSS correspondiente
@@ -20,7 +20,7 @@ function RecetaCard({ receta, esFavorito, alFavorito }) {
   return (
     <article className="receta-card">
       <div className="receta-card-imagen-contenedor">
-        {faltaImagen ? (
+        {faltaImagen || !receta.imagen ? (
           <div className="receta-card-imagen-fallback" aria-hidden="true">
             {ICONOS_CATEGORIA[receta.categoria] || '🍽️'}
           </div>
@@ -49,6 +49,7 @@ function RecetaCard({ receta, esFavorito, alFavorito }) {
         <span className="etiqueta etiqueta-categoria receta-card-categoria">
           {receta.categoria}
         </span>
+        {receta.familiaId && <span className="etiqueta receta-card-familia">De mi familia</span>}
       </div>
 
       <div className="receta-card-contenido">

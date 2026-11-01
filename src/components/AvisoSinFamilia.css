@@ -1,0 +1,24 @@
+.aviso-sin-familia {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 22px 24px;
+  border-radius: var(--radio-borde);
+  background-color: var(--color-verde-claro);
+  color: var(--color-verde-oscuro);
+  border: 1px solid var(--color-borde);
+}
+
+.aviso-sin-familia > div {
+  flex: 1 1 260px;
+}
+
+.aviso-sin-familia p {
+  color: var(--color-texto);
+}
+
+.aviso-sin-familia-titulo {
+  font-weight: 800;
+  margin-bottom: 2px;
+}

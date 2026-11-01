@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo.jpg'
-import { CATEGORIAS, ICONOS_CATEGORIA } from '../data/recetas'
+import { CATEGORIAS, ICONOS_CATEGORIA } from '../data/catalogo'
 import './Footer.css'
 
 // Las primeras 4 categorías del catálogo son las que mostramos como "populares".

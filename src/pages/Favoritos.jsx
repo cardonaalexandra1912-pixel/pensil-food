@@ -1,11 +1,12 @@
-import { recetas } from '../data/recetas'
-import { useFavoritos } from '../hooks/useFavoritos'
+import { useFavoritos } from '../context/FavoritosContext'
+import { useRecetas } from '../context/RecetasContext'
 import RecetaCard from '../components/RecetaCard'
 import EstadoVacio from '../components/EstadoVacio'
 
 // Página de Favoritos: muestra solo las recetas que el usuario marcó con el corazón.
 function Favoritos() {
   const { favoritos, esFavorito, alternarFavorito } = useFavoritos()
+  const { recetas } = useRecetas()
   const recetasFavoritas = recetas.filter((receta) => favoritos.includes(receta.id))
 
   return (

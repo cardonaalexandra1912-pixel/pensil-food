@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CATEGORIAS, recetas } from '../data/recetas'
-import { useFavoritos } from '../hooks/useFavoritos'
+import { CATEGORIAS } from '../data/catalogo'
+import { useFavoritos } from '../context/FavoritosContext'
+import { useRecetas } from '../context/RecetasContext'
+import Cargando from '../components/Cargando'
 import SeccionCategoria from '../components/SeccionCategoria'
 import './Inicio.css'
 
@@ -27,6 +29,7 @@ function Inicio() {
   const [categoria, setCategoria] = useState('')
   const navigate = useNavigate()
   const { esFavorito, alternarFavorito } = useFavoritos()
+  const { recetas, cargando } = useRecetas()
 
   const [indiceHero, setIndiceHero] = useState(0)
   const heroPausadoRef = useRef(false)
@@ -95,7 +98,9 @@ function Inicio() {
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Selecciona una categoría</option>
-              {CATEGORIAS.map((cat) => (
+              {cargando && <Cargando texto="Cargando recetas…" />}
+
+        {CATEGORIAS.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>

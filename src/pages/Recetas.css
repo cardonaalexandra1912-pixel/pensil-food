@@ -1,6 +1,7 @@
 .filtros-recetas {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto auto;
+  align-items: center;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -21,4 +22,20 @@
   .filtros-recetas {
     grid-template-columns: 1fr;
   }
+}
+
+.filtro-familia {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filtro-familia input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-verde);
 }

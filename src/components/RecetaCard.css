@@ -105,3 +105,12 @@
   width: 100%;
   margin-top: 6px;
 }
+
+.receta-card-familia {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: var(--color-terracota);
+  color: var(--color-blanco);
+  box-shadow: var(--sombra-suave);
+}

@@ -1,0 +1,90 @@
+.ingresar-pagina {
+  background: radial-gradient(circle at 20% 10%, var(--color-verde-claro), transparent 55%),
+    radial-gradient(circle at 85% 80%, #fbe6d4, transparent 50%);
+}
+
+.ingresar-tarjeta {
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ingresar-logo {
+  height: 64px;
+  width: auto;
+  margin: 0 auto 4px;
+}
+
+.ingresar-tarjeta h1 {
+  font-size: 1.9rem;
+}
+
+.ingresar-subtitulo {
+  color: var(--color-texto-suave);
+  margin-bottom: 8px;
+}
+
+.ingresar-google {
+  width: 100%;
+  background-color: var(--color-blanco);
+  color: var(--color-texto);
+  border: 2px solid var(--color-borde);
+}
+
+.ingresar-google:hover {
+  border-color: var(--color-verde);
+  background-color: var(--color-crema);
+}
+
+.ingresar-separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+
+.ingresar-separador::before,
+.ingresar-separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-borde);
+}
+
+.ingresar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.ingresar-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ingresar-cambiar {
+  color: var(--color-texto-suave);
+  font-size: 0.92rem;
+}
+
+.ingresar-cambiar button {
+  border: none;
+  background: none;
+  color: var(--color-terracota);
+  font-weight: 800;
+  font-size: inherit;
+}
+
+.ingresar-volver {
+  color: var(--color-verde-oscuro);
+  font-weight: 700;
+  font-size: 0.9rem;
+}

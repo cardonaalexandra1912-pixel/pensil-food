@@ -1,7 +1,86 @@
 .menu-semanal-intro {
   color: var(--color-texto-suave);
   max-width: 640px;
-  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-semanal-envivo {
+  color: var(--color-terracota);
+  flex-shrink: 0;
+}
+
+.menu-semanal-familia {
+  font-weight: 700;
+  color: var(--color-verde-oscuro);
+  background-color: var(--color-verde-claro);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.menu-semanal-navegacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.menu-semanal-flecha {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--color-borde);
+  background-color: var(--color-blanco);
+  color: var(--color-texto);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.menu-semanal-flecha:hover {
+  border-color: var(--color-verde);
+}
+
+.menu-semanal-semana {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 220px;
+  text-align: center;
+}
+
+.menu-semanal-semana strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+}
+
+.menu-semanal-semana span,
+.menu-semanal-semana button {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-terracota);
+  border: none;
+  background: none;
+}
+
+.menu-semanal-semana button:hover {
+  text-decoration: underline;
+}
+
+.menu-semanal-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.menu-semanal-error {
+  margin-bottom: 20px;
 }
 
 .menu-semanal-grid {
@@ -21,9 +100,58 @@
   gap: 8px;
 }
 
+.dia-card.es-hoy {
+  outline: 2px solid var(--color-terracota);
+}
+
 .dia-card h3 {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: var(--color-verde-oscuro);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.dia-card-fecha {
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  font-weight: 600;
+}
+
+.dia-card-hoy {
+  margin-left: auto;
+  font-family: var(--fuente-texto);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-blanco);
+  background-color: var(--color-terracota);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.dia-card-comida {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dia-card-quien {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--color-texto-suave);
+}
+
+.dia-card-ver {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--color-verde-oscuro);
+}
+
+.dia-card-ver:hover {
+  text-decoration: underline;
 }
 
 .dia-card-label {
@@ -33,7 +161,7 @@
   margin-top: 8px;
 }
 
-.dia-card-label:first-of-type {
+.dia-card-comida:first-of-type .dia-card-label {
   margin-top: 0;
 }
 

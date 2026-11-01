@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { CATEGORIAS, DIFICULTADES, recetas } from '../data/recetas'
-import { useFavoritos } from '../hooks/useFavoritos'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Plus } from 'lucide-react'
+import { CATEGORIAS, DIFICULTADES } from '../data/catalogo'
+import { useAuth } from '../context/AuthContext'
+import { useFavoritos } from '../context/FavoritosContext'
+import { useRecetas } from '../context/RecetasContext'
+import Cargando from '../components/Cargando'
 import RecetaCard from '../components/RecetaCard'
 import EstadoVacio from '../components/EstadoVacio'
 import './Recetas.css'
@@ -23,6 +27,9 @@ const OPCIONES_TIEMPO = [
 function Recetas() {
   const [parametrosURL] = useSearchParams()
   const { esFavorito, alternarFavorito } = useFavoritos()
+  const { recetas, cargando, error } = useRecetas()
+  const { usuario } = useAuth()
+  const [soloFamilia, setSoloFamilia] = useState(false)
 
   const [busqueda, setBusqueda] = useState(parametrosURL.get('q') || '')
   const [categoria, setCategoria] = useState(parametrosURL.get('categoria') || '')
@@ -48,15 +55,20 @@ function Recetas() {
         coincideTiempo = receta.tiempoPreparacion <= Number(tiempo)
       }
 
-      return coincideTexto && coincideCategoria && coincideDificultad && coincideTiempo
+      const coincideOrigen = !soloFamilia || receta.familiaId
+
+      return coincideTexto && coincideCategoria && coincideDificultad && coincideTiempo && coincideOrigen
     })
-  }, [busqueda, categoria, dificultad, tiempo])
+  }, [recetas, busqueda, categoria, dificultad, tiempo, soloFamilia])
+
+  const hayRecetasFamilia = recetas.some((receta) => receta.familiaId)
 
   function limpiarFiltros() {
     setBusqueda('')
     setCategoria('')
     setDificultad('')
     setTiempo('')
+    setSoloFamilia(false)
   }
 
   return (
@@ -64,6 +76,9 @@ function Recetas() {
       <div className="contenedor seccion">
         <div className="encabezado-seccion">
           <h1>Todas las Recetas</h1>
+          <Link to={usuario ? '/recetas/nueva' : '/ingresar'} state={{ desde: '/recetas/nueva' }} className="boton boton-primario">
+            <Plus size={18} aria-hidden="true" /> Nueva receta
+          </Link>
         </div>
 
         {/* --- Barra de filtros --- */}
@@ -114,11 +129,24 @@ function Recetas() {
             ))}
           </select>
 
+          {hayRecetasFamilia && (
+            <label className="filtro-familia">
+              <input type="checkbox" checked={soloFamilia} onChange={(e) => setSoloFamilia(e.target.checked)} />
+              Solo de mi familia
+            </label>
+          )}
+
           <button type="button" className="boton boton-contorno" onClick={limpiarFiltros}>
             Limpiar filtros
           </button>
         </div>
 
+        {error && <p className="mensaje-error">{error}</p>}
+
+        {cargando ? (
+          <Cargando texto="Cargando recetas…" />
+        ) : (
+          <>
         <p className="filtros-resultados">
           {recetasFiltradas.length}{' '}
           {recetasFiltradas.length === 1 ? 'receta encontrada' : 'recetas encontradas'}
@@ -142,6 +170,8 @@ function Recetas() {
             titulo="No encontramos recetas con esos filtros"
             mensaje="Intenta con otro término de búsqueda o quita algunos filtros."
           />
+        )}
+          </>
         )}
       </div>
     </div>

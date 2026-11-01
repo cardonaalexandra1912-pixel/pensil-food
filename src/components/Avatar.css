@@ -1,0 +1,15 @@
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-inicial {
+  background-color: var(--color-verde-claro);
+  color: var(--color-verde-oscuro);
+  font-weight: 800;
+  border: 2px solid var(--color-borde);
+}

@@ -207,3 +207,16 @@
     gap: 32px;
   }
 }
+
+.detalle-acciones-familia {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.receta-card-familia-inline {
+  background-color: var(--color-terracota);
+  color: var(--color-blanco);
+}

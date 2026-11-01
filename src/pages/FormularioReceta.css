@@ -1,0 +1,124 @@
+.formulario-titulo {
+  margin: 12px 0 8px;
+}
+
+.formulario-intro {
+  color: var(--color-texto-suave);
+  margin-bottom: 24px;
+}
+
+.formulario-receta {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.formulario-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.formulario-ancho {
+  grid-column: 1 / -1;
+}
+
+.formulario-campo textarea {
+  resize: vertical;
+}
+
+.formulario-lista {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.formulario-lista legend {
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.formulario-ayuda {
+  color: var(--color-texto-suave);
+  font-size: 0.88rem;
+}
+
+.formulario-ingrediente {
+  display: grid;
+  grid-template-columns: 90px 170px 1fr 40px;
+  gap: 10px;
+  width: 100%;
+}
+
+.formulario-paso {
+  display: grid;
+  grid-template-columns: 32px 1fr 40px;
+  gap: 10px;
+  width: 100%;
+  align-items: start;
+}
+
+.formulario-paso .detalle-paso-numero {
+  margin-top: 10px;
+}
+
+.formulario-paso textarea {
+  resize: vertical;
+}
+
+.formulario-quitar {
+  border: none;
+  background: none;
+  color: var(--color-texto-suave);
+  border-radius: var(--radio-borde-chico);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+}
+
+.formulario-quitar:hover:not(:disabled) {
+  color: #c1432a;
+  background-color: #fbe3df;
+}
+
+.formulario-quitar:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 780px) {
+  .formulario-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formulario-ingrediente {
+    grid-template-columns: 70px 1fr 40px;
+  }
+
+  .formulario-ingrediente input:nth-child(3) {
+    grid-column: 1 / 3;
+  }
+
+  .formulario-ingrediente button {
+    grid-row: 1 / 3;
+    grid-column: 3;
+  }
+}

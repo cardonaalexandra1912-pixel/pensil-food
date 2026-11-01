@@ -1,0 +1,24 @@
+.cargando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 16px;
+  color: var(--color-texto-suave);
+  font-weight: 600;
+}
+
+.cargando-rueda {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--color-borde);
+  border-top-color: var(--color-terracota);
+  animation: cargando-girar 0.8s linear infinite;
+}
+
+@keyframes cargando-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
