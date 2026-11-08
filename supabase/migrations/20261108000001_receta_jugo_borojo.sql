@@ -1,0 +1,8 @@
+-- Receta del catálogo: Jugo de Borojó con Cola Granulada, Leche en Polvo y Brandy.
+-- Sin foto todavía: la tarjeta muestra el ícono de "Jugos y Bebidas".
+insert into public.recetas (id, nombre, categoria, imagen, descripcion, tiempo_preparacion, porciones, dificultad, ingredientes, pasos)
+overriding system value values
+(38, 'Jugo de Borojó con Cola Granulada y un Toque de Brandy', 'Jugos y Bebidas', null, 'Jugo espeso y cremoso de borojó del Pacífico, endulzado con cola granulada, suavizado con leche en polvo y con un toque de brandy que lo vuelve especial. Queda muy bueno.', 10, 2, 'Fácil', '[{"cantidadBase":150,"unidad":"g","nombre":"pulpa de borojó"},{"cantidadBase":2,"unidad":"tazas","nombre":"leche fría"},{"cantidadBase":3,"unidad":"cdas","nombre":"cola granulada"},{"cantidadBase":2,"unidad":"cdas","nombre":"leche en polvo"},{"cantidadBase":2,"unidad":"cdas","nombre":"brandy"},{"cantidadBase":null,"unidad":"","nombre":"Azúcar o miel al gusto"},{"cantidadBase":null,"unidad":"","nombre":"Hielo al gusto"}]'::jsonb, '["Pon en la licuadora la pulpa de borojó con la leche fría y licúa hasta que quede bien lisa.","Agrega la cola granulada y la leche en polvo, y licúa de nuevo hasta que el jugo quede espeso y cremoso.","Añade el brandy y licúa unos segundos más. Prueba y endulza con azúcar o miel si hace falta (la cola granulada ya endulza).","Para servir: en vasos con hielo, con una pizca de cola granulada por encima. El brandy es solo para adultos: para los niños, sírvelo antes de agregarlo."]'::jsonb)
+on conflict (id) do nothing;
+
+select setval(pg_get_serial_sequence('public.recetas', 'id'), (select max(id) from public.recetas));
