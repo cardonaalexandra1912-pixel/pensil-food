@@ -1,12 +1,35 @@
-.filtros-recetas {
-  display: grid;
-  grid-template-columns: 1fr;
+.recetas {
+  padding-top: 24px;
+  padding-bottom: 64px;
+}
+
+.recetas-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
 }
 
+/* --- Barra fija bajo el encabezado: buscador, filtros y categorías --- */
+.recetas-barra {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 50;
+  margin: 0 -16px;
+  padding: 8px 16px 0;
+  background-color: var(--paper);
+  border-bottom: 1px solid transparent;
+}
+
+.recetas-busqueda {
+  display: flex;
+  gap: 8px;
+}
+
 .filtro-busqueda {
   position: relative;
+  flex: 1;
 }
 
 .filtro-busqueda .lucide {
@@ -20,26 +43,52 @@
 
 .filtro-busqueda input {
   padding-left: 46px;
-}
-
-.filtros-recetas .campo-formulario {
   border-radius: var(--radius-pill);
 }
 
-@media (min-width: 768px) {
-  .filtros-recetas {
-    grid-template-columns: 2fr 1fr 1fr;
-  }
+.recetas-boton-filtros {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: var(--control-min);
+  min-height: var(--control-min);
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  font-weight: 600;
+  transition: border-color var(--duration) var(--ease-out);
 }
 
-/* Filtros en píldoras (patrón de Pensil.Devs Academy). */
+.recetas-boton-filtros:hover,
+.recetas-boton-filtros[aria-expanded='true'] {
+  border-color: var(--ink);
+}
+
+.recetas-boton-filtros-cuenta {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Píldoras de categoría: se deslizan de lado y llegan al borde de la pantalla. */
 .filtros-categorias {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
-  padding-bottom: 4px;
+  margin: 0 -16px;
+  padding: 12px 16px;
   overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 
 .filtro-pildora {
@@ -83,13 +132,46 @@
   border-color: color-mix(in oklab, var(--tomato) 40%, transparent);
 }
 
+.filtro-pildora-chica {
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.9375rem;
+}
+
+/* --- Panel de tiempo y dificultad --- */
+.recetas-panel {
+  display: grid;
+  gap: 16px;
+  margin-top: 4px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background-color: var(--paper-sunken);
+}
+
+.recetas-panel[hidden] {
+  display: none;
+}
+
+.recetas-panel-grupo p {
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.recetas-panel-grupo > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .filtros-resultados {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 40px;
-  margin-bottom: 20px;
+  min-height: 44px;
+  margin: 8px 0 12px;
   color: var(--ink-muted);
   font-size: 0.9375rem;
 }
@@ -98,7 +180,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 4px;
   border: none;
   background: none;
@@ -108,4 +190,51 @@
   text-decoration-color: var(--pencil);
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
+}
+
+@media (max-width: 479px) {
+  .recetas-boton-filtros-texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+@media (min-width: 768px) {
+  .recetas {
+    padding-top: 40px;
+  }
+
+  .recetas-barra {
+    margin: 0 -24px;
+    padding: 8px 24px 0;
+  }
+
+  .filtros-categorias {
+    margin: 0 -24px;
+    padding: 12px 24px;
+  }
+
+  .recetas-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .recetas-barra {
+    margin: 0 -32px;
+    padding: 8px 32px 0;
+  }
+
+  .filtros-categorias {
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 12px 0;
+  }
+
+  .recetas-busqueda {
+    max-width: 640px;
+  }
 }

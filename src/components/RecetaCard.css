@@ -160,3 +160,54 @@
 .receta-card:hover .receta-card-ver .lucide {
   transform: translateX(4px);
 }
+
+/* Móvil: tarjeta compacta (dos por fila). Foto, nombre, tiempo y dificultad;
+   la descripción y las porciones quedan para el detalle. */
+@media (max-width: 639px) {
+  .receta-card {
+    border-radius: var(--radius-tile);
+  }
+
+  .receta-card-imagen-contenedor {
+    aspect-ratio: 1;
+  }
+
+  .receta-card-favorito {
+    top: 6px;
+    right: 6px;
+  }
+
+  .receta-card-contenido {
+    gap: 6px;
+    padding: 10px 12px 12px;
+  }
+
+  .receta-card-categoria,
+  .receta-card-descripcion,
+  .receta-card-ver,
+  .receta-card-meta > span:nth-child(2) {
+    display: none;
+  }
+
+  .receta-card-etiquetas:not(:has(.etiqueta-familia)) {
+    display: none;
+  }
+
+  .receta-card-nombre {
+    flex: 1;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .receta-card-meta {
+    gap: 6px 10px;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+  }
+
+  .receta-card-meta .etiqueta {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+  }
+}

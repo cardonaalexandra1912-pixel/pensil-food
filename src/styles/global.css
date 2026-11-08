@@ -499,15 +499,17 @@ select.campo-formulario {
 }
 
 /* --- Grid de tarjetas de recetas: 3 columnas escritorio / 2 tablet / 1 móvil --- */
+/* En móvil van dos por fila, en versión compacta (ver RecetaCard.css). */
 .grid-recetas {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 @media (min-width: 640px) {
   .grid-recetas {
     grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
 }
 
