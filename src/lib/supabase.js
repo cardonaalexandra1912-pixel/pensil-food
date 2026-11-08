@@ -37,6 +37,10 @@ export function mensajeError(error) {
   if (texto.includes('Password should be at least')) return 'La contraseña debe tener al menos 6 caracteres.'
   if (texto.includes('rate limit')) return 'Demasiados intentos. Espera un momento y vuelve a intentarlo.'
   if (texto.includes('provider is not enabled')) return 'El ingreso con Google todavía no está activado en Supabase.'
+  if (texto.includes('should be different from the old password'))
+    return 'La contraseña nueva tiene que ser distinta a la anterior.'
+  if (texto.includes('Auth session missing')) return 'El enlace ya no sirve. Pide uno nuevo desde «¿Olvidaste tu contraseña?».'
+  if (texto.includes('Unable to validate email address')) return 'Revisa el correo: parece que está mal escrito.'
   if (texto.includes('Failed to fetch')) return 'No pudimos conectarnos. Revisa tu conexión a internet.'
   return texto
 }

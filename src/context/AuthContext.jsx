@@ -94,6 +94,19 @@ export function AuthProvider({ children }) {
     return Boolean(data.session)
   }, [])
 
+  // Correo con el enlace para poner una contraseña nueva (lleva a /nueva-contrasena).
+  const enviarRecuperacion = useCallback(async (correo) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(correo.trim(), {
+      redirectTo: `${urlRaizApp()}nueva-contrasena`,
+    })
+    if (error) throw error
+  }, [])
+
+  const cambiarContrasena = useCallback(async (contrasena) => {
+    const { error } = await supabase.auth.updateUser({ password: contrasena })
+    if (error) throw error
+  }, [])
+
   const cerrarSesion = useCallback(async () => {
     await supabase.auth.signOut()
   }, [])
@@ -159,6 +172,8 @@ export function AuthProvider({ children }) {
       iniciarConGoogle,
       iniciarConCorreo,
       registrarse,
+      enviarRecuperacion,
+      cambiarContrasena,
       cerrarSesion,
       actualizarNombre,
       crearFamilia,
@@ -177,6 +192,8 @@ export function AuthProvider({ children }) {
       iniciarConGoogle,
       iniciarConCorreo,
       registrarse,
+      enviarRecuperacion,
+      cambiarContrasena,
       cerrarSesion,
       actualizarNombre,
       crearFamilia,

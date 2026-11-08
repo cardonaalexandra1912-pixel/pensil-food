@@ -8,8 +8,9 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
 
 - **Recetas**: catálogo público (cualquiera puede verlo sin cuenta) y recetas
   propias de cada familia (crear, editar y borrar).
-- **Cuentas**: ingreso con correo y contraseña. El ingreso con Google ya está
-  programado pero apagado (ver más abajo).
+- **Cuentas**: ingreso con correo y contraseña, y recuperación de la
+  contraseña por correo (el enlace abre `/nueva-contrasena`). El ingreso con
+  Google ya está programado pero apagado (ver más abajo).
 - **Familias**: cada usuario pertenece a una familia; quien la crea queda como
   administrador e invita a los demás con un código de 6 letras o un enlace.
 - **Menú semanal compartido**: un plan por familia y por semana (lunes a

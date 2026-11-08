@@ -13,6 +13,7 @@ import FormularioReceta from './pages/FormularioReceta'
 import MenuSemanal from './pages/MenuSemanal'
 import Favoritos from './pages/Favoritos'
 import Ingresar from './pages/Ingresar'
+import NuevaContrasena from './pages/NuevaContrasena'
 import Familia from './pages/Familia'
 
 // Al volver de Google, lleva al usuario a la página desde la que pidió ingresar.
@@ -80,6 +81,7 @@ function App() {
             }
           />
           <Route path="/ingresar" element={<Ingresar />} />
+          <Route path="/nueva-contrasena" element={<NuevaContrasena />} />
         </Routes>
       </main>
       {/* Con sesión la app es una herramienta: sin pie de página, con pestañas abajo. */}

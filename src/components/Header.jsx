@@ -141,6 +141,8 @@ function MenuUsuario() {
   if (cargando) return <span className="header-usuario-espacio" aria-hidden="true" />
 
   if (!usuario) {
+    // En las páginas de ingreso el botón llevaría al mismo lugar.
+    if (['/ingresar', '/nueva-contrasena'].includes(location.pathname)) return null
     return (
       <Link
         to="/ingresar"
