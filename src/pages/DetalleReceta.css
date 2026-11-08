@@ -1,3 +1,8 @@
+.detalle {
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
 .detalle-volver {
   display: inline-flex;
   align-items: center;
@@ -35,6 +40,32 @@
   border-radius: var(--radius-band);
   background-color: var(--paper-sunken);
   box-shadow: var(--shadow-raised);
+}
+
+.detalle-corazon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background-color: color-mix(in oklab, var(--paper-raised) 92%, transparent);
+  color: var(--ink);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.detalle-corazon:hover {
+  transform: scale(1.06);
+  color: var(--tomato);
+}
+
+.detalle-corazon.es-favorito {
+  color: var(--tomato);
 }
 
 .detalle-imagen {
@@ -81,23 +112,34 @@
   font-size: 2.25rem;
 }
 
+.detalle-descripcion {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}
+
 /* Datos rápidos en tres casillas. */
+/* Datos rápidos: una tira de tres casillas que cabe en un renglón. */
 .detalle-meta {
   display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: start;
-  gap: 12px;
+  grid-template-columns: auto auto 1fr;
   margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-raised);
 }
 
 .detalle-meta > div {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-tile);
-  background-color: var(--paper-raised);
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 14px;
+}
+
+.detalle-meta > div + div {
+  border-left: 1px solid var(--line);
 }
 
 .detalle-meta dt {
@@ -120,8 +162,8 @@
 .detalle-porciones-boton {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--line);
   background-color: var(--paper);
@@ -152,14 +194,44 @@
   margin-top: 8px;
 }
 
-.detalle-favorito.es-favorito {
-  color: var(--tomato-text);
-  border-color: color-mix(in oklab, var(--tomato) 45%, transparent);
-  background-color: var(--tomato-soft);
+.detalle-agregar {
+  flex: 1 1 auto;
 }
 
-.detalle-favorito.es-favorito .lucide {
-  color: var(--tomato);
+.detalle-aviso a {
+  margin-left: auto;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Editar y borrar: solo para recetas de la familia, en voz baja. */
+.detalle-gestion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.detalle-gestion-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.detalle-gestion-enlace:hover {
+  color: var(--ink);
+}
+
+.detalle-gestion-enlace.peligro:hover {
+  color: var(--danger);
 }
 
 /* --- Cuerpo: ingredientes y preparación --- */
@@ -208,7 +280,7 @@
   border-bottom: 1px solid var(--line);
 }
 
-.detalle-ingredientes-nota {
+.detalle-nota {
   font-size: 0.875rem;
   color: var(--ink-muted);
   margin-bottom: 12px;
@@ -248,25 +320,85 @@
   }
 }
 
-.detalle-pasos ol {
-  display: grid;
-  gap: 20px;
-  margin-top: 20px;
-  counter-reset: none;
+.detalle-pasos-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.detalle-pasos li {
+.detalle-pasos-cabecera .detalle-nota {
+  margin-bottom: 0;
+}
+
+.detalle-pantalla {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.detalle-pantalla[aria-pressed='true'] {
+  border-color: var(--pencil-strong);
+  background-color: var(--pencil-soft);
+  color: var(--pencil-text);
+}
+
+.detalle-pasos ol {
+  display: grid;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.detalle-pasos li label {
+  position: relative;
   display: flex;
   gap: 16px;
   align-items: flex-start;
+  padding: 12px;
+  margin: 0 -12px;
+  border-radius: var(--radius-tile);
+  cursor: pointer;
+  transition: background-color var(--duration) var(--ease-out);
 }
 
-.detalle-pasos li p {
+.detalle-pasos li label:hover {
+  background-color: var(--paper-sunken);
+}
+
+.detalle-pasos li input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.detalle-pasos li input:focus-visible + .detalle-paso-numero {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.detalle-paso-texto {
   padding-top: 4px;
   max-width: 65ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
-/* Pasos en lápiz; el último, en verde (sale bien). */
+.detalle-pasos label.hecho .detalle-paso-texto {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--leaf) 60%, transparent);
+}
+
+/* Pasos en lápiz; el último, en verde (sale bien). Hecho: check verde. */
 .detalle-paso-numero {
   display: grid;
   place-items: center;
@@ -281,7 +413,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.detalle-paso-numero.ultimo {
+.detalle-paso-numero.ultimo,
+.detalle-pasos label.hecho .detalle-paso-numero {
   background-color: var(--leaf);
   color: var(--on-leaf);
 }
@@ -304,16 +437,59 @@
   }
 }
 
-@media (max-width: 479px) {
-  .detalle-meta {
-    grid-template-columns: 1fr 1fr;
+/* Móvil: foto de borde a borde y acciones a la mano del pulgar. */
+@media (max-width: 767px) {
+  .detalle-volver {
+    display: none;
   }
 
-  .detalle-meta > div:last-child {
-    grid-column: 1 / -1;
+  .detalle {
+    padding-top: 0;
+  }
+
+  .detalle-receta {
+    gap: 20px;
+  }
+
+  .detalle-imagen-contenedor {
+    margin: 0 -16px;
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    box-shadow: none;
+  }
+
+  .detalle-info h1 {
+    font-size: 2rem;
+  }
+
+  .detalle-cuerpo {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 479px) {
+  .detalle-meta > div {
+    padding: 10px 12px;
+  }
+
+  .detalle-compartir span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .detalle-compartir {
+    padding: 12px 14px;
   }
 
   .detalle-ingredientes {
     padding-left: 72px;
+  }
+}
+
+@media (min-width: 768px) {
+  .detalle-meta {
+    align-self: flex-start;
   }
 }

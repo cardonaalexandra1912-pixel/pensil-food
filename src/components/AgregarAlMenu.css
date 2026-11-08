@@ -1,0 +1,71 @@
+/* La hoja usa la base de SelectorReceta.css; la tira de días, la del menú semanal. */
+.agregar-menu-receta {
+  margin-top: 2px;
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+}
+
+.agregar-menu-semanas {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.agregar-menu-cuerpo {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.agregar-menu-paso {
+  margin: 16px 0 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.agregar-menu-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.agregar-menu-momentos {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.agregar-menu-momento {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 60px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-raised);
+  text-align: left;
+}
+
+.agregar-menu-momento span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.agregar-menu-momento[aria-checked='true'] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.agregar-menu-aviso {
+  margin-bottom: 10px;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}

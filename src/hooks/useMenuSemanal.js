@@ -95,7 +95,7 @@ export function useMenuSemanal(lunes) {
 
   const seleccionarReceta = useCallback(
     async (dia, momento, recetaId) => {
-      if (!menuId || !userId) return
+      if (!menuId || !userId) return false
       setError('')
       const anterior = items
       if (!recetaId) {
@@ -109,8 +109,9 @@ export function useMenuSemanal(lunes) {
         if (errorBorrar) {
           setItems(anterior)
           setError('No se pudo quitar la comida. Intenta de nuevo.')
+          return false
         }
-        return
+        return true
       }
       setItems((actuales) => [
         ...actuales.filter((i) => !(i.dia === dia && i.momento === momento)),
@@ -130,9 +131,10 @@ export function useMenuSemanal(lunes) {
       if (errorGuardar) {
         setItems(anterior)
         setError('No se pudo guardar la comida. Intenta de nuevo.')
-        return
+        return false
       }
       cargarItems(menuId)
+      return true
     },
     [menuId, userId, items, cargarItems]
   )

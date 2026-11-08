@@ -1,6 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ChefHat, Clock, Heart, Minus, Pencil, Plus, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  CalendarPlus,
+  Check,
+  ChefHat,
+  Clock,
+  Heart,
+  Minus,
+  Pencil,
+  Plus,
+  Share2,
+  Sun,
+  Trash2,
+} from 'lucide-react'
 import { iconoDeCategoria } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { useFavoritos } from '../context/FavoritosContext'
@@ -8,6 +21,7 @@ import { useRecetas } from '../context/RecetasContext'
 import { mensajeError, supabase } from '../lib/supabase'
 import { formatIngrediente } from '../utils/ingredientes'
 import { claseDificultad } from '../utils/dificultad'
+import AgregarAlMenu from '../components/AgregarAlMenu'
 import Cargando from '../components/Cargando'
 import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
@@ -17,26 +31,52 @@ import './DetalleReceta.css'
 const PORCIONES_MIN = 1
 const PORCIONES_MAX = 12
 
-// Página de detalle: muestra toda la información de una receta según su id en la URL.
+// Mantiene la pantalla encendida mientras se cocina (Screen Wake Lock API).
+// El navegador suelta el bloqueo al cambiar de pestaña: se pide de nuevo al volver.
+function usePantallaEncendida() {
+  const soportado = typeof navigator !== 'undefined' && 'wakeLock' in navigator
+  const [activa, setActiva] = useState(false)
+  const bloqueoRef = useRef(null)
+
+  const pedir = useCallback(async () => {
+    try {
+      bloqueoRef.current = await navigator.wakeLock.request('screen')
+      return true
+    } catch {
+      return false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!activa) return undefined
+    function alVolver() {
+      if (document.visibilityState === 'visible') pedir()
+    }
+    document.addEventListener('visibilitychange', alVolver)
+    return () => {
+      document.removeEventListener('visibilitychange', alVolver)
+      bloqueoRef.current?.release().catch(() => {})
+      bloqueoRef.current = null
+    }
+  }, [activa, pedir])
+
+  async function alternar() {
+    if (activa) {
+      setActiva(false)
+      return
+    }
+    if (await pedir()) setActiva(true)
+  }
+
+  return { soportado, activa, alternar }
+}
+
+// Página de detalle: foto, datos, ingredientes que se ajustan a las porciones,
+// pasos que se marcan mientras se cocina y comentarios de la familia.
 function DetalleReceta() {
   const { id } = useParams()
-  const { recetaPorId, cargando, recargar } = useRecetas()
+  const { recetaPorId, cargando } = useRecetas()
   const receta = recetaPorId(id)
-  const { familia } = useAuth()
-  const navigate = useNavigate()
-  const { esFavorito, alternarFavorito } = useFavoritos()
-  const [errorBorrar, setErrorBorrar] = useState('')
-  // Ingredientes marcados mientras se cocina (solo en esta pantalla).
-  const [listos, setListos] = useState(() => new Set())
-  const [faltaImagen, setFaltaImagen] = useState(false)
-  const [porciones, setPorciones] = useState(receta ? receta.porciones : PORCIONES_MIN)
-
-  // Si se navega directo a otra receta (cambia el id), reinicia el selector
-  // a las porciones base de la receta nueva.
-  useEffect(() => {
-    if (receta) setPorciones(receta.porciones)
-    setListos(new Set())
-  }, [receta?.id])
 
   if (!receta && cargando) {
     return (
@@ -64,8 +104,36 @@ function DetalleReceta() {
     )
   }
 
+  // La key reinicia porciones y marcas al pasar de una receta a otra.
+  return <Receta key={receta.id} receta={receta} />
+}
+
+function Receta({ receta }) {
+  const { usuario, familia } = useAuth()
+  const { recargar } = useRecetas()
+  const navigate = useNavigate()
+  const { esFavorito, alternarFavorito } = useFavoritos()
+  const pantalla = usePantallaEncendida()
+  const [porciones, setPorciones] = useState(receta.porciones)
+  const [ingredientesListos, setIngredientesListos] = useState(() => new Set())
+  const [pasosHechos, setPasosHechos] = useState(() => new Set())
+  const [faltaImagen, setFaltaImagen] = useState(false)
+  const [agregando, setAgregando] = useState(false)
+  const [aviso, setAviso] = useState('')
+  const [errorBorrar, setErrorBorrar] = useState('')
+
   const favorita = esFavorito(receta.id)
   const esDeMiFamilia = Boolean(familia && receta.familiaId === familia.id)
+  const IconoCategoria = iconoDeCategoria(receta.categoria)
+
+  function alternarEn(setConjunto, indice) {
+    setConjunto((actuales) => {
+      const nuevos = new Set(actuales)
+      if (nuevos.has(indice)) nuevos.delete(indice)
+      else nuevos.add(indice)
+      return nuevos
+    })
+  }
 
   async function borrarReceta() {
     if (!window.confirm(`¿Borrar "${receta.nombre}"? También se quitará de los menús y se borrarán sus comentarios.`)) {
@@ -81,30 +149,41 @@ function DetalleReceta() {
     navigate('/recetas', { replace: true })
   }
 
-  function disminuirPorciones() {
-    setPorciones((actual) => Math.max(PORCIONES_MIN, actual - 1))
+  async function compartir() {
+    const ingredientes = receta.ingredientes.map((ing) => `- ${formatIngrediente(ing, receta.porciones, receta.porciones)}`)
+    const texto = [`${receta.nombre} (Pensil.Food)`, '', 'Ingredientes:', ...ingredientes, '', window.location.href].join('\n')
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: receta.nombre, text: texto })
+      } catch {
+        // Cerró el menú de compartir: no es un error.
+      }
+      return
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
   }
 
-  function aumentarPorciones() {
-    setPorciones((actual) => Math.min(PORCIONES_MAX, actual + 1))
+  function abrirAgregar() {
+    setAviso('')
+    if (!usuario) {
+      navigate('/ingresar', { state: { desde: `/recetas/${receta.id}` } })
+      return
+    }
+    if (!familia) {
+      navigate('/familia')
+      return
+    }
+    setAgregando(true)
   }
 
-  function alternarListo(indice) {
-    setListos((actuales) => {
-      const nuevos = new Set(actuales)
-      if (nuevos.has(indice)) nuevos.delete(indice)
-      else nuevos.add(indice)
-      return nuevos
-    })
-  }
-
-  const IconoCategoria = iconoDeCategoria(receta.categoria)
+  const totalPasos = receta.pasos.length
+  const hechos = pasosHechos.size
 
   return (
     <div className="contenido-pagina">
-      <div className="contenedor seccion">
+      <div className="contenedor detalle">
         <Link to="/recetas" className="detalle-volver">
-          <ArrowLeft size={18} aria-hidden="true" /> Todas las recetas
+          <ArrowLeft size={18} aria-hidden="true" /> Recetas
         </Link>
 
         <div className="detalle-receta">
@@ -118,6 +197,15 @@ function DetalleReceta() {
             ) : (
               <img src={receta.imagen} alt={receta.nombre} className="detalle-imagen" onError={() => setFaltaImagen(true)} />
             )}
+            <button
+              type="button"
+              className={`detalle-corazon ${favorita ? 'es-favorito' : ''}`}
+              onClick={() => alternarFavorito(receta.id)}
+              aria-pressed={favorita}
+              aria-label={favorita ? 'Quitar de favoritos' : 'Guardar en favoritos'}
+            >
+              <Heart size={22} aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+            </button>
           </div>
 
           <div className="detalle-info">
@@ -130,7 +218,7 @@ function DetalleReceta() {
             </div>
 
             <h1>{receta.nombre}</h1>
-            <p className="texto-intro">{receta.descripcion}</p>
+            {receta.descripcion && <p className="detalle-descripcion">{receta.descripcion}</p>}
 
             <dl className="detalle-meta">
               <div>
@@ -151,11 +239,11 @@ function DetalleReceta() {
                   <button
                     type="button"
                     className="detalle-porciones-boton"
-                    onClick={disminuirPorciones}
+                    onClick={() => setPorciones((actual) => Math.max(PORCIONES_MIN, actual - 1))}
                     disabled={porciones <= PORCIONES_MIN}
                     aria-label="Quitar una porción"
                   >
-                    <Minus size={18} aria-hidden="true" />
+                    <Minus size={16} aria-hidden="true" />
                   </button>
                   <span className="detalle-porciones-valor" aria-live="polite">
                     {porciones}
@@ -163,37 +251,43 @@ function DetalleReceta() {
                   <button
                     type="button"
                     className="detalle-porciones-boton"
-                    onClick={aumentarPorciones}
+                    onClick={() => setPorciones((actual) => Math.min(PORCIONES_MAX, actual + 1))}
                     disabled={porciones >= PORCIONES_MAX}
                     aria-label="Agregar una porción"
                   >
-                    <Plus size={18} aria-hidden="true" />
+                    <Plus size={16} aria-hidden="true" />
                   </button>
                 </dd>
               </div>
             </dl>
 
             <div className="detalle-acciones">
-              <button
-                type="button"
-                className={`boton boton-secundario detalle-favorito ${favorita ? 'es-favorito' : ''}`}
-                onClick={() => alternarFavorito(receta.id)}
-                aria-pressed={favorita}
-              >
-                <Heart aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
-                {favorita ? 'En tus favoritos' : 'Guardar en favoritos'}
+              <button type="button" className="boton boton-primario detalle-agregar" onClick={abrirAgregar}>
+                <CalendarPlus aria-hidden="true" /> Agregar al menú
               </button>
-              {esDeMiFamilia && (
-                <>
-                  <Link to={`/recetas/${receta.id}/editar`} className="boton boton-secundario">
-                    <Pencil aria-hidden="true" /> Editar
-                  </Link>
-                  <button type="button" className="boton boton-peligro" onClick={borrarReceta}>
-                    <Trash2 aria-hidden="true" /> Borrar
-                  </button>
-                </>
+              <button type="button" className="boton boton-secundario detalle-compartir" onClick={compartir}>
+                <Share2 aria-hidden="true" /> <span>Compartir</span>
+              </button>
+            </div>
+            <div aria-live="polite">
+              {aviso && (
+                <p className="mensaje-exito detalle-aviso">
+                  <Check size={16} aria-hidden="true" /> Quedó en {aviso}.{' '}
+                  <Link to="/menu-semanal">Ver menú</Link>
+                </p>
               )}
             </div>
+
+            {esDeMiFamilia && (
+              <div className="detalle-gestion">
+                <Link to={`/recetas/${receta.id}/editar`} className="detalle-gestion-enlace">
+                  <Pencil size={16} aria-hidden="true" /> Editar receta
+                </Link>
+                <button type="button" className="detalle-gestion-enlace peligro" onClick={borrarReceta}>
+                  <Trash2 size={16} aria-hidden="true" /> Borrar
+                </button>
+              </div>
+            )}
             {errorBorrar && <p className="mensaje-error">{errorBorrar}</p>}
           </div>
         </div>
@@ -202,14 +296,18 @@ function DetalleReceta() {
           {/* Los ingredientes van en una ficha de receta: renglones y margen tomate. */}
           <section className="detalle-ingredientes ficha-receta" aria-labelledby="titulo-ingredientes">
             <h2 id="titulo-ingredientes">Ingredientes</h2>
-            <p className="detalle-ingredientes-nota">
-              Para {porciones} {porciones === 1 ? 'porción' : 'porciones'}. Márcalos mientras cocinas.
+            <p className="detalle-nota">
+              Para {porciones} {porciones === 1 ? 'porción' : 'porciones'}. Márcalos a medida que los tengas.
             </p>
             <ul key={porciones} className="detalle-ingredientes-lista">
               {receta.ingredientes.map((ingrediente, indice) => (
                 <li key={indice}>
-                  <label className={listos.has(indice) ? 'listo' : ''}>
-                    <input type="checkbox" checked={listos.has(indice)} onChange={() => alternarListo(indice)} />
+                  <label className={ingredientesListos.has(indice) ? 'listo' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={ingredientesListos.has(indice)}
+                      onChange={() => alternarEn(setIngredientesListos, indice)}
+                    />
                     <span>{formatIngrediente(ingrediente, receta.porciones, porciones)}</span>
                   </label>
                 </li>
@@ -218,19 +316,52 @@ function DetalleReceta() {
           </section>
 
           <section className="detalle-pasos" aria-labelledby="titulo-preparacion">
-            <h2 id="titulo-preparacion">Preparación</h2>
+            <div className="detalle-pasos-cabecera">
+              <div>
+                <h2 id="titulo-preparacion">Preparación</h2>
+                {totalPasos > 0 && (
+                  <p className="detalle-nota" aria-live="polite">
+                    {hechos === 0
+                      ? 'Toca cada paso cuando lo termines.'
+                      : hechos === totalPasos
+                        ? '¡Listo! A servir.'
+                        : `${hechos} de ${totalPasos} pasos hechos`}
+                  </p>
+                )}
+              </div>
+              {pantalla.soportado && (
+                <button
+                  type="button"
+                  className="detalle-pantalla"
+                  aria-pressed={pantalla.activa}
+                  onClick={pantalla.alternar}
+                >
+                  <Sun size={18} aria-hidden="true" />
+                  {pantalla.activa ? 'Pantalla encendida' : 'No apagar pantalla'}
+                </button>
+              )}
+            </div>
             <ol>
-              {receta.pasos.map((paso, indice) => (
-                <li key={indice}>
-                  <span
-                    className={`detalle-paso-numero ${indice === receta.pasos.length - 1 ? 'ultimo' : ''}`}
-                    aria-hidden="true"
-                  >
-                    {indice + 1}
-                  </span>
-                  <p>{paso}</p>
-                </li>
-              ))}
+              {receta.pasos.map((paso, indice) => {
+                const hecho = pasosHechos.has(indice)
+                return (
+                  <li key={indice}>
+                    <label className={hecho ? 'hecho' : ''}>
+                      <input type="checkbox" checked={hecho} onChange={() => alternarEn(setPasosHechos, indice)} />
+                      <span
+                        className={`detalle-paso-numero ${indice === totalPasos - 1 ? 'ultimo' : ''}`}
+                        aria-hidden="true"
+                      >
+                        {hecho ? <Check size={16} /> : indice + 1}
+                      </span>
+                      <span className="detalle-paso-texto">
+                        <span className="solo-lectores">Paso {indice + 1}: </span>
+                        {paso}
+                      </span>
+                    </label>
+                  </li>
+                )
+              })}
             </ol>
           </section>
         </div>
@@ -242,6 +373,10 @@ function DetalleReceta() {
           descripcion="¿La prepararon? ¿Qué le cambiarían? Déjenlo anotado aquí."
         />
       </div>
+
+      {agregando && (
+        <AgregarAlMenu receta={receta} alAgregar={setAviso} alCerrar={() => setAgregando(false)} />
+      )}
     </div>
   )
 }
