@@ -1,0 +1,148 @@
+/* Las píldoras de categoría (.filtros-categorias, .filtro-pildora) vienen de Recetas.css. */
+.favoritos {
+  padding-top: 24px;
+  padding-bottom: 64px;
+}
+
+.favoritos-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.favoritos-cabecera p {
+  margin-top: 4px;
+  color: var(--ink-muted);
+}
+
+.favoritos .filtros-categorias {
+  margin-bottom: 8px;
+}
+
+.favoritos .grid-recetas {
+  margin-top: 12px;
+}
+
+/* --- Aviso «Deshacer»: flota sobre la barra de pestañas --- */
+.favoritos-aviso-zona {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--barra-inferior-alto) + env(safe-area-inset-bottom) + 12px);
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.favoritos-aviso {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 8px 8px 20px;
+  border-radius: var(--radius-pill);
+  background-color: var(--graphite);
+  color: var(--on-graphite);
+  box-shadow: var(--shadow-raised);
+  pointer-events: auto;
+  animation: aviso-sube 240ms var(--ease-out);
+}
+
+.favoritos-aviso > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9375rem;
+}
+
+.favoritos-aviso button {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  font-weight: 700;
+}
+
+.favoritos-aviso button:focus-visible {
+  outline-color: var(--pencil);
+}
+
+@keyframes aviso-sube {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+}
+
+/* --- Vacío --- */
+.favoritos-vacio {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 16px;
+}
+
+.favoritos-vacio-texto {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-card);
+}
+
+.favoritos-vacio-texto h2 {
+  margin-bottom: 4px;
+  font-size: 1.375rem;
+}
+
+.favoritos-vacio-texto p {
+  max-width: 52ch;
+  color: var(--ink-muted);
+}
+
+/* El corazón en tomate: el acento de Pensil.Food para favoritos. */
+.favoritos-vacio-corazon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-tile);
+  background-color: var(--tomato-soft);
+  color: var(--tomato);
+}
+
+.favoritos-sugeridas-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.favoritos-sugeridas-cabecera h3 {
+  font-size: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .favoritos {
+    padding-top: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .favoritos-aviso-zona {
+    bottom: 24px;
+  }
+}
