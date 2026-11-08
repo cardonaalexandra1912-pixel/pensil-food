@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { Check, ChevronLeft, ChevronRight, Download, Send, ShoppingBasket } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Download, Repeat, Send, ShoppingBasket } from 'lucide-react'
 import { MOMENTOS } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
+import { mensajeError } from '../lib/supabase'
 import { useRecetas } from '../context/RecetasContext'
-import { DIAS_SEMANA, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
+import { DIAS_SEMANA, contarComidasDeSemana, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
 import { agruparIngredientes } from '../utils/ingredientes'
 import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
@@ -87,12 +88,28 @@ function MenuSemanal() {
 }
 
 function PlanSemana({ lunes, esSemanaActual }) {
-  const { usuario } = useAuth()
+  const { usuario, familia } = useAuth()
   const { recetaPorId } = useRecetas()
   const { hash } = useLocation()
-  const { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu } = useMenuSemanal(lunes)
+  const { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu, copiarSemana } = useMenuSemanal(lunes)
   const [diaActivo, setDiaActivo] = useState(esSemanaActual ? indiceEnSemana(new Date()) : 0)
   const [eligiendo, setEligiendo] = useState(null) // { dia, momento } mientras la hoja está abierta
+  const [comidasSemanaPasada, setComidasSemanaPasada] = useState(0)
+  const [copiando, setCopiando] = useState(false)
+  const [aviso, setAviso] = useState('')
+  const toqueRef = useRef(null)
+  const lunesPasado = useMemo(() => sumarDias(lunes, -7), [lunes])
+
+  // ¿Hay algo que repetir de la semana pasada?
+  useEffect(() => {
+    let cancelado = false
+    contarComidasDeSemana(familia.id, lunesPasado).then((total) => {
+      if (!cancelado) setComidasSemanaPasada(total)
+    })
+    return () => {
+      cancelado = true
+    }
+  }, [familia.id, lunesPasado])
 
   const recetasSeleccionadas = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
   const listaMercado = useMemo(
@@ -108,6 +125,42 @@ function PlanSemana({ lunes, esSemanaActual }) {
   if (cargando) return <Cargando texto="Cargando el menú de la semana…" />
 
   const planeadas = recetasSeleccionadas.length
+  const libres = COMIDAS_POR_SEMANA - menu.reduce((total, dia) => total + MOMENTOS.filter(({ clave }) => dia[clave]).length, 0)
+  const puedeRepetir = comidasSemanaPasada > 0 && libres > 0
+
+  async function repetirSemanaPasada() {
+    if (planeadas > 0 && !window.confirm('Copiamos la semana pasada solo en las comidas que están libres. ¿Seguimos?')) return
+    setAviso('')
+    setCopiando(true)
+    try {
+      const copiadas = await copiarSemana(lunesPasado)
+      setAviso(
+        copiadas === 0
+          ? 'No había nada nuevo que copiar: esas comidas ya estaban elegidas.'
+          : `Listo: copiamos ${copiadas} ${copiadas === 1 ? 'comida' : 'comidas'} de la semana pasada.`
+      )
+    } catch (e) {
+      setAviso(mensajeError(e))
+    } finally {
+      setCopiando(false)
+    }
+  }
+
+  // En móvil se pasa de un día a otro deslizando el dedo de lado.
+  function alEmpezarToque(evento) {
+    const toque = evento.touches[0]
+    toqueRef.current = { x: toque.clientX, y: toque.clientY }
+  }
+
+  function alTerminarToque(evento) {
+    if (!toqueRef.current) return
+    const toque = evento.changedTouches[0]
+    const dx = toque.clientX - toqueRef.current.x
+    const dy = toque.clientY - toqueRef.current.y
+    toqueRef.current = null
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return
+    setDiaActivo((actual) => Math.min(DIAS_SEMANA.length - 1, Math.max(0, actual + (dx < 0 ? 1 : -1))))
+  }
   const momentoEligiendo = eligiendo && MOMENTOS.find((m) => m.clave === eligiendo.momento)
   const itemEligiendo = eligiendo && menu[eligiendo.dia][eligiendo.momento]
 
@@ -131,6 +184,25 @@ function PlanSemana({ lunes, esSemanaActual }) {
         </span>
       </div>
       {error && <p className="mensaje-error menu-semanal-error">{error}</p>}
+
+      {planeadas === 0 && puedeRepetir && (
+        <div className="menu-semanal-sugerencia">
+          <span className="mosaico" aria-hidden="true">
+            <Repeat />
+          </span>
+          <div>
+            <p className="menu-semanal-sugerencia-titulo">¿Repiten la semana pasada?</p>
+            <p>
+              Tenía {comidasSemanaPasada} {comidasSemanaPasada === 1 ? 'comida' : 'comidas'}. Las copiamos aquí y luego
+              cambian lo que quieran.
+            </p>
+          </div>
+          <button type="button" className="boton boton-primario" onClick={repetirSemanaPasada} disabled={copiando}>
+            {copiando ? 'Copiando…' : 'Repetir semana pasada'}
+          </button>
+        </div>
+      )}
+      <div aria-live="polite">{aviso && <p className="mensaje-exito menu-semanal-aviso">{aviso}</p>}</div>
 
       {/* En móvil se ve un día a la vez: esta tira elige cuál. */}
       <div className="menu-semanal-dias" role="group" aria-label="Elegir día">
@@ -159,7 +231,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
         })}
       </div>
 
-      <div className="menu-semanal-grid">
+      <div className="menu-semanal-grid" onTouchStart={alEmpezarToque} onTouchEnd={alTerminarToque}>
         {DIAS_SEMANA.map((dia, indiceDia) => {
           const fechaDia = sumarDias(lunes, indiceDia)
           const esHoy = fechaISO(fechaDia) === fechaISO(new Date())
@@ -192,15 +264,22 @@ function PlanSemana({ lunes, esSemanaActual }) {
       </div>
 
       {planeadas > 0 && (
-        <button
-          type="button"
-          className="menu-semanal-vaciar"
-          onClick={() => {
-            if (window.confirm('¿Quitar todas las comidas de esta semana para toda la familia?')) limpiarMenu()
-          }}
-        >
-          Vaciar la semana
-        </button>
+        <div className="menu-semanal-mas">
+          {puedeRepetir && (
+            <button type="button" className="menu-semanal-mas-boton" onClick={repetirSemanaPasada} disabled={copiando}>
+              <Repeat size={16} aria-hidden="true" /> Llenar lo libre con la semana pasada
+            </button>
+          )}
+          <button
+            type="button"
+            className="menu-semanal-mas-boton peligro"
+            onClick={() => {
+              if (window.confirm('¿Quitar todas las comidas de esta semana para toda la familia?')) limpiarMenu()
+            }}
+          >
+            Vaciar la semana
+          </button>
+        </div>
       )}
 
       <ListaMercado menuId={menuId} lunes={lunes} menu={menu} items={listaMercado} />
@@ -256,7 +335,10 @@ function ListaMercado({ menuId, lunes, menu, items }) {
   const { recetaPorId } = useRecetas()
   const [comprados, alternar] = useComprados(menuId)
   const [generandoPdf, setGenerandoPdf] = useState(false)
-  const conId = items.map((item) => ({ ...item, id: `${item.claveNombre}|${item.texto}` }))
+  // Lo que ya está en el carrito baja al final de la lista.
+  const conId = items
+    .map((item) => ({ ...item, id: `${item.claveNombre}|${item.texto}` }))
+    .sort((a, b) => Number(comprados.includes(a.id)) - Number(comprados.includes(b.id)))
   const listos = conId.filter((item) => comprados.includes(item.id)).length
 
   async function descargarPdf() {

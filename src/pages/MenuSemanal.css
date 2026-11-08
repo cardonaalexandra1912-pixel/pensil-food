@@ -277,16 +277,74 @@
   letter-spacing: 0;
 }
 
-.menu-semanal-vaciar {
-  display: block;
+.menu-semanal-mas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 24px;
+  margin-top: 12px;
+}
+
+.menu-semanal-mas-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 44px;
-  margin: 12px auto 0;
-  padding: 0 12px;
+  padding: 0 4px;
   border: none;
   background: none;
-  color: var(--danger);
   font-size: 0.9375rem;
   font-weight: 600;
+  color: var(--ink);
+}
+
+.menu-semanal-mas-boton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.menu-semanal-mas-boton.peligro {
+  color: var(--danger);
+}
+
+/* Semana vacía y la pasada tenía comidas: la sugerencia va primero. */
+.menu-semanal-sugerencia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 14px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1.5px dashed color-mix(in oklab, var(--pencil-strong) 55%, transparent);
+  border-radius: var(--radius-card);
+  background-color: var(--pencil-soft);
+}
+
+.menu-semanal-sugerencia-titulo {
+  font-weight: 700;
+}
+
+.menu-semanal-sugerencia p:not(.menu-semanal-sugerencia-titulo) {
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+}
+
+.menu-semanal-sugerencia .boton {
+  grid-column: 1 / -1;
+}
+
+.menu-semanal-aviso {
+  margin-bottom: 16px;
+}
+
+@media (min-width: 640px) {
+  .menu-semanal-sugerencia {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .menu-semanal-sugerencia .boton {
+    grid-column: auto;
+  }
 }
 
 /* En escritorio se ve la semana completa y la tira sobra. */

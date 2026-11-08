@@ -150,7 +150,50 @@ export function useMenuSemanal(lunes) {
     }
   }, [menuId, items])
 
-  return { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu }
+  // Copia las comidas de otra semana (la pasada) solo en las comidas que aquí
+  // están libres: no pisa lo que ya eligió alguien. Devuelve cuántas copió.
+  const copiarSemana = useCallback(
+    async (lunesOrigen) => {
+      if (!menuId || !userId || !familiaId) return 0
+      const { data: origen, error: errorOrigen } = await supabase
+        .from('menus_semanales')
+        .select('id')
+        .eq('familia_id', familiaId)
+        .eq('semana_inicio', fechaISO(lunesOrigen))
+        .maybeSingle()
+      if (errorOrigen) throw errorOrigen
+      if (!origen) return 0
+
+      const { data: comidas, error: errorComidas } = await supabase
+        .from('menu_items')
+        .select('dia, momento, receta_id')
+        .eq('menu_id', origen.id)
+      if (errorComidas) throw errorComidas
+
+      const ocupadas = new Set(items.map((i) => `${i.dia}-${i.momento}`))
+      const filas = comidas
+        .filter((c) => !ocupadas.has(`${c.dia}-${c.momento}`))
+        .map((c) => ({
+          menu_id: menuId,
+          dia: c.dia,
+          momento: c.momento,
+          receta_id: c.receta_id,
+          elegido_por: userId,
+          actualizado_en: new Date().toISOString(),
+        }))
+      if (filas.length === 0) return 0
+
+      const { error: errorGuardar } = await supabase
+        .from('menu_items')
+        .upsert(filas, { onConflict: 'menu_id,dia,momento' })
+      if (errorGuardar) throw errorGuardar
+      await cargarItems(menuId)
+      return filas.length
+    },
+    [menuId, userId, familiaId, items, cargarItems]
+  )
+
+  return { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu, copiarSemana }
 }
 
 // Recetas elegidas en la semana (7 días × 3 momentos), en el orden del menú.
@@ -160,4 +203,20 @@ export function recetasDelMenu(menu, recetaPorId) {
     .filter(Boolean)
     .map((id) => recetaPorId(id))
     .filter(Boolean)
+}
+
+// Cuántas comidas tiene el menú de otra semana (sin crearlo si no existe).
+export async function contarComidasDeSemana(familiaId, lunes) {
+  const { data: menu } = await supabase
+    .from('menus_semanales')
+    .select('id')
+    .eq('familia_id', familiaId)
+    .eq('semana_inicio', fechaISO(lunes))
+    .maybeSingle()
+  if (!menu) return 0
+  const { count } = await supabase
+    .from('menu_items')
+    .select('id', { count: 'exact', head: true })
+    .eq('menu_id', menu.id)
+  return count ?? 0
 }
