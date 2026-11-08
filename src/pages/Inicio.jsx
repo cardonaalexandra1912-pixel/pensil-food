@@ -7,6 +7,7 @@ import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import Cargando from '../components/Cargando'
 import SeccionCategoria from '../components/SeccionCategoria'
+import PanelInicio from './PanelInicio'
 import './Inicio.css'
 
 // Fotos del carrusel del hero: un desayuno, una crema y un almuerzo del
@@ -37,9 +38,22 @@ const PASOS_FAMILIA = [
   { icono: MessageCircle, texto: 'Comentan las recetas y se ponen de acuerdo en quién cocina.' },
 ]
 
-// Página principal: hero con la ficha de receta y el carrusel de fotos,
-// categorías, la banda del menú en familia y recetas destacadas.
+// Con sesión, el inicio es el panel de la familia; sin sesión, la portada.
 function Inicio() {
+  const { usuario, cargando } = useAuth()
+  if (cargando) {
+    return (
+      <div className="contenido-pagina">
+        <Cargando texto="Cargando…" />
+      </div>
+    )
+  }
+  return usuario ? <PanelInicio /> : <Portada />
+}
+
+// Portada: hero con la ficha de receta y el carrusel de fotos, categorías, la
+// banda del menú en familia y recetas destacadas.
+function Portada() {
   const [texto, setTexto] = useState('')
   const [categoria, setCategoria] = useState('')
   const navigate = useNavigate()

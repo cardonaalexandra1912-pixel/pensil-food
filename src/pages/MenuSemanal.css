@@ -1,11 +1,24 @@
+.menu-semanal.seccion {
+  padding-top: 24px;
+}
+
+.menu-semanal-cabecera {
+  margin-bottom: 20px;
+}
+
+.menu-semanal-cabecera p {
+  margin-top: 4px;
+  color: var(--ink-muted);
+}
+
 /* --- Navegación entre semanas --- */
 .menu-semanal-navegacion {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 24px;
-  padding: 8px;
+  margin-bottom: 20px;
+  padding: 6px;
   background-color: var(--paper-sunken);
   border-radius: var(--radius-pill);
 }
@@ -36,7 +49,7 @@
 
 .menu-semanal-semana strong {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   letter-spacing: -0.02em;
 }
 
@@ -55,29 +68,51 @@
   text-underline-offset: 3px;
 }
 
-/* --- Barra: «En vivo» y limpiar --- */
-.menu-semanal-barra {
+/* --- Progreso de la semana y «En vivo» --- */
+.menu-semanal-estado {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.menu-semanal-intro {
+.menu-semanal-progreso {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  max-width: 640px;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
   color: var(--ink-muted);
+  font-size: 0.9375rem;
+}
+
+.menu-semanal-progreso strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.barra-progreso {
+  display: block;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-sunken);
+  overflow: hidden;
+}
+
+.barra-progreso span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--leaf);
+  transition: width 400ms var(--ease-out);
 }
 
 /* «En vivo»: el acento tomate de Pensil.Food (como el cohete en Pensil.Pos). */
 .en-vivo {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 8px;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
@@ -115,18 +150,89 @@
   margin-bottom: 20px;
 }
 
-/* --- Los 7 días --- */
+/* --- Tira de días (solo móvil y tableta) --- */
+.menu-semanal-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.menu-semanal-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 72px;
+  padding: 8px 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-tile);
+  background: none;
+  color: var(--ink-muted);
+}
+
+.menu-semanal-dia > span:first-child {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.menu-semanal-dia strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu-semanal-dia.es-hoy > span:first-child {
+  color: var(--leaf-text);
+}
+
+.menu-semanal-dia[aria-pressed='true'] {
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  box-shadow: var(--shadow-pencil);
+}
+
+.menu-semanal-dia[aria-pressed='true'] strong,
+.menu-semanal-dia[aria-pressed='true'] > span:first-child {
+  color: var(--on-pencil);
+}
+
+.menu-semanal-dia-puntos {
+  display: flex;
+  gap: 3px;
+}
+
+.menu-semanal-dia-puntos i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--line);
+}
+
+.menu-semanal-dia-puntos i.lleno {
+  background-color: var(--leaf);
+}
+
+.menu-semanal-dia[aria-pressed='true'] .menu-semanal-dia-puntos i {
+  background-color: color-mix(in oklab, var(--on-pencil) 25%, transparent);
+}
+
+.menu-semanal-dia[aria-pressed='true'] .menu-semanal-dia-puntos i.lleno {
+  background-color: var(--on-pencil);
+}
+
+/* --- Los días --- */
 .menu-semanal-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-  margin-bottom: 64px;
 }
 
 .dia-card {
-  display: flex;
+  display: none;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   padding: 20px;
   background-color: var(--paper-raised);
   border: 1px solid var(--line);
@@ -134,14 +240,20 @@
   box-shadow: var(--shadow-card);
 }
 
+.dia-card.activo {
+  display: flex;
+}
+
 .dia-card.es-hoy {
   border-color: var(--ink);
 }
 
-.dia-card h3 {
+.dia-card h2 {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  font-size: 1.25rem;
+  line-height: 1.4;
 }
 
 .dia-card-fecha {
@@ -165,83 +277,68 @@
   letter-spacing: 0;
 }
 
-.dia-card-comida {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.dia-card-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--ink-muted);
-}
-
-.dia-card-comida select {
+.menu-semanal-vaciar {
+  display: block;
+  min-height: 44px;
+  margin: 12px auto 0;
+  padding: 0 12px;
+  border: none;
+  background: none;
+  color: var(--danger);
   font-size: 0.9375rem;
-}
-
-.dia-card-quien {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  color: var(--ink-muted);
-}
-
-.dia-card-ver {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 0 4px;
   font-weight: 600;
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: var(--pencil);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
 }
 
-@media (min-width: 640px) {
-  .menu-semanal-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* En escritorio se ve la semana completa y la tira sobra. */
 @media (min-width: 1024px) {
+  .menu-semanal-dias {
+    display: none;
+  }
+
+  /* Planeador: una fila por día y sus tres comidas lado a lado. */
   .menu-semanal-grid {
-    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .dia-card,
+  .dia-card.activo {
+    display: grid;
+    grid-template-columns: 136px repeat(3, minmax(0, 1fr));
+    align-items: start;
     gap: 20px;
+    padding: 16px 20px;
+  }
+
+  .dia-card h2 {
+    flex-wrap: wrap;
+    padding-top: 26px;
+  }
+
+  .dia-card-hoy {
+    margin-left: 0;
   }
 
   .menu-semanal-navegacion {
     max-width: 520px;
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 
-/* --- Lista de mercado: renglones con casilla --- */
-.lista-mercado-encabezado {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+/* --- Lista de mercado --- */
+.lista-mercado {
+  margin-top: 56px;
   max-width: 640px;
-  margin-bottom: 20px;
 }
 
-.lista-mercado-pdf:disabled {
-  cursor: wait;
+.lista-mercado-encabezado {
+  margin-bottom: 16px;
+}
+
+.lista-mercado-encabezado p {
+  margin-top: 4px;
+  color: var(--ink-muted);
 }
 
 .lista-mercado-items {
-  max-width: 640px;
   overflow: hidden;
   background-color: var(--paper-raised);
   border: 1px solid var(--line);
@@ -249,29 +346,58 @@
   box-shadow: var(--shadow-card);
 }
 
-.lista-mercado-items li {
+.lista-mercado-items li + li {
+  border-top: 1px solid var(--line);
+}
+
+.lista-mercado-items label {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
   min-height: 52px;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--line);
+  cursor: pointer;
 }
 
-.lista-mercado-items li:last-child {
-  border-bottom: none;
+.lista-mercado-items input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lista-mercado-casilla {
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border: 1.8px solid var(--ink-muted);
-  border-radius: 5px;
+  border-radius: 6px;
+  color: transparent;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+}
+
+.lista-mercado-items input:focus-visible + .lista-mercado-casilla {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.comprado .lista-mercado-casilla {
+  background-color: var(--leaf);
+  border-color: var(--leaf);
+  color: var(--on-leaf);
 }
 
 .lista-mercado-texto {
   flex: 1;
+}
+
+.comprado .lista-mercado-texto {
+  color: var(--ink-muted);
+  text-decoration: line-through;
 }
 
 .lista-mercado-cantidad {
@@ -283,4 +409,21 @@
   font-weight: 600;
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
+}
+
+.lista-mercado-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.lista-mercado-acciones .boton:disabled {
+  cursor: wait;
+}
+
+@media (max-width: 479px) {
+  .lista-mercado-acciones .boton {
+    flex: 1 1 100%;
+  }
 }

@@ -53,3 +53,15 @@ export function tiempoRelativo(textoFecha) {
   if (dias < 7) return `hace ${dias} días`
   return `${fecha.getDate()} de ${MESES[fecha.getMonth()]}`
 }
+
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+
+// Posición del día en una semana que empieza el lunes: 0 = lunes ... 6 = domingo.
+export function indiceEnSemana(fecha) {
+  return (fecha.getDay() + 6) % 7
+}
+
+// "domingo 8 de noviembre"
+export function textoDia(fecha) {
+  return `${DIAS[fecha.getDay()]} ${fecha.getDate()} de ${MESES[fecha.getMonth()]}`
+}

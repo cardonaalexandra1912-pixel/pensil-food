@@ -274,12 +274,15 @@ p {
 
 /* --- Sección genérica de página --- */
 .seccion {
-  padding: 48px 0 64px;
+  /* Solo vertical: el horizontal lo pone .contenedor (van juntos en la misma etiqueta). */
+  padding-top: 48px;
+  padding-bottom: 64px;
 }
 
 @media (min-width: 1024px) {
   .seccion {
-    padding: 64px 0 96px;
+    padding-top: 64px;
+    padding-bottom: 96px;
   }
 }
 
@@ -601,5 +604,20 @@ select.campo-formulario {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* --- Con sesión: la barra de pestañas de abajo (móvil y tableta) --- */
+:root {
+  --barra-inferior-alto: 64px;
+}
+
+.app-con-sesion {
+  padding-bottom: calc(var(--barra-inferior-alto) + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .app-con-sesion {
+    padding-bottom: 0;
   }
 }

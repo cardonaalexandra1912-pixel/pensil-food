@@ -1,0 +1,210 @@
+/* Hoja para elegir receta: sube desde abajo en móvil y es una ventana
+   centrada en escritorio. Usa <dialog>, que ya atrapa el foco y cierra con Escape. */
+.selector-receta {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+}
+
+.selector-receta::backdrop {
+  background-color: rgb(22 24 29 / 0.55);
+}
+
+.selector-receta[open] {
+  display: flex;
+  align-items: flex-end;
+}
+
+.selector-receta-hoja {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 88dvh;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+  background-color: var(--paper-raised);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  box-shadow: var(--shadow-raised);
+  animation: hoja-sube 260ms var(--ease-out);
+}
+
+@keyframes hoja-sube {
+  from {
+    transform: translateY(32px);
+    opacity: 0;
+  }
+}
+
+.selector-receta-cabecera,
+.selector-receta-busqueda,
+.selector-receta-filtros,
+.selector-receta-pie {
+  flex-shrink: 0;
+}
+
+.selector-receta-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0 12px;
+}
+
+.selector-receta-cabecera h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.selector-receta-cerrar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--paper-sunken);
+}
+
+.selector-receta-busqueda {
+  position: relative;
+}
+
+.selector-receta-busqueda .lucide {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.selector-receta-busqueda input {
+  padding-left: 44px;
+  border-radius: var(--radius-pill);
+}
+
+.selector-receta-filtros {
+  display: flex;
+  gap: 8px;
+  margin: 12px -16px 0;
+  padding: 0 16px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.selector-receta-filtro {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.selector-receta-filtro[aria-pressed='true'] {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.selector-receta-lista {
+  flex: 1;
+  overflow-y: auto;
+  margin: 12px -8px 0;
+  padding: 0 8px;
+  overscroll-behavior: contain;
+}
+
+.selector-receta-opcion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 72px;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-tile);
+  background: none;
+  text-align: left;
+}
+
+.selector-receta-opcion:hover,
+.selector-receta-opcion[aria-current='true'] {
+  background-color: var(--paper-sunken);
+}
+
+.selector-receta-opcion img,
+.selector-receta-opcion .mosaico {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-control);
+  object-fit: cover;
+}
+
+.selector-receta-opcion-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.selector-receta-opcion-texto strong {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.selector-receta-opcion-texto span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.selector-receta-opcion-texto span .lucide {
+  margin-left: 8px;
+}
+
+.selector-receta-vacio {
+  padding: 24px 8px;
+  color: var(--ink-muted);
+}
+
+.selector-receta-pie {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.selector-receta-pie .boton {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .selector-receta[open] {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .selector-receta-hoja {
+    max-width: 560px;
+    max-height: 80dvh;
+    padding: 16px 24px 24px;
+    border-radius: var(--radius-card);
+  }
+
+  .selector-receta-filtros {
+    flex-wrap: wrap;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+}

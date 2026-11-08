@@ -150,3 +150,12 @@ export function useMenuSemanal(lunes) {
 
   return { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu }
 }
+
+// Recetas elegidas en la semana (7 días × 3 momentos), en el orden del menú.
+export function recetasDelMenu(menu, recetaPorId) {
+  return menu
+    .flatMap((dia) => ['desayuno', 'almuerzo', 'cena'].map((momento) => dia[momento]?.receta_id))
+    .filter(Boolean)
+    .map((id) => recetaPorId(id))
+    .filter(Boolean)
+}

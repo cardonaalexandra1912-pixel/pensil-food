@@ -1,0 +1,54 @@
+.barra-inferior {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: color-mix(in oklab, var(--paper) 94%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+
+.barra-inferior ul {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.barra-inferior-pestana {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--barra-inferior-alto);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.barra-inferior-icono {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  transition: background-color var(--duration) var(--ease-out);
+}
+
+.barra-inferior-pestana.active {
+  color: var(--ink);
+}
+
+.barra-inferior-pestana.active .barra-inferior-icono {
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+}
+
+@media (min-width: 1024px) {
+  .barra-inferior {
+    display: none;
+  }
+}

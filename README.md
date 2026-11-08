@@ -13,9 +13,16 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
 - **Familias**: cada usuario pertenece a una familia; quien la crea queda como
   administrador e invita a los demás con un código de 6 letras o un enlace.
 - **Menú semanal compartido**: un plan por familia y por semana (lunes a
-  domingo). Cualquier integrante elige desayuno, almuerzo y cena; se ve quién
-  eligió cada comida y los cambios aparecen en vivo para todos.
-- **Lista de mercado** automática con descarga en PDF.
+  domingo). Cualquier integrante elige desayuno, almuerzo y cena desde una hoja
+  con buscador, fotos y filtros; se ve quién eligió cada comida y los cambios
+  aparecen en vivo para todos. En móvil se ve un día a la vez (tira de días con
+  el avance de cada uno); en escritorio, la semana completa como planeador.
+- **Inicio con sesión**: en vez de la portada, un panel con lo que hay hoy en
+  casa (desayuno, almuerzo y cena, que se eligen ahí mismo), cómo va el menú de
+  la semana, la lista de mercado, las favoritas y el recetario. Con sesión no
+  hay pie de página y, en móvil, se navega con cinco pestañas abajo.
+- **Lista de mercado** automática: se marca lo que ya está en el carrito (se
+  guarda en ese teléfono), se descarga en PDF o se envía por WhatsApp.
 - **Comentarios** en cada receta y en cada menú semanal, privados de la familia.
 - **Favoritos** por usuario (los que estaban guardados en el navegador se suben
   a la cuenta al ingresar por primera vez).

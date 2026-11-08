@@ -21,6 +21,7 @@ function Header() {
   const [texto, setTexto] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
+  const { usuario } = useAuth()
 
   // Al cambiar de página se cierran la búsqueda y el menú móvil.
   useEffect(() => {
@@ -79,20 +80,23 @@ function Header() {
             {busquedaAbierta ? <X size={20} aria-hidden="true" /> : <Search size={20} aria-hidden="true" />}
           </button>
           <MenuUsuario />
-          <button
-            type="button"
-            className="header-icono header-menu-movil-boton"
-            aria-controls="menu-movil"
-            aria-expanded={menuMovilAbierto}
-            aria-label={menuMovilAbierto ? 'Cerrar menú' : 'Abrir menú'}
-            onClick={() => setMenuMovilAbierto((abierto) => !abierto)}
-          >
-            {menuMovilAbierto ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
-          </button>
+          {/* Con sesión, en móvil las secciones están en la barra de abajo. */}
+          {!usuario && (
+            <button
+              type="button"
+              className="header-icono header-menu-movil-boton"
+              aria-controls="menu-movil"
+              aria-expanded={menuMovilAbierto}
+              aria-label={menuMovilAbierto ? 'Cerrar menú' : 'Abrir menú'}
+              onClick={() => setMenuMovilAbierto((abierto) => !abierto)}
+            >
+              {menuMovilAbierto ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+            </button>
+          )}
         </div>
       </nav>
 
-      <div id="menu-movil" className="header-menu-movil" hidden={!menuMovilAbierto}>
+      <div id="menu-movil" className="header-menu-movil" hidden={!menuMovilAbierto || Boolean(usuario)}>
         <ul className="contenedor">
           {ENLACES.map((enlace) => (
             <li key={enlace.ruta}>

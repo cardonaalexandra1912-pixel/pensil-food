@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import BarraInferior from './components/BarraInferior'
 import WhatsappFlotante from './components/WhatsappFlotante'
 import RutaProtegida from './components/RutaProtegida'
 import { tomarRutaPendiente, useAuth } from './context/AuthContext'
@@ -27,8 +28,10 @@ function RedireccionTrasIngreso() {
 }
 
 function App() {
+  const { usuario, cargando } = useAuth()
+
   return (
-    <>
+    <div className={usuario ? 'app app-con-sesion' : 'app'}>
       <RedireccionTrasIngreso />
       <Header />
       <main>
@@ -79,9 +82,10 @@ function App() {
           <Route path="/ingresar" element={<Ingresar />} />
         </Routes>
       </main>
-      <Footer />
-      <WhatsappFlotante />
-    </>
+      {/* Con sesión la app es una herramienta: sin pie de página, con pestañas abajo. */}
+      {usuario ? <BarraInferior /> : !cargando && <Footer />}
+      {!usuario && <WhatsappFlotante />}
+    </div>
   )
 }
 
