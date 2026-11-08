@@ -12,6 +12,7 @@ import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
 import ComidaSlot from '../components/ComidaSlot'
 import SelectorReceta from '../components/SelectorReceta'
+import './Inicio.css'
 import './PanelInicio.css'
 
 const COMIDAS_POR_SEMANA = DIAS_SEMANA.length * MOMENTOS.length

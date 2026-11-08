@@ -36,7 +36,9 @@ function Ingresar() {
   const destino = location.state?.desde || '/'
   const vieneDeInvitacion = destino.startsWith('/familia?codigo=')
 
-  const [modo, setModo] = useState(vieneDeInvitacion ? 'registro' : 'ingresar')
+  const [modo, setModo] = useState(
+    vieneDeInvitacion || location.state?.modo === 'registro' ? 'registro' : 'ingresar'
+  )
   const [nombre, setNombre] = useState('')
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')

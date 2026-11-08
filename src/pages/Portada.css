@@ -1,0 +1,391 @@
+/* --- Hero: la ficha de receta con el carrusel de fotos --- */
+.portada-hero {
+  padding: 24px 0 40px;
+}
+
+.portada-hero-interior {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.portada-hero-texto h1 {
+  margin-bottom: 14px;
+  font-size: 2.5rem;
+}
+
+.portada-hero-texto .texto-intro {
+  margin-bottom: 24px;
+}
+
+/* Buscador: una sola píldora con el botón adentro. */
+.portada-buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 520px;
+}
+
+.portada-buscador > .lucide {
+  position: absolute;
+  left: 18px;
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.portada-buscador input {
+  min-height: 56px;
+  padding-left: 48px;
+  padding-right: 104px;
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.portada-buscador-boton {
+  position: absolute;
+  right: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background-color: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.portada-hero-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 20px;
+}
+
+.portada-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.portada-enlace:hover {
+  text-decoration-color: var(--ink);
+}
+
+.portada-hero-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-band);
+  background-color: var(--paper-sunken);
+  box-shadow: var(--shadow-raised);
+}
+
+.portada-hero-foto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 4000ms linear;
+}
+
+.portada-hero-foto img.activo {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.portada-hero-foto-nombre {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 120px);
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background-color: color-mix(in oklab, var(--paper-raised) 92%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.portada-hero-puntos {
+  position: absolute;
+  right: 12px;
+  bottom: 16px;
+  display: flex;
+  gap: 2px;
+}
+
+/* Cada punto es un botón de 32 px; el punto visible es más pequeño. */
+.portada-hero-puntos button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 40px;
+  border: none;
+  background: none;
+}
+
+.portada-hero-puntos button::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: color-mix(in oklab, var(--paper-raised) 70%, transparent);
+  transition:
+    width var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+}
+
+.portada-hero-puntos button[aria-pressed='true']::after {
+  width: 22px;
+  background-color: var(--pencil);
+}
+
+/* --- Categorías: en móvil se deslizan de lado --- */
+.portada-categorias {
+  padding-bottom: 48px;
+}
+
+@media (max-width: 767px) {
+  .portada-categorias .categorias-lista {
+    display: flex;
+    margin: 0 -16px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .portada-categorias .categorias-lista li {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .portada-categorias .categoria-chip {
+    padding-right: 18px;
+  }
+}
+
+/* --- Banda grafito: la semana en familia, con un ejemplo --- */
+.portada-semana {
+  display: grid;
+  /* minmax(0, …): los nombres largos del ejemplo no deben ensanchar la página. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  padding: 32px 20px;
+  border-radius: var(--radius-band);
+  background-color: var(--graphite);
+  color: var(--on-graphite);
+}
+
+.portada-semana :focus-visible {
+  outline-color: var(--pencil);
+}
+
+.portada-semana h2 {
+  margin-bottom: 12px;
+  color: var(--on-graphite);
+}
+
+.portada-semana-texto p {
+  max-width: 46ch;
+  margin-bottom: 24px;
+  color: color-mix(in oklab, var(--on-graphite) 78%, transparent);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+/* El ejemplo es una tarjeta de papel sobre la banda, como la app real. */
+.portada-semana-ejemplo {
+  margin: 0;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow-raised);
+}
+
+.portada-ejemplo-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.portada-ejemplo-cabecera strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+}
+
+.portada-ejemplo-cabecera span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--tomato-text);
+}
+
+.portada-semana-ejemplo > ol,
+.portada-ejemplo-dia,
+.portada-ejemplo-dia ul {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portada-semana-ejemplo > ol {
+  display: grid;
+  gap: 12px;
+}
+
+.portada-ejemplo-dia {
+  display: grid;
+  gap: 6px;
+}
+
+.portada-ejemplo-nombre {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.portada-ejemplo-dia ul {
+  display: grid;
+  gap: 6px;
+}
+
+.portada-ejemplo-dia ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+}
+
+.portada-ejemplo-dia img,
+.portada-ejemplo-sin-foto {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: var(--paper-sunken);
+  color: var(--ink-muted);
+}
+
+.portada-ejemplo-plato {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.portada-ejemplo-mercado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  background-color: var(--leaf-soft);
+  color: var(--leaf-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* --- Para empezar --- */
+.portada-empezar {
+  padding-top: 56px;
+  padding-bottom: 64px;
+}
+
+.portada-seccion-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .portada-semana {
+    padding: 40px;
+  }
+}
+
+@media (min-width: 768px) {
+  .portada-hero {
+    padding: 48px 0 56px;
+  }
+
+  .portada-hero-texto h1 {
+    font-size: 3.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .portada-hero-interior {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 56px;
+  }
+
+  .portada-hero-texto h1 {
+    font-size: 3.75rem;
+  }
+
+  .portada-semana {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 56px;
+    padding: 56px;
+  }
+
+  .portada-semana-ejemplo > ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portada-ejemplo-dia ul li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .portada-ejemplo-dia img,
+  .portada-ejemplo-sin-foto {
+    width: 100%;
+    height: 64px;
+  }
+
+  .portada-ejemplo-plato {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.25;
+    font-size: 0.8125rem;
+  }
+
+  .portada-empezar .grid-recetas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
