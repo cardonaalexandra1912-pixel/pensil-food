@@ -12,6 +12,7 @@ const ENLACES = [
   { ruta: '/menu-semanal', etiqueta: 'Menú semanal' },
   { ruta: '/favoritos', etiqueta: 'Favoritos' },
 ]
+const ENLACE_FAMILIA = { ruta: '/familia', etiqueta: 'Mi familia' }
 
 // Encabezado fijo (72 px) al estilo de Pensil.Devs: logotipo, navegación en
 // píldoras, búsqueda rápida y la cuenta. En móvil la navegación se despliega.
@@ -22,6 +23,7 @@ function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const { usuario } = useAuth()
+  const enlaces = usuario ? [...ENLACES, ENLACE_FAMILIA] : ENLACES
 
   // Al cambiar de página se cierran la búsqueda y el menú móvil.
   useEffect(() => {
@@ -44,7 +46,7 @@ function Header() {
         <Logotipo />
 
         <ul className="header-nav">
-          {ENLACES.map((enlace) => (
+          {enlaces.map((enlace) => (
             <li key={enlace.ruta}>
               <NavLink to={enlace.ruta} end={enlace.exacta} className={claseEnlace}>
                 {enlace.etiqueta}

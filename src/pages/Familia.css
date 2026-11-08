@@ -1,17 +1,280 @@
-.familia-intro {
-  color: var(--ink-muted);
-  max-width: 720px;
+.familia.seccion {
+  padding-top: 24px;
+}
+
+/* --- Cabecera: el nombre de la familia es el título --- */
+.familia-cabecera {
   margin-bottom: 24px;
 }
 
+.familia-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.familia-titulo h1 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.familia-intro {
+  margin-top: 6px;
+  max-width: 62ch;
+  color: var(--ink-muted);
+}
+
+.familia-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background-color: var(--paper-raised);
+  color: var(--ink-muted);
+  transition:
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.familia-icono:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.familia-renombrar label,
+.familia-perfil-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.familia-renombrar > div,
+.familia-perfil-form > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.familia-renombrar input {
+  flex: 1 1 260px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.familia-renombrar + .mensaje-error {
+  margin-top: 12px;
+}
+
+/* --- Dos columnas en escritorio --- */
+.familia-columnas {
+  display: grid;
+  gap: 40px;
+}
+
+.familia-principal,
+.familia-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+}
+
+.familia-seccion h2 {
+  margin-bottom: 16px;
+  font-size: 1.375rem;
+}
+
+/* --- Invitación: un boleto de entrada con el código --- */
+.familia-invitacion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.familia-invitacion > div[aria-live] {
+  align-self: stretch;
+}
+
+.familia-boleto {
+  --muesca: 14px;
+  position: relative;
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background-color: var(--pencil-soft);
+  color: var(--ink);
+  /* Las dos muescas laterales del boleto, a la altura de la línea punteada. */
+  -webkit-mask:
+    radial-gradient(circle var(--muesca) at 0 var(--corte), transparent 98%, black) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--muesca) at 100% var(--corte), transparent 98%, black) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--muesca) at 0 var(--corte), transparent 98%, black) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--muesca) at 100% var(--corte), transparent 98%, black) right / 51% 100% no-repeat;
+  --corte: calc(100% - 88px);
+}
+
+.familia-boleto h2 {
+  margin-bottom: 4px;
+  font-size: 1.375rem;
+}
+
+.familia-boleto p {
+  color: var(--ink-muted);
+}
+
+.familia-boleto .familia-boleto-codigo {
+  display: grid;
+  place-items: center;
+  height: 88px;
+  margin: 0 -24px -24px;
+  padding: 0 24px;
+  border-top: 2px dashed color-mix(in oklab, var(--pencil-text) 45%, transparent);
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  color: var(--pencil-text);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.familia-invitacion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.familia-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.familia-enlace:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* --- Integrantes --- */
+.familia-miembros {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.familia-miembros li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  padding: 14px 20px;
+}
+
+.familia-miembros li + li {
+  border-top: 1px solid var(--line);
+}
+
+.familia-miembro-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.familia-miembro-texto strong {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.familia-miembro-texto span {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.familia-miembro-texto .familia-tu {
+  font-size: inherit;
+  font-weight: 500;
+}
+
+.familia-rol {
+  flex-shrink: 0;
+}
+
+/* --- Tu perfil --- */
+.familia-perfil-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.familia-perfil-fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.familia-perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.familia-cerrar-sesion {
+  align-self: flex-start;
+}
+
+/* --- Salir de la familia: aparte y en voz baja --- */
+.familia-salir {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.familia-salir p:not(.mensaje-error) {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+/* --- Sin familia: crear o unirse --- */
 .familia-error {
   margin-bottom: 20px;
 }
 
 .familia-opciones {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 16px;
+  margin-bottom: 40px;
 }
 
 .familia-opcion {
@@ -20,164 +283,72 @@
   gap: 12px;
 }
 
-.familia-opcion p {
-  color: var(--ink-muted);
-}
-
 .familia-opcion h2 {
   font-size: 1.375rem;
 }
 
-.familia-codigo-campo {
-  font-size: 1.3rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  font-weight: 700;
-  text-align: center;
-}
-
-.familia-panel {
-  display: grid;
-  gap: 24px;
-}
-
-.familia-cabecera {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.familia-nombre {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.familia-nombre h2 {
-  font-size: 2rem;
-}
-
-.familia-renombrar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.familia-renombrar input {
-  flex: 1 1 220px;
-}
-
-.familia-enlace {
-  border: none;
-  background: none;
-  color: var(--leaf-text);
-  font-weight: 700;
-  font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.familia-enlace:hover {
-  text-decoration: underline;
-}
-
-.familia-invitacion-titulo {
-  font-weight: 600;
-  color: var(--leaf-text);
-  margin-bottom: 8px;
-}
-
-.familia-codigo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.familia-codigo > span {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--ink);
-  background-color: var(--pencil-soft);
-  border: 1px dashed var(--pencil-strong);
-  border-radius: var(--radius-control);
-  padding: 4px 16px;
-}
-
-.familia-subtitulo {
-  font-size: 1.4rem;
-  margin-bottom: 16px;
-}
-
-.familia-miembros {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.familia-miembros li,
-.familia-perfil-fila {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.familia-miembros li > div,
-.familia-perfil-fila > div {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.familia-miembros span,
-.familia-perfil-fila span {
+.familia-opcion p {
   color: var(--ink-muted);
-  font-size: 0.85rem;
-  overflow-wrap: anywhere;
 }
 
-.familia-rol {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.familia-perfil {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.familia-perfil-form label {
+.familia-codigo-campo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 700;
-  font-size: 0.9rem;
-  display: block;
-  margin-bottom: 6px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
-.familia-perfil-form > div {
-  display: flex;
-  gap: 10px;
+.familia > .familia-perfil {
+  max-width: 560px;
 }
 
-.familia-cerrar-sesion,
-.familia-salir {
-  align-self: flex-start;
-}
-
-@media (max-width: 720px) {
-  .familia-opciones {
-    grid-template-columns: 1fr;
+@media (max-width: 479px) {
+  .familia-invitacion-acciones .boton {
+    flex: 1 1 100%;
   }
 
-  .familia-perfil-form > div {
-    flex-direction: column;
+  .familia-boleto .familia-boleto-codigo {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .familia-opciones {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .familia-boleto {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 28px 32px;
+    -webkit-mask:
+      radial-gradient(circle var(--muesca) at var(--corte) 0, transparent 98%, black) top / 100% 51% no-repeat,
+      radial-gradient(circle var(--muesca) at var(--corte) 100%, transparent 98%, black) bottom / 100% 51% no-repeat;
+    mask:
+      radial-gradient(circle var(--muesca) at var(--corte) 0, transparent 98%, black) top / 100% 51% no-repeat,
+      radial-gradient(circle var(--muesca) at var(--corte) 100%, transparent 98%, black) bottom / 100% 51% no-repeat;
+    --corte: calc(100% - 248px);
+  }
+
+  .familia-boleto .familia-boleto-codigo {
+    width: 248px;
+    height: auto;
+    align-self: stretch;
+    margin: -28px -32px -28px 0;
+    padding: 36px 16px;
+    border-top: none;
+    border-left: 2px dashed color-mix(in oklab, var(--pencil-text) 45%, transparent);
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .familia-columnas {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 48px;
   }
 }
