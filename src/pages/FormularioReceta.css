@@ -1,77 +1,359 @@
+.contenedor.formulario {
+  max-width: 760px;
+  padding-top: 24px;
+  padding-bottom: 32px;
+}
+
+.formulario-cabecera {
+  margin-bottom: 20px;
+}
+
 .formulario-titulo {
-  margin: 12px 0 8px;
+  margin-bottom: 6px;
 }
 
 .formulario-intro {
   color: var(--ink-muted);
-  margin-bottom: 24px;
+}
+
+.formulario-recuperado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  background-color: var(--pencil-soft);
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+
+.formulario-recuperado button {
+  min-height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .formulario-receta {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 16px;
 }
 
-.formulario-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+/* --- Secciones: una tarjeta por bloque --- */
+.formulario-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow-card);
 }
 
+.formulario-seccion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: -8px;
+}
+
+.formulario-seccion-cabecera h2 {
+  font-size: 1.375rem;
+}
+
+/* --- Campos --- */
 .formulario-campo {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-weight: 700;
-  font-size: 0.9rem;
+  gap: 8px;
+  min-width: 0;
+  border: none;
 }
 
-.formulario-ancho {
-  grid-column: 1 / -1;
+.formulario-campo > label,
+.formulario-campo > legend {
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.formulario-campo > legend {
+  margin-bottom: 8px;
+}
+
+.formulario-opcional {
+  font-weight: 400;
+  color: var(--ink-muted);
 }
 
 .formulario-campo textarea {
   resize: vertical;
 }
 
-.formulario-lista {
-  border: none;
+.formulario-nombre {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.formulario-ayuda {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+/* Categoría: píldoras con su ícono (radio nativo escondido). */
+.formulario-opciones {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.formulario-opcion,
+.formulario-segmento {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--duration) var(--ease-out);
+}
+
+.formulario-opcion:hover,
+.formulario-segmento:hover {
+  border-color: var(--ink);
+}
+
+.formulario-opcion input,
+.formulario-segmento input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.formulario-opcion:has(input:checked),
+.formulario-segmento:has(input:checked) {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.formulario-opcion:has(input:focus-visible),
+.formulario-segmento:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.formulario-segmentos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Tiempo y porciones: número con − / +. */
+.formulario-fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.formulario-contador {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--control-min);
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper);
+}
+
+.formulario-contador:focus-within {
+  border-color: var(--ink);
+}
+
+.formulario-contador button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--paper-sunken);
+}
+
+.formulario-contador button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.formulario-contador input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.formulario-contador.con-sufijo input {
+  text-align: right;
+}
+
+.formulario-contador input::-webkit-inner-spin-button,
+.formulario-contador input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.formulario-contador input:focus-visible {
+  outline: none;
+}
+
+.formulario-contador span {
+  flex: 1;
+  color: var(--ink-muted);
+  font-size: 0.9375rem;
+}
+
+/* Foto: vista previa al lado del enlace. */
+.formulario-foto {
+  display: flex;
   gap: 12px;
   align-items: flex-start;
 }
 
-.formulario-lista legend {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 8px;
+.formulario-foto-vista {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-sunken);
+  color: var(--ink-muted);
 }
 
-.formulario-ayuda {
-  color: var(--ink-muted);
-  font-size: 0.88rem;
+.formulario-foto-vista img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.formulario-foto-campo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* --- Pegar una lista --- */
+.formulario-pegar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.formulario-pegado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-sunken);
+}
+
+.formulario-pegado textarea {
+  resize: vertical;
+}
+
+.formulario-pegado-botones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Ingredientes: nombre primero; cantidad y unidad debajo en móvil --- */
+.formulario-ingredientes,
+.formulario-pasos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .formulario-ingrediente {
   display: grid;
-  grid-template-columns: 90px 170px 1fr 40px;
-  gap: 10px;
-  width: 100%;
+  grid-template-columns: 88px minmax(0, 1fr) 44px;
+  grid-template-areas:
+    'nombre nombre quitar'
+    'cantidad unidad quitar';
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.formulario-ingrediente-nombre {
+  grid-area: nombre;
+}
+
+.formulario-ingrediente-cantidad {
+  grid-area: cantidad;
+}
+
+.formulario-ingrediente-unidad {
+  grid-area: unidad;
+}
+
+.formulario-ingrediente .formulario-quitar {
+  grid-area: quitar;
 }
 
 .formulario-paso {
   display: grid;
-  grid-template-columns: 32px 1fr 40px;
+  grid-template-columns: 32px minmax(0, 1fr) 44px;
   gap: 10px;
-  width: 100%;
   align-items: start;
 }
 
 .formulario-paso .detalle-paso-numero {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .formulario-paso textarea {
@@ -79,14 +361,14 @@
 }
 
 .formulario-quitar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   border: none;
+  border-radius: 50%;
   background: none;
   color: var(--ink-muted);
-  border-radius: var(--radius-control);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 46px;
 }
 
 .formulario-quitar:hover:not(:disabled) {
@@ -99,26 +381,83 @@
   cursor: not-allowed;
 }
 
-.formulario-acciones {
+/* Agregar fila: un renglón punteado por llenar, como en el menú. */
+.formulario-agregar {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--control-min);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-control);
+  background: none;
+  font-weight: 600;
+  color: var(--ink-muted);
 }
 
-@media (max-width: 780px) {
-  .formulario-grid {
-    grid-template-columns: repeat(2, 1fr);
+.formulario-agregar:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* --- Barra para guardar: fija abajo (sobre las pestañas en móvil) --- */
+.formulario-barra {
+  position: sticky;
+  bottom: calc(var(--barra-inferior-alto) + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 -16px;
+  padding: 12px 16px;
+  background-color: color-mix(in oklab, var(--paper) 94%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+
+.formulario-barra-botones {
+  display: flex;
+  gap: 12px;
+}
+
+.formulario-barra-botones .boton-primario {
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  .formulario-seccion {
+    padding: 28px 32px;
   }
 
   .formulario-ingrediente {
-    grid-template-columns: 70px 1fr 40px;
+    grid-template-columns: minmax(0, 1fr) 88px 128px 44px;
+    grid-template-areas: 'nombre cantidad unidad quitar';
+    padding-bottom: 0;
+    border-bottom: none;
   }
 
-  .formulario-ingrediente input:nth-child(3) {
-    grid-column: 1 / 3;
+  .formulario-barra {
+    margin: 0;
+    padding: 12px 0;
   }
 
-  .formulario-ingrediente button {
-    grid-row: 1 / 3;
-    grid-column: 3;
+  .formulario-barra-botones {
+    justify-content: flex-end;
+  }
+
+  .formulario-barra-botones .boton-primario {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .formulario {
+    padding-top: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .formulario-barra {
+    bottom: 0;
   }
 }

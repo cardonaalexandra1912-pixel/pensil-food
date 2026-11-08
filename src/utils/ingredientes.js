@@ -108,3 +108,60 @@ export function agruparIngredientes(listaIngredientes) {
     })
     .sort((a, b) => a.claveNombre.localeCompare(b.claveNombre, 'es'))
 }
+
+// --- Leer ingredientes y pasos escritos como texto (pegados de WhatsApp, etc.) ---
+
+// Unidades que se reconocen después de la cantidad ("2 tazas de arroz").
+const UNIDADES_CONOCIDAS = new Set(
+  [
+    'taza', 'tazas', 'cda', 'cdas', 'cucharada', 'cucharadas', 'cdta', 'cdtas', 'cucharadita', 'cucharaditas',
+    'g', 'gr', 'gramos', 'kg', 'kilo', 'kilos', 'lb', 'libra', 'libras', 'oz', 'ml', 'l', 'litro', 'litros',
+    'diente', 'dientes', 'pizca', 'pizcas', 'puñado', 'puñados', 'rama', 'ramas', 'ramita', 'ramitas',
+    'tallo', 'tallos', 'rebanada', 'rebanadas', 'tajada', 'tajadas', 'filete', 'filetes', 'lata', 'latas',
+    'paquete', 'paquetes', 'bolsa', 'bolsas', 'unidad', 'unidades', 'pastilla', 'pastillas', 'trocito', 'trocitos',
+  ]
+)
+
+const FRACCIONES = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3 }
+
+// "1/2" -> 0.5, "1 1/2" -> 1.5, "1,5" -> 1.5, "½" -> 0.5. null si no es número.
+function leerCantidad(texto) {
+  const limpio = texto.trim()
+  if (FRACCIONES[limpio] != null) return FRACCIONES[limpio]
+  const mixto = limpio.match(/^(\d+)\s+(\d+)\/(\d+)$/)
+  if (mixto) return Number(mixto[1]) + Number(mixto[2]) / Number(mixto[3])
+  const fraccion = limpio.match(/^(\d+)\/(\d+)$/)
+  if (fraccion) return Number(fraccion[1]) / Number(fraccion[2])
+  const numero = Number(limpio.replace(',', '.'))
+  return Number.isFinite(numero) && numero > 0 ? numero : null
+}
+
+// "- 2 tazas de arroz" -> { cantidad: '2', unidad: 'tazas', nombre: 'arroz' }
+// "Sal al gusto"       -> { cantidad: '', unidad: '', nombre: 'Sal al gusto' }
+export function ingredienteDesdeTexto(linea) {
+  const texto = linea.replace(/^\s*(?:[-*•·]|\d+[.)])\s+/, '').trim()
+  const coincidencia = texto.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:[.,]\d+)?|[½¼¾⅓⅔])\s*(.*)$/)
+  if (!coincidencia) return { cantidad: '', unidad: '', nombre: texto }
+
+  const cantidad = leerCantidad(coincidencia[1])
+  if (cantidad == null) return { cantidad: '', unidad: '', nombre: texto }
+
+  let resto = coincidencia[2]
+  let unidad = ''
+  const primera = resto.split(/\s+/)[0] || ''
+  if (UNIDADES_CONOCIDAS.has(primera.toLowerCase().replace(/\.$/, ''))) {
+    unidad = primera.replace(/\.$/, '')
+    resto = resto.slice(primera.length).trim()
+  }
+  const nombre = resto.replace(/^de\s+/i, '').trim()
+  // Con coma decimal, como se escribe en Colombia (al guardar se vuelve número).
+  return { cantidad: String(Math.round(cantidad * 100) / 100).replace('.', ','), unidad, nombre: nombre || texto }
+}
+
+// Un paso por renglón, sin la numeración ("1.", "2)", "Paso 3:") que traiga.
+export function pasosDesdeTexto(texto) {
+  return texto
+    .split('\n')
+    .map((linea) => linea.replace(/^\s*(?:paso\s*)?\d+\s*[.):-]?\s*/i, '').replace(/^\s*[-*•·]\s+/, '').trim())
+    .filter(Boolean)
+}
