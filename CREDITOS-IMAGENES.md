@@ -43,6 +43,8 @@ J Doll | CC BY 3.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File
 | 36 | Crema de Zanahoria | Unsplash | Licencia Unsplash (uso libre) | [Unsplash](https://images.unsplash.com/photo-1547592166-23ac45744acd) |
 | 37 | Arepita con Huevo Blandito en Cacerola y Chocolate (collage) | Huevos y chocolate: Unsplash; arepas: Steven Depolo | Licencia Unsplash (uso libre); arepas CC BY 2.0 | [Huevos](https://images.unsplash.com/photo-1510693206972-df098062cb71), [Chocolate](https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed), [Arepas](https://commons.wikimedia.org/wiki/File:Arepitas_Food_Macro.jpg) |
 | 38 | Jugo de Borojó con Cola Granulada y un Toque de Brandy (ilustración) | Ilustración propia del proyecto | Propia (uso libre en el proyecto) | — |
+| — | Espaguetis con Camarones, Pollo Desmechado, Maicitos y Salsa Bechamel (ilustración, `espaguetis-camarones.jpg`) | Ilustración propia del proyecto | Propia (uso libre en el proyecto) | — |
+| — | Jugo de Guanábana con Leche Klim (ilustración, `jugo-guanabana.jpg`) | Ilustración propia del proyecto | Propia (uso libre en el proyecto) | — |
 
 ## Otras imágenes
 
