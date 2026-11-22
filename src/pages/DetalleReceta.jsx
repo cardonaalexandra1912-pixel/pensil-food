@@ -190,7 +190,7 @@ function Receta({ receta }) {
         <div className="detalle-receta">
           <div className="detalle-imagen-contenedor">
             {faltaImagen || !receta.imagen ? (
-              <div className="detalle-imagen-fallback ficha-receta" aria-hidden="true">
+              <div className="detalle-imagen-fallback" aria-hidden="true">
                 <span className="mosaico">
                   <IconoCategoria />
                 </span>

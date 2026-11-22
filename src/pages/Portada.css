@@ -1,6 +1,7 @@
-/* --- Hero: la ficha de receta con el carrusel de fotos --- */
+/* --- Hero: título, buscador y el carrusel de fotos. Fondo limpio: la foto
+   es la protagonista; los renglones de libreta quedan para los ingredientes. --- */
 .portada-hero {
-  padding: 24px 0 40px;
+  padding: 32px 0 40px;
 }
 
 .portada-hero-interior {

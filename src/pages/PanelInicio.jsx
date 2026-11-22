@@ -208,7 +208,7 @@ function Favoritas() {
                   {receta.imagen ? (
                     <img src={receta.imagen} alt="" loading="lazy" />
                   ) : (
-                    <span className="panel-favorita-sin-foto ficha-receta" aria-hidden="true">
+                    <span className="panel-favorita-sin-foto" aria-hidden="true">
                       <span className="mosaico">
                         <Icono />
                       </span>

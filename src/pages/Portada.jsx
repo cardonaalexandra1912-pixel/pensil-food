@@ -133,7 +133,7 @@ function Hero() {
   const foto = FOTOS_HERO[indice]
 
   return (
-    <section className="portada-hero ficha-receta" aria-labelledby="portada-titulo">
+    <section className="portada-hero" aria-labelledby="portada-titulo">
       <div className="contenedor portada-hero-interior">
         <div className="portada-hero-texto">
           <h1 id="portada-titulo">
@@ -153,7 +153,7 @@ function Hero() {
               id="portada-busqueda"
               type="search"
               className="campo-formulario"
-              placeholder="Arroz con pollo, crema, salmón…"
+              placeholder="¿Qué quieres cocinar?"
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
             />

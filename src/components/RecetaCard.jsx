@@ -16,7 +16,7 @@ function RecetaCard({ receta, esFavorito, alFavorito }) {
     <article className="receta-card">
       <div className="receta-card-imagen-contenedor">
         {faltaImagen || !receta.imagen ? (
-          <div className="receta-card-imagen-fallback ficha-receta" aria-hidden="true">
+          <div className="receta-card-imagen-fallback" aria-hidden="true">
             <span className="mosaico">
               <IconoCategoria />
             </span>

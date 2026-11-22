@@ -209,9 +209,11 @@
   }
 }
 
-/* «Ingresar» proporcionado a la barra delgada. */
+/* «Ingresar» proporcionado a la barra delgada: más bajo y sin la sombra del
+   botón grande, para que acompañe y no compita con el título. */
 .header .boton-chico {
-  min-height: 36px;
-  padding: 0 16px;
-  font-size: 0.9375rem;
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+  box-shadow: none;
 }
