@@ -1,0 +1,175 @@
+-- ============================================================================
+-- CATÁLOGO DE PRODUCTOS PARA LA LISTA DE MERCADO
+-- ----------------------------------------------------------------------------
+-- Las recetas dicen "3 dientes de ajo picado"; en el mercado se compra
+-- "1 cabeza de ajo". Cada producto dice cómo se compra:
+--   seccion          pasillo del mercado (Frutas y verduras, Carnes, ...)
+--   unidad_compra    cómo se compra (lb, unidad, cabeza, atado, bandeja, ...)
+--   equivalencias    cuánto de la unidad de compra es una unidad de receta,
+--                    por ejemplo {"diente": 0.1} = 10 dientes por cabeza
+--   alias            cómo aparece en las recetas ("ajo", "pechuga de pollo");
+--                    la app reconoce los ingredientes por estos alias
+--   despensa         lo que casi siempre hay en casa (sal, aceite, especias):
+--                    se lista aparte para revisar, sin cantidad
+--   se_compra        false para lo que no se compra (agua, hielo)
+--
+-- Más adelante, con las facturas, cada producto tendrá dónde se consigue y a
+-- qué precio.
+-- ============================================================================
+
+create table public.productos (
+  id bigint generated always as identity primary key,
+  nombre text not null unique,
+  seccion text not null,
+  unidad_compra text not null default 'unidad',
+  unidad_compra_plural text,
+  despensa boolean not null default false,
+  se_compra boolean not null default true,
+  equivalencias jsonb not null default '{}'::jsonb,
+  alias text[] not null default '{}',
+  creado_en timestamptz not null default now()
+);
+
+alter table public.productos enable row level security;
+
+-- Cualquiera lo puede leer (la lista se arma en el navegador); se edita desde
+-- Supabase, no desde la app.
+create policy "productos_ver_todos" on public.productos
+  for select to anon, authenticated
+  using (true);
+
+insert into public.productos
+  (nombre, seccion, unidad_compra, unidad_compra_plural, despensa, se_compra, equivalencias, alias)
+values
+  ('Ajo', 'Frutas y verduras', 'cabeza', 'cabezas', false, true, '{"diente": 0.1, "cda": 0.3}'::jsonb, array['ajo']::text[]),
+  ('Cebolla cabezona', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 1}'::jsonb, array['cebolla cabezona', 'cebolla blanca', 'cebolla']::text[]),
+  ('Cebolla morada', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['cebolla morada']::text[]),
+  ('Cebolla larga', 'Frutas y verduras', 'atado', 'atados', false, true, '{"tallo": 0.2}'::jsonb, array['cebolla larga', 'cebolla de rama']::text[]),
+  ('Cebollín', 'Frutas y verduras', 'atado', 'atados', false, true, '{"tallo": 0.1}'::jsonb, array['cebollín']::text[]),
+  ('Tomate', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['tomate']::text[]),
+  ('Tomate cherry', 'Frutas y verduras', 'bandeja', 'bandejas', false, true, '{"taza": 0.5}'::jsonb, array['tomate cherry', 'tomates cherry']::text[]),
+  ('Zanahoria', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['zanahoria']::text[]),
+  ('Papa pastusa', 'Frutas y verduras', 'lb', 'lb', false, true, '{"unidad": 0.5}'::jsonb, array['papa', 'papa pastusa', 'papas pastusas']::text[]),
+  ('Papa criolla', 'Frutas y verduras', 'lb', 'lb', false, true, '{"unidad": 0.1}'::jsonb, array['papa criolla', 'papas criollas', 'papitas criollas']::text[]),
+  ('Plátano verde', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['plátano verde', 'plátanos verdes', 'plátano']::text[]),
+  ('Plátano maduro', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['plátano maduro', 'plátanos maduros']::text[]),
+  ('Yuca', 'Frutas y verduras', 'lb', 'lb', false, true, '{}'::jsonb, array['yuca']::text[]),
+  ('Pimentón', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['pimentón', 'pimiento']::text[]),
+  ('Apio', 'Frutas y verduras', 'mata', 'matas', false, true, '{"tallo": 0.15}'::jsonb, array['apio']::text[]),
+  ('Cilantro', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{"taza": 0.5, "cda": 0.05}'::jsonb, array['cilantro']::text[]),
+  ('Perejil', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{"taza": 0.5, "cda": 0.05}'::jsonb, array['perejil']::text[]),
+  ('Hierbabuena', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{"puñado": 0.5}'::jsonb, array['hierbabuena']::text[]),
+  ('Albahaca', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{}'::jsonb, array['albahaca']::text[]),
+  ('Eneldo', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{"cda": 0.1}'::jsonb, array['eneldo']::text[]),
+  ('Tomillo o romero', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{"ramita": 0.15}'::jsonb, array['tomillo', 'romero']::text[]),
+  ('Orégano fresco', 'Frutas y verduras', 'manojo', 'manojos', false, true, '{}'::jsonb, array['orégano fresco']::text[]),
+  ('Lechuga', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 0.2}'::jsonb, array['lechuga']::text[]),
+  ('Espinaca', 'Frutas y verduras', 'paquete', 'paquetes', false, true, '{"taza": 0.25}'::jsonb, array['espinaca']::text[]),
+  ('Repollo morado', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 0.15}'::jsonb, array['repollo morado', 'repollo']::text[]),
+  ('Pepino', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['pepino']::text[]),
+  ('Aguacate', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['aguacate']::text[]),
+  ('Limón', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"cda": 0.5, "cdta": 0.17}'::jsonb, array['limón', 'jugo de limón']::text[]),
+  ('Naranja', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['naranja', 'toronja']::text[]),
+  ('Remolacha', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['remolacha']::text[]),
+  ('Rábano', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['rábano']::text[]),
+  ('Calabacín', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['calabacín']::text[]),
+  ('Batata', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['camote', 'batata']::text[]),
+  ('Jengibre', 'Frutas y verduras', 'trozo', 'trozos', false, true, '{"trocito": 0.5}'::jsonb, array['jengibre']::text[]),
+  ('Champiñones', 'Frutas y verduras', 'bandeja', 'bandejas', false, true, '{"g": 0.004, "taza": 0.4}'::jsonb, array['champiñón', 'champiñones']::text[]),
+  ('Mazorca', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 1}'::jsonb, array['maíz tierno', 'mazorca']::text[]),
+  ('Arveja', 'Frutas y verduras', 'lb', 'lb', false, true, '{"taza": 0.35}'::jsonb, array['arveja', 'arvejas dulces', 'frijolitos verdes', 'habichuela']::text[]),
+  ('Jalapeño', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['jalapeño']::text[]),
+  ('Banano', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['banano']::text[]),
+  ('Fresas', 'Frutas y verduras', 'lb', 'lb', false, true, '{"taza": 0.35}'::jsonb, array['fresa']::text[]),
+  ('Arándanos', 'Frutas y verduras', 'bandeja', 'bandejas', false, true, '{"taza": 1}'::jsonb, array['arándano']::text[]),
+  ('Frambuesas', 'Frutas y verduras', 'bandeja', 'bandejas', false, true, '{"taza": 1}'::jsonb, array['frambuesa']::text[]),
+  ('Moras', 'Frutas y verduras', 'lb', 'lb', false, true, '{"taza": 0.35}'::jsonb, array['mora']::text[]),
+  ('Mango', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 0.5}'::jsonb, array['mango']::text[]),
+  ('Piña', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 0.15}'::jsonb, array['piña']::text[]),
+  ('Kiwi', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['kiwi']::text[]),
+  ('Manzana verde', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['manzana verde', 'manzana']::text[]),
+  ('Maracuyá', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['maracuyá']::text[]),
+  ('Sandía', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{"taza": 0.1}'::jsonb, array['sandía']::text[]),
+  ('Uvas', 'Frutas y verduras', 'lb', 'lb', false, true, '{"taza": 0.35}'::jsonb, array['uva', 'cereza']::text[]),
+  ('Coco', 'Frutas y verduras', 'unidad', 'unidades', false, true, '{}'::jsonb, array['coco']::text[]),
+  ('Germinados', 'Frutas y verduras', 'bandeja', 'bandejas', false, true, '{}'::jsonb, array['germinado', 'brote']::text[]),
+  ('Pechuga de pollo', 'Carnes, pollo y pescado', 'unidad', 'unidades', false, true, '{"filete": 0.5, "pechuga": 1}'::jsonb, array['pechuga de pollo', 'pechugas de pollo', 'pechuga', 'pollo']::text[]),
+  ('Presas de pollo', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{}'::jsonb, array['presas de pollo']::text[]),
+  ('Carne molida de res', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{}'::jsonb, array['carne molida']::text[]),
+  ('Carne de res', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{"unidad": 0.25}'::jsonb, array['carne de res', 'filetes delgados de carne', 'lomo', 'punta de anca']::text[]),
+  ('Tocino de cerdo', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{}'::jsonb, array['tocino', 'garra de cerdo']::text[]),
+  ('Chorizo', 'Carnes, pollo y pescado', 'unidad', 'unidades', false, true, '{}'::jsonb, array['chorizo']::text[]),
+  ('Jamón', 'Carnes, pollo y pescado', 'paquete', 'paquetes', false, true, '{"taza": 0.5}'::jsonb, array['jamón']::text[]),
+  ('Filete de pescado', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{"filete": 0.4}'::jsonb, array['filete de pescado', 'pescado']::text[]),
+  ('Mojarra', 'Carnes, pollo y pescado', 'unidad', 'unidades', false, true, '{}'::jsonb, array['mojarra']::text[]),
+  ('Salmón', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{"filete": 0.4}'::jsonb, array['salmón']::text[]),
+  ('Camarones', 'Carnes, pollo y pescado', 'lb', 'lb', false, true, '{}'::jsonb, array['camarón', 'camarones']::text[]),
+  ('Mariscos mixtos', 'Carnes, pollo y pescado', 'bolsa', 'bolsas', false, true, '{}'::jsonb, array['mariscos']::text[]),
+  ('Huevos', 'Lácteos y huevos', 'unidad', 'unidades', false, true, '{}'::jsonb, array['huevo']::text[]),
+  ('Huevos de codorniz', 'Lácteos y huevos', 'bandeja', 'bandejas', false, true, '{"unidad": 0.0833}'::jsonb, array['huevitos de codorniz', 'huevos de codorniz']::text[]),
+  ('Leche', 'Lácteos y huevos', 'litro', 'litros', false, true, '{"taza": 0.25, "cda": 0.015}'::jsonb, array['leche', 'bebida de almendras']::text[]),
+  ('Crema de leche', 'Lácteos y huevos', 'caja', 'cajas', false, true, '{"taza": 1.2, "cda": 0.075}'::jsonb, array['crema de leche']::text[]),
+  ('Queso parmesano', 'Lácteos y huevos', 'bolsa', 'bolsas', false, true, '{"taza": 1, "cda": 0.06}'::jsonb, array['queso parmesano']::text[]),
+  ('Queso campesino', 'Lácteos y huevos', 'unidad', 'unidades', false, true, '{"tajada": 0.15}'::jsonb, array['queso campesino', 'quesito']::text[]),
+  ('Queso feta', 'Lácteos y huevos', 'paquete', 'paquetes', false, true, '{"taza": 1}'::jsonb, array['queso feta']::text[]),
+  ('Queso fresco', 'Lácteos y huevos', 'unidad', 'unidades', false, true, '{}'::jsonb, array['queso fresco']::text[]),
+  ('Queso mozzarella', 'Lácteos y huevos', 'paquete', 'paquetes', false, true, '{"rodaja": 0.1}'::jsonb, array['queso mozzarella']::text[]),
+  ('Queso rallado', 'Lácteos y huevos', 'bolsa', 'bolsas', false, true, '{"taza": 1, "cda": 0.06}'::jsonb, array['queso rallado']::text[]),
+  ('Queso crema', 'Lácteos y huevos', 'tarro', 'tarros', false, true, '{"cda": 0.07}'::jsonb, array['queso crema']::text[]),
+  ('Yogur griego', 'Lácteos y huevos', 'tarro', 'tarros', false, true, '{"taza": 1, "cda": 0.06}'::jsonb, array['yogur griego', 'yogur natural', 'yogur']::text[]),
+  ('Arroz', 'Granos, arroz y pastas', 'lb', 'lb', false, true, '{"taza": 0.45}'::jsonb, array['arroz']::text[]),
+  ('Frijol cargamanto', 'Granos, arroz y pastas', 'lb', 'lb', false, true, '{}'::jsonb, array['frijol cargamanto']::text[]),
+  ('Frijol rojo', 'Granos, arroz y pastas', 'lb', 'lb', false, true, '{}'::jsonb, array['frijol rojo']::text[]),
+  ('Frijoles refritos', 'Granos, arroz y pastas', 'lata', 'latas', false, true, '{"taza": 1}'::jsonb, array['frijoles refritos']::text[]),
+  ('Lentejas', 'Granos, arroz y pastas', 'lb', 'lb', false, true, '{}'::jsonb, array['lenteja']::text[]),
+  ('Garbanzos', 'Granos, arroz y pastas', 'lata', 'latas', false, true, '{"taza": 0.6}'::jsonb, array['garbanzo']::text[]),
+  ('Espaguetis', 'Granos, arroz y pastas', 'paquete', 'paquetes', false, true, '{"g": 0.002}'::jsonb, array['espagueti', 'espaguetis']::text[]),
+  ('Fideos', 'Granos, arroz y pastas', 'paquete', 'paquetes', false, true, '{"taza": 0.5}'::jsonb, array['fideo']::text[]),
+  ('Quinoa', 'Granos, arroz y pastas', 'bolsa', 'bolsas', false, true, '{"taza": 0.4}'::jsonb, array['quinoa']::text[]),
+  ('Avena en hojuelas', 'Granos, arroz y pastas', 'bolsa', 'bolsas', false, true, '{"taza": 0.2}'::jsonb, array['avena']::text[]),
+  ('Granola', 'Granos, arroz y pastas', 'bolsa', 'bolsas', false, true, '{"taza": 0.25, "cda": 0.02}'::jsonb, array['granola']::text[]),
+  ('Nueces o almendras', 'Granos, arroz y pastas', 'bolsa', 'bolsas', false, true, '{"taza": 1}'::jsonb, array['nueces', 'nuez', 'almendra']::text[]),
+  ('Pistachos', 'Granos, arroz y pastas', 'bolsa', 'bolsas', false, true, '{"taza": 1}'::jsonb, array['pistacho']::text[]),
+  ('Pan integral', 'Panadería', 'paquete', 'paquetes', false, true, '{"rebanada": 0.05}'::jsonb, array['pan integral', 'pan']::text[]),
+  ('Arepas', 'Panadería', 'paquete', 'paquetes', false, true, '{"unidad": 0.2}'::jsonb, array['arepa']::text[]),
+  ('Tortillas de maíz', 'Panadería', 'paquete', 'paquetes', false, true, '{"unidad": 0.1}'::jsonb, array['tortilla']::text[]),
+  ('Crutones', 'Panadería', 'bolsa', 'bolsas', false, true, '{"taza": 0.5}'::jsonb, array['crutones', 'crutón']::text[]),
+  ('Frutos rojos congelados', 'Congelados', 'bolsa', 'bolsas', false, true, '{"taza": 0.33}'::jsonb, array['frutos rojos']::text[]),
+  ('Pulpa de borojó', 'Congelados', 'paquete', 'paquetes', false, true, '{"g": 0.002}'::jsonb, array['pulpa de borojó', 'borojó']::text[]),
+  ('Papas a la francesa', 'Congelados', 'bolsa', 'bolsas', false, true, '{}'::jsonb, array['papas a la francesa']::text[]),
+  ('Leche de coco', 'Despensa', 'lata', 'latas', false, true, '{}'::jsonb, array['leche de coco']::text[]),
+  ('Chocolate de mesa', 'Despensa', 'paquete', 'paquetes', false, true, '{"pastilla": 0.125}'::jsonb, array['chocolate de mesa', 'chocolate']::text[]),
+  ('Sal', 'Despensa', 'bolsa', 'bolsas', true, true, '{}'::jsonb, array['sal', 'sal gruesa']::text[]),
+  ('Pimienta', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['pimienta']::text[]),
+  ('Aceite', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['aceite']::text[]),
+  ('Aceite de oliva', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['aceite de oliva']::text[]),
+  ('Mantequilla', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['mantequilla']::text[]),
+  ('Comino', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['comino']::text[]),
+  ('Color (achiote)', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['color', 'achiote']::text[]),
+  ('Paprika', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['paprika', 'páprika', 'pimentón dulce']::text[]),
+  ('Orégano', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['orégano']::text[]),
+  ('Laurel', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['laurel']::text[]),
+  ('Canela', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['canela']::text[]),
+  ('Cúrcuma', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['cúrcuma']::text[]),
+  ('Ajo en polvo', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['ajo en polvo']::text[]),
+  ('Ají en hojuelas', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['ají en hojuelas', 'hojuelas de ají']::text[]),
+  ('Esencia de vainilla', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['esencia de vainilla', 'vainilla']::text[]),
+  ('Polvo de hornear', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['polvo de hornear']::text[]),
+  ('Maicena', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['maicena']::text[]),
+  ('Azúcar', 'Despensa', 'bolsa', 'bolsas', true, true, '{}'::jsonb, array['azúcar']::text[]),
+  ('Miel', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['miel']::text[]),
+  ('Panela', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['panela']::text[]),
+  ('Vinagre', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['vinagre']::text[]),
+  ('Vinagre balsámico', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['vinagre balsámico']::text[]),
+  ('Salsa de soya', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['salsa de soya']::text[]),
+  ('Salsa picante', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['salsa de tomate picante', 'salsa picante']::text[]),
+  ('Pasta de tomate', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['pasta de tomate']::text[]),
+  ('Caldo en cubos', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['caldo']::text[]),
+  ('Tahini', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['tahini']::text[]),
+  ('Ajonjolí', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['ajonjolí', 'semillas de ajonjolí']::text[]),
+  ('Chía', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['chía', 'semillas de chía']::text[]),
+  ('Cola granulada', 'Despensa', 'bolsa', 'bolsas', true, true, '{}'::jsonb, array['cola granulada']::text[]),
+  ('Leche en polvo', 'Despensa', 'bolsa', 'bolsas', true, true, '{}'::jsonb, array['leche en polvo']::text[]),
+  ('Brandy', 'Despensa', 'frasco', 'frascos', true, true, '{}'::jsonb, array['brandy']::text[]),
+  ('Agua', 'Despensa', 'unidad', 'unidades', false, false, '{}'::jsonb, array['agua']::text[]),
+  ('Hielo', 'Despensa', 'unidad', 'unidades', false, false, '{}'::jsonb, array['hielo']::text[]);

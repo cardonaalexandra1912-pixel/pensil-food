@@ -23,7 +23,15 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
   casa (desayuno, almuerzo y cena, que se eligen ahí mismo), cómo va el menú de
   la semana, la lista de mercado, las favoritas y el recetario. Con sesión no
   hay pie de página y, en móvil, se navega con cinco pestañas abajo.
-- **Lista de mercado** automática: se marca lo que ya está en el carrito (se
+- **Lista de mercado** automática y por producto: junta los ingredientes de
+  todas las recetas en lo que de verdad se compra (3 dientes de ajo + 2 dientes
+  de ajo = 1 cabeza de ajo), ordenado por pasillo (frutas y verduras, carnes,
+  lácteos…), y deja aparte lo de despensa (sal, aceite, especias) para revisar
+  en casa. Usa el catálogo `productos` de Supabase: cada producto tiene su
+  sección, unidad de compra, equivalencias y los alias con que aparece en las
+  recetas; si un ingrediente no se reconoce, sale en «Otros» tal cual. Para
+  enseñarle uno nuevo, se agrega el alias al producto en Supabase.
+  Se marca lo que ya está en el carrito (se
   guarda en ese teléfono), se descarga en PDF o se envía por WhatsApp.
 - **Comentarios** en cada receta y en cada menú semanal, privados de la familia.
 - **Favoritos** por usuario (los que estaban guardados en el navegador se suben

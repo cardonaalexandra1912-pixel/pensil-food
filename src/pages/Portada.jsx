@@ -5,7 +5,7 @@ import { CATEGORIAS, iconoDeCategoria } from '../data/catalogo'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import { recetasDelMenu } from '../hooks/useMenuSemanal'
-import { agruparIngredientes } from '../utils/ingredientes'
+import { armarListaMercado } from '../utils/listaMercado'
 import Avatar from '../components/Avatar'
 import Cargando from '../components/Cargando'
 import RecetaCard from '../components/RecetaCard'
@@ -37,7 +37,7 @@ function urlPublica(ruta) {
 // Portada para quien todavía no tiene cuenta: buscar recetas, ver cómo se
 // planea la semana en familia y unas recetas para empezar.
 function Portada() {
-  const { recetas, recetaPorId, cargando } = useRecetas()
+  const { recetas, recetaPorId, productos, cargando } = useRecetas()
   const { esFavorito, alternarFavorito } = useFavoritos()
   const catalogo = recetas.filter((receta) => !receta.familiaId)
 
@@ -74,7 +74,7 @@ function Portada() {
         </ul>
       </section>
 
-      <SemanaEnFamilia recetaPorId={recetaPorId} />
+      <SemanaEnFamilia recetaPorId={recetaPorId} productos={productos} />
 
       <section className="contenedor portada-empezar" aria-labelledby="portada-empezar-titulo">
         <div className="portada-seccion-cabecera">
@@ -202,7 +202,7 @@ function Hero() {
 }
 
 // Banda grafito: lo que hace distinta la app, mostrado con una semana de ejemplo.
-function SemanaEnFamilia({ recetaPorId }) {
+function SemanaEnFamilia({ recetaPorId, productos }) {
   const ejemplo = useMemo(
     () =>
       SEMANA_EJEMPLO.map(({ dia, comidas }) => ({
@@ -217,8 +217,8 @@ function SemanaEnFamilia({ recetaPorId }) {
     const menu = ejemplo.map((dia) =>
       Object.fromEntries(dia.comidas.map((c) => [c.momento, { receta_id: c.receta.id }]))
     )
-    return agruparIngredientes(recetasDelMenu(menu, recetaPorId).flatMap((r) => r.ingredientes)).length
-  }, [ejemplo, recetaPorId])
+    return armarListaMercado(recetasDelMenu(menu, recetaPorId), productos).totalPorComprar
+  }, [ejemplo, recetaPorId, productos])
 
   return (
     <section className="contenedor" aria-labelledby="portada-semana-titulo">
@@ -271,7 +271,7 @@ function SemanaEnFamilia({ recetaPorId }) {
             {ingredientes > 0 && (
               <div className="portada-ejemplo-mercado" aria-hidden="true">
                 <ShoppingBasket size={18} />
-                Lista de mercado: {ingredientes} ingredientes
+                Lista de mercado: {ingredientes} productos
               </div>
             )}
           </figure>

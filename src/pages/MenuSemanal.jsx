@@ -12,7 +12,7 @@ import {
   recetasDelMenu,
   useMenuSemanal,
 } from '../hooks/useMenuSemanal'
-import { agruparIngredientes } from '../utils/ingredientes'
+import { armarListaMercado } from '../utils/listaMercado'
 import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
@@ -96,7 +96,7 @@ function MenuSemanal() {
 
 function PlanSemana({ lunes, esSemanaActual }) {
   const { usuario, familia } = useAuth()
-  const { recetaPorId } = useRecetas()
+  const { recetaPorId, productos } = useRecetas()
   const { hash } = useLocation()
   const { menuId, menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta, limpiarMenu, copiarSemana } =
     useMenuSemanal(lunes)
@@ -123,8 +123,8 @@ function PlanSemana({ lunes, esSemanaActual }) {
 
   const recetasSeleccionadas = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
   const listaMercado = useMemo(
-    () => agruparIngredientes(recetasSeleccionadas.flatMap((receta) => receta.ingredientes)),
-    [recetasSeleccionadas]
+    () => armarListaMercado(recetasSeleccionadas, productos),
+    [recetasSeleccionadas, productos]
   )
 
   // Desde el inicio se puede llegar directo a la lista (/menu-semanal#lista-mercado).
@@ -289,7 +289,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
         </div>
       )}
 
-      <ListaMercado menuId={menuId} lunes={lunes} menu={menu} items={listaMercado} />
+      <ListaMercado menuId={menuId} lunes={lunes} menu={menu} lista={listaMercado} />
 
       <Comentarios
         tipo="menu"
@@ -347,15 +347,19 @@ function useComprados(menuId) {
   return [comprados, alternar]
 }
 
-function ListaMercado({ menuId, lunes, menu, items }) {
+function ListaMercado({ menuId, lunes, menu, lista }) {
   const { recetaPorId } = useRecetas()
   const [comprados, alternar] = useComprados(menuId)
   const [generandoPdf, setGenerandoPdf] = useState(false)
-  // Lo que ya está en el carrito baja al final de la lista.
-  const conId = items
-    .map((item) => ({ ...item, id: `${item.claveNombre}|${item.texto}` }))
-    .sort((a, b) => Number(comprados.includes(a.id)) - Number(comprados.includes(b.id)))
-  const listos = conId.filter((item) => comprados.includes(item.id)).length
+
+  // Lo que se compra, por pasillo; lo de "Otros" (no reconocido) va al final.
+  const grupos = [
+    ...lista.secciones.map((seccion) => ({ ...seccion, tipo: 'compra' })),
+    ...(lista.otros.length > 0 ? [{ nombre: 'Otros', items: lista.otros, tipo: 'compra' }] : []),
+  ]
+  const porComprar = grupos.flatMap((grupo) => grupo.items)
+  const listos = porComprar.filter((item) => comprados.includes(item.id)).length
+  const vacia = porComprar.length === 0 && lista.despensa.length === 0
 
   async function descargarPdf() {
     const diasConRecetas = DIAS_SEMANA.map((dia, indice) => ({
@@ -371,58 +375,59 @@ function ListaMercado({ menuId, lunes, menu, items }) {
 
     setGenerandoPdf(true)
     try {
-      await descargarListaMercadoPdf(diasConRecetas, items)
+      await descargarListaMercadoPdf(diasConRecetas, grupos, lista.despensa)
     } finally {
       setGenerandoPdf(false)
     }
   }
 
   function enviarPorWhatsapp() {
-    const pendientes = conId.filter((item) => !comprados.includes(item.id))
-    const texto = [`Lista de mercado (${textoSemana(lunes)})`, ...pendientes.map((item) => `- ${item.texto}`)].join('\n')
-    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
+    const lineas = [`*Lista de mercado* (${textoSemana(lunes)})`]
+    grupos.forEach((grupo) => {
+      const pendientes = grupo.items.filter((item) => !comprados.includes(item.id))
+      if (pendientes.length === 0) return
+      lineas.push('', `*${grupo.nombre}*`)
+      pendientes.forEach((item) => lineas.push(`- ${item.nombre}${item.cantidad ? `: ${item.cantidad}` : ''}`))
+    })
+    if (lista.despensa.length > 0) {
+      lineas.push('', '*Revisar en la despensa*', lista.despensa.map((item) => item.nombre).join(', '))
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(lineas.join('\n'))}`, '_blank', 'noopener')
   }
 
   return (
     <section className="lista-mercado" id="lista-mercado" aria-labelledby="lista-mercado-titulo">
       <div className="lista-mercado-encabezado">
         <h2 id="lista-mercado-titulo">Lista de mercado</h2>
-        {items.length > 0 && (
+        {porComprar.length > 0 && (
           <p>
-            {listos === items.length
+            {listos === porComprar.length
               ? 'Ya tienen todo.'
-              : `${listos} de ${items.length} ingredientes en el carrito`}
+              : `${listos} de ${porComprar.length} productos en el carrito`}
           </p>
         )}
       </div>
 
-      {items.length === 0 ? (
+      {vacia ? (
         <EstadoVacio
           icono={ShoppingBasket}
           titulo="Aún no hay nada en la lista"
-          mensaje="Elijan las comidas de la semana y aquí aparecerán los ingredientes que necesitan comprar."
+          mensaje="Elijan las comidas de la semana y aquí aparecerán los productos que necesitan comprar."
         />
       ) : (
         <>
-          <ul className="lista-mercado-items">
-            {conId.map((item) => {
-              const comprado = comprados.includes(item.id)
-              return (
-                <li key={item.id}>
-                  <label className={comprado ? 'comprado' : ''}>
-                    <input type="checkbox" checked={comprado} onChange={() => alternar(item.id)} />
-                    <span className="lista-mercado-casilla" aria-hidden="true">
-                      <Check size={14} />
-                    </span>
-                    <span className="lista-mercado-texto">{item.texto}</span>
-                    {!item.esNumerico && item.veces > 1 && (
-                      <span className="lista-mercado-cantidad">×{item.veces}</span>
-                    )}
-                  </label>
-                </li>
-              )
-            })}
-          </ul>
+          {grupos.map((grupo) => (
+            <GrupoMercado key={grupo.nombre} titulo={grupo.nombre} items={grupo.items} comprados={comprados} alternar={alternar} />
+          ))}
+          {lista.despensa.length > 0 && (
+            <GrupoMercado
+              titulo="Revisa en la despensa"
+              descripcion="Casi siempre hay en casa. Marca lo que ya tienes y compra solo lo que falte."
+              items={lista.despensa}
+              comprados={comprados}
+              alternar={alternar}
+            />
+          )}
           <div className="lista-mercado-acciones">
             <button type="button" className="boton boton-primario" onClick={descargarPdf} disabled={generandoPdf}>
               <Download aria-hidden="true" />
@@ -435,6 +440,47 @@ function ListaMercado({ menuId, lunes, menu, items }) {
         </>
       )}
     </section>
+  )
+}
+
+// Un pasillo del mercado: cada producto con su cantidad de compra y para qué
+// recetas es. Lo que ya está en el carrito baja al final del pasillo.
+function GrupoMercado({ titulo, descripcion, items, comprados, alternar }) {
+  const ordenados = [...items].sort(
+    (a, b) => Number(comprados.includes(a.id)) - Number(comprados.includes(b.id))
+  )
+  const id = `mercado-${titulo.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+  return (
+    <div className="lista-mercado-grupo">
+      <h3 id={id}>{titulo}</h3>
+      {descripcion && <p className="lista-mercado-grupo-descripcion">{descripcion}</p>}
+      <ul className="lista-mercado-items" aria-labelledby={id}>
+        {ordenados.map((item) => {
+          const comprado = comprados.includes(item.id)
+          return (
+            <li key={item.id}>
+              <label className={comprado ? 'comprado' : ''}>
+                <input type="checkbox" checked={comprado} onChange={() => alternar(item.id)} />
+                <span className="lista-mercado-casilla" aria-hidden="true">
+                  <Check size={14} />
+                </span>
+                <span className="lista-mercado-texto">
+                  <span className="lista-mercado-nombre">{item.nombre}</span>
+                  {item.recetas.length > 0 && (
+                    <span className="lista-mercado-para">
+                      {item.recetas.length > 2
+                        ? `${item.recetas.slice(0, 2).join(' · ')} +${item.recetas.length - 2} más`
+                        : item.recetas.join(' · ')}
+                    </span>
+                  )}
+                </span>
+                {item.cantidad && <span className="lista-mercado-cantidad">{item.cantidad}</span>}
+              </label>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }
 

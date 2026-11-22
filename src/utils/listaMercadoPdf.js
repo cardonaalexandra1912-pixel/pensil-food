@@ -1,8 +1,8 @@
 // ============================================================================
 // LISTA DE MERCADO EN PDF
 // ----------------------------------------------------------------------------
-// Arma y descarga un PDF con el menú de la semana y la lista de mercado, con
-// una casilla al lado de cada ingrediente para ir marcando en la tienda.
+// Arma y descarga un PDF con el menú de la semana y la lista de mercado por
+// pasillo, con una casilla al lado de cada producto para ir marcando en la tienda.
 // jsPDF se carga solo cuando alguien pide el PDF, para no hacer más pesada la
 // página para quien nunca lo usa.
 // ============================================================================
@@ -19,8 +19,9 @@ const TEXTO = [22, 24, 29]
 const TEXTO_SUAVE = [84, 90, 102]
 
 // diasConRecetas: [{ dia, comidas: [{ momento: 'Desayuno', nombre }] }]
-// listaMercado: el resultado de agruparIngredientes()
-export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
+// grupos: pasillos de armarListaMercado() [{ nombre, items: [{ nombre, cantidad, recetas }] }]
+// despensa: lo que se revisa en casa antes de salir [{ nombre }]
+export async function descargarListaMercadoPdf(diasConRecetas, grupos, despensa = []) {
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   let y = 0
@@ -85,23 +86,63 @@ export async function descargarListaMercadoPdf(diasConRecetas, listaMercado) {
     y += 4
   }
 
-  // --- Ingredientes con casilla para marcar ---
-  tituloSeccion(`Ingredientes (${listaMercado.length})`)
-  doc.setFontSize(11)
-  const anchoTexto = ANCHO_PAGINA - MARGEN * 2 - 10
-  listaMercado.forEach((item) => {
-    const texto = !item.esNumerico && item.veces > 1 ? `${item.texto}  (x${item.veces})` : item.texto
-    const lineas = doc.splitTextToSize(texto, anchoTexto)
-    const alto = lineas.length * 5.2 + 2.6
+  // --- Productos por pasillo, con casilla para marcar y la cantidad a la derecha ---
+  const total = grupos.reduce((suma, grupo) => suma + grupo.items.length, 0)
+  tituloSeccion(`Para comprar (${total})`)
+  const derecha = ANCHO_PAGINA - MARGEN
+  const anchoNombre = ANCHO_PAGINA - MARGEN * 2 - 10 - 42
+
+  function subtitulo(texto) {
+    asegurarEspacio(14)
+    y += 2
+    doc.setTextColor(...VERDE)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.text(texto.toUpperCase(), MARGEN, y)
+    y += 6
+  }
+
+  function renglon(item) {
+    const lineas = doc.splitTextToSize(item.nombre, anchoNombre)
+    const para = item.recetas?.length ? doc.splitTextToSize(item.recetas.join(' · '), anchoNombre) : []
+    const alto = lineas.length * 5.2 + para.length * 4 + 2.6
     asegurarEspacio(alto)
     doc.setDrawColor(...TEXTO_SUAVE)
     doc.setLineWidth(0.3)
     doc.rect(MARGEN, y - 3.6, 4.2, 4.2)
     doc.setTextColor(...TEXTO)
     doc.setFont('helvetica', 'normal')
+    doc.setFontSize(11)
     doc.text(lineas, MARGEN + 8, y)
+    if (item.cantidad) {
+      doc.setFont('helvetica', 'bold')
+      doc.text(item.cantidad, derecha, y, { align: 'right' })
+    }
+    if (para.length) {
+      doc.setTextColor(...TEXTO_SUAVE)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8.5)
+      doc.text(para, MARGEN + 8, y + lineas.length * 5.2 - 1)
+    }
     y += alto
+  }
+
+  grupos.forEach((grupo) => {
+    subtitulo(grupo.nombre)
+    grupo.items.forEach(renglon)
   })
+
+  if (despensa.length > 0) {
+    y += 4
+    tituloSeccion('Revisa en la despensa')
+    doc.setTextColor(...TEXTO_SUAVE)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9.5)
+    asegurarEspacio(8)
+    doc.text('Casi siempre hay en casa: compra solo lo que falte.', MARGEN, y)
+    y += 7
+    despensa.forEach((item) => renglon({ nombre: item.nombre }))
+  }
 
   // Pie de página con número de página
   const totalPaginas = doc.getNumberOfPages()

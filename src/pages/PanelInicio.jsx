@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import { DIAS_SEMANA, contarComidasLlenas, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
-import { agruparIngredientes } from '../utils/ingredientes'
+import { armarListaMercado } from '../utils/listaMercado'
 import { indiceEnSemana, lunesDe, textoDia } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
@@ -48,7 +48,7 @@ function PanelInicio() {
 
 function HoyEnCasa({ hoy }) {
   const { usuario, familia } = useAuth()
-  const { recetaPorId } = useRecetas()
+  const { recetaPorId, productos } = useRecetas()
   const lunes = useMemo(() => lunesDe(hoy), [hoy])
   const { menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta } = useMenuSemanal(lunes)
   // { momento, item } mientras la hoja está abierta (item null = agregar un plato).
@@ -57,8 +57,8 @@ function HoyEnCasa({ hoy }) {
 
   const recetasSemana = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
   const ingredientes = useMemo(
-    () => agruparIngredientes(recetasSemana.flatMap((receta) => receta.ingredientes)).length,
-    [recetasSemana]
+    () => armarListaMercado(recetasSemana, productos).totalPorComprar,
+    [recetasSemana, productos]
   )
 
   if (cargando) return <Cargando texto="Cargando el menú de hoy…" />
@@ -116,7 +116,7 @@ function HoyEnCasa({ hoy }) {
             <span>
               {ingredientes === 0
                 ? 'Se arma sola cuando elijan comidas'
-                : `${ingredientes} ${ingredientes === 1 ? 'ingrediente' : 'ingredientes'} por comprar`}
+                : `${ingredientes} ${ingredientes === 1 ? 'producto' : 'productos'} por comprar`}
             </span>
           </span>
           <ArrowRight className="panel-atajo-flecha" aria-hidden="true" />
