@@ -12,9 +12,8 @@ import {
   recetasDelMenu,
   useMenuSemanal,
 } from '../hooks/useMenuSemanal'
-import { armarListaMercado } from '../utils/listaMercado'
+import { armarListaMercado, gruposDeCompra, textoWhatsapp } from '../utils/listaMercado'
 import { resumenDelMenu } from '../utils/nutricion'
-import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
@@ -22,6 +21,7 @@ import ComidaSlot, { CATEGORIA_BEBIDAS } from '../components/ComidaSlot'
 import Comentarios from '../components/Comentarios'
 import ResumenSemana from '../components/ResumenSemana'
 import EstadoVacio from '../components/EstadoVacio'
+import MercadoPdf from '../components/MercadoPdf'
 import SelectorReceta from '../components/SelectorReceta'
 import './MenuSemanal.css'
 
@@ -109,6 +109,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
   const [comidasSemanaPasada, setComidasSemanaPasada] = useState(0)
   const [copiando, setCopiando] = useState(false)
   const [aviso, setAviso] = useState('')
+  const [mercadoAbierto, setMercadoAbierto] = useState(false)
   const toqueRef = useRef(null)
   const lunesPasado = useMemo(() => sumarDias(lunes, -7), [lunes])
 
@@ -195,6 +196,15 @@ function PlanSemana({ lunes, esSemanaActual }) {
           <span className="en-vivo-punto" aria-hidden="true" />
           En vivo
         </span>
+        {planeadas > 0 && (
+          <button
+            type="button"
+            className="boton boton-primario mercado-pdf-abrir"
+            onClick={() => setMercadoAbierto(true)}
+          >
+            <Download aria-hidden="true" /> Lista de mercado
+          </button>
+        )}
       </div>
       {error && <p className="mensaje-error menu-semanal-error">{error}</p>}
 
@@ -304,7 +314,9 @@ function PlanSemana({ lunes, esSemanaActual }) {
 
       {productos.length > 0 && <ResumenSemana resumen={resumen} />}
 
-      <ListaMercado menuId={menuId} lunes={lunes} menu={menu} lista={listaMercado} />
+      <ListaMercado menuId={menuId} lunes={lunes} lista={listaMercado} alAbrirPdf={() => setMercadoAbierto(true)} />
+
+      {mercadoAbierto && <MercadoPdf lunes={lunes} menu={menu} alCerrar={() => setMercadoAbierto(false)} />}
 
       <Comentarios
         tipo="menu"
@@ -365,52 +377,19 @@ function useComprados(menuId) {
   return [comprados, alternar]
 }
 
-function ListaMercado({ menuId, lunes, menu, lista }) {
-  const { recetaPorId } = useRecetas()
+function ListaMercado({ menuId, lunes, lista, alAbrirPdf }) {
   const [comprados, alternar] = useComprados(menuId)
-  const [generandoPdf, setGenerandoPdf] = useState(false)
 
   // Lo que se compra, por pasillo; lo de "Otros" (no reconocido) va al final.
-  const grupos = [
-    ...lista.secciones.map((seccion) => ({ ...seccion, tipo: 'compra' })),
-    ...(lista.otros.length > 0 ? [{ nombre: 'Otros', items: lista.otros, tipo: 'compra' }] : []),
-  ]
+  const grupos = gruposDeCompra(lista)
   const porComprar = grupos.flatMap((grupo) => grupo.items)
   const listos = porComprar.filter((item) => comprados.includes(item.id)).length
   const vacia = porComprar.length === 0 && lista.despensa.length === 0
 
-  async function descargarPdf() {
-    const diasConRecetas = DIAS_SEMANA.map((dia, indice) => ({
-      dia: `${dia} ${sumarDias(lunes, indice).getDate()}`,
-      comidas: MOMENTOS.map(({ clave, etiqueta }) => ({
-        momento: etiqueta,
-        nombre: menu[indice][clave]
-          .map((item) => recetaPorId(item.receta_id)?.nombre)
-          .filter(Boolean)
-          .join(' + '),
-      })).filter((comida) => comida.nombre),
-    })).filter((dia) => dia.comidas.length > 0)
-
-    setGenerandoPdf(true)
-    try {
-      await descargarListaMercadoPdf(diasConRecetas, grupos, lista.despensa)
-    } finally {
-      setGenerandoPdf(false)
-    }
-  }
-
+  // Por WhatsApp va solo lo que falta: lo que ya está en el carrito se omite.
   function enviarPorWhatsapp() {
-    const lineas = [`*Lista de mercado* (${textoSemana(lunes)})`]
-    grupos.forEach((grupo) => {
-      const pendientes = grupo.items.filter((item) => !comprados.includes(item.id))
-      if (pendientes.length === 0) return
-      lineas.push('', `*${grupo.nombre}*`)
-      pendientes.forEach((item) => lineas.push(`- ${item.nombre}${item.cantidad ? `: ${item.cantidad}` : ''}`))
-    })
-    if (lista.despensa.length > 0) {
-      lineas.push('', '*Revisar en la despensa*', lista.despensa.map((item) => item.nombre).join(', '))
-    }
-    window.open(`https://wa.me/?text=${encodeURIComponent(lineas.join('\n'))}`, '_blank', 'noopener')
+    const texto = textoWhatsapp(lista, `Lista de mercado (${textoSemana(lunes)})`, comprados)
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
   }
 
   return (
@@ -453,9 +432,8 @@ function ListaMercado({ menuId, lunes, menu, lista }) {
             />
           )}
           <div className="lista-mercado-acciones">
-            <button type="button" className="boton boton-primario" onClick={descargarPdf} disabled={generandoPdf}>
-              <Download aria-hidden="true" />
-              {generandoPdf ? 'Preparando PDF…' : 'Descargar PDF'}
+            <button type="button" className="boton boton-primario" onClick={alAbrirPdf}>
+              <Download aria-hidden="true" /> Descargar PDF
             </button>
             <button type="button" className="boton boton-secundario" onClick={enviarPorWhatsapp}>
               <Send aria-hidden="true" /> Enviar por WhatsApp

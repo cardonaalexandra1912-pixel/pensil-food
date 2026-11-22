@@ -21,7 +21,8 @@ const TEXTO_SUAVE = [84, 90, 102]
 // diasConRecetas: [{ dia, comidas: [{ momento: 'Desayuno', nombre }] }]
 // grupos: pasillos de armarListaMercado() [{ nombre, items: [{ nombre, cantidad, recetas }] }]
 // despensa: lo que se revisa en casa antes de salir [{ nombre }]
-export async function descargarListaMercadoPdf(diasConRecetas, grupos, despensa = []) {
+// rango: texto de las fechas que cubre («23 – 29 de noviembre»); nombre: del archivo.
+export async function descargarListaMercadoPdf(diasConRecetas, grupos, despensa = [], { rango, nombre } = {}) {
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   let y = 0
@@ -34,11 +35,15 @@ export async function descargarListaMercadoPdf(diasConRecetas, grupos, despensa 
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(22)
-  doc.text('Lista de Mercado', MARGEN, 19)
+  doc.text('Lista de Mercado', MARGEN, rango ? 16 : 19)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   const fecha = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
   doc.text(`Pensil.Food  ·  ${fecha}`, ANCHO_PAGINA - MARGEN, 19, { align: 'right' })
+  if (rango) {
+    doc.setFontSize(11)
+    doc.text(rango, MARGEN, 26)
+  }
   y = 42
 
   // Pasa a una página nueva cuando lo siguiente ya no cabe.
@@ -153,5 +158,5 @@ export async function descargarListaMercadoPdf(diasConRecetas, grupos, despensa 
     doc.text(`Página ${pagina} de ${totalPaginas}`, ANCHO_PAGINA / 2, ALTO_PAGINA - 8, { align: 'center' })
   }
 
-  doc.save('lista-de-mercado.pdf')
+  doc.save(nombre || 'lista-de-mercado.pdf')
 }

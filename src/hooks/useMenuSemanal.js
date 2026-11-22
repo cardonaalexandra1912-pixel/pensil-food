@@ -26,7 +26,9 @@ export function useMenuSemanal(lunes) {
   const cargarItems = useCallback(async (id) => {
     const { data, error: errorConsulta } = await supabase
       .from('menu_items')
-      .select('id, dia, momento, receta_id, elegido_por, actualizado_en, creado_en, elegido:perfiles(nombre, avatar_url)')
+      .select(
+        'id, dia, momento, receta_id, elegido_por, actualizado_en, creado_en, elegido:perfiles(nombre, avatar_url)',
+      )
       .eq('menu_id', id)
     if (errorConsulta) {
       setError('No pudimos cargar el menú.')
@@ -72,12 +74,10 @@ export function useMenuSemanal(lunes) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'menu_items', filter: `menu_id=eq.${menuId}` },
-        () => cargarItems(menuId)
+        () => cargarItems(menuId),
       )
       // Los DELETE no se pueden filtrar por columna: recargamos ante cualquiera.
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'menu_items' }, () =>
-        cargarItems(menuId)
-      )
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'menu_items' }, () => cargarItems(menuId))
       .subscribe()
     return () => {
       supabase.removeChannel(canal)
@@ -132,7 +132,7 @@ export function useMenuSemanal(lunes) {
       cargarItems(menuId)
       return true
     },
-    [menuId, userId, items, cargarItems]
+    [menuId, userId, items, cargarItems],
   )
 
   // Cambia un plato de una comida por otra receta (los demás platos quedan igual).
@@ -145,7 +145,7 @@ export function useMenuSemanal(lunes) {
       setError('')
       const anterior = items
       setItems((actuales) =>
-        actuales.map((i) => (i.id === itemId ? { ...i, receta_id: id, elegido_por: userId, elegido: null } : i))
+        actuales.map((i) => (i.id === itemId ? { ...i, receta_id: id, elegido_por: userId, elegido: null } : i)),
       )
       const { error: errorGuardar } = await supabase
         .from('menu_items')
@@ -159,7 +159,7 @@ export function useMenuSemanal(lunes) {
       cargarItems(menuId)
       return true
     },
-    [menuId, userId, items, cargarItems]
+    [menuId, userId, items, cargarItems],
   )
 
   // Quita un plato de una comida.
@@ -177,7 +177,7 @@ export function useMenuSemanal(lunes) {
       }
       return true
     },
-    [menuId, items]
+    [menuId, items],
   )
 
   const limpiarMenu = useCallback(async () => {
@@ -232,7 +232,7 @@ export function useMenuSemanal(lunes) {
       await cargarItems(menuId)
       return new Set(filas.map((f) => `${f.dia}-${f.momento}`)).size
     },
-    [menuId, userId, familiaId, items, cargarItems]
+    [menuId, userId, familiaId, items, cargarItems],
   )
 
   return { menuId, menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta, limpiarMenu, copiarSemana }
@@ -252,7 +252,7 @@ export function recetasDelMenu(menu, recetaPorId) {
 export function contarComidasLlenas(menu) {
   return menu.reduce(
     (total, dia) => total + ['desayuno', 'almuerzo', 'cena'].filter((momento) => dia[momento]?.length > 0).length,
-    0
+    0,
   )
 }
 
@@ -267,4 +267,25 @@ export async function contarComidasDeSemana(familiaId, lunes) {
   if (!menu) return 0
   const { data: comidas } = await supabase.from('menu_items').select('dia, momento').eq('menu_id', menu.id)
   return new Set((comidas ?? []).map((c) => `${c.dia}-${c.momento}`)).size
+}
+
+// Lee el menú de otra semana una sola vez (sin crearlo y sin cambios en vivo),
+// con la misma forma que `menu` del hook: menu[dia][momento] = [platos].
+export async function leerMenuDeSemana(familiaId, lunes) {
+  const menu = menuVacio()
+  const { data: semana } = await supabase
+    .from('menus_semanales')
+    .select('id')
+    .eq('familia_id', familiaId)
+    .eq('semana_inicio', fechaISO(lunes))
+    .maybeSingle()
+  if (!semana) return menu
+  const { data: items, error } = await supabase
+    .from('menu_items')
+    .select('id, dia, momento, receta_id, creado_en')
+    .eq('menu_id', semana.id)
+    .order('creado_en')
+  if (error) throw error
+  ;(items ?? []).forEach((item) => menu[item.dia]?.[item.momento]?.push(item))
+  return menu
 }

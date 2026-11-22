@@ -43,28 +43,61 @@ export function normalizar(texto) {
 
 // Unidades de las recetas llevadas a una sola forma ("tazas" -> "taza").
 const UNIDADES = {
-  '': 'unidad', unidad: 'unidad', unidades: 'unidad',
-  lb: 'lb', libra: 'lb', libras: 'lb',
-  g: 'g', gr: 'g', gramo: 'g', gramos: 'g',
-  kg: 'kg', kilo: 'kg', kilos: 'kg',
-  taza: 'taza', tazas: 'taza',
-  cda: 'cda', cdas: 'cda', cucharada: 'cda', cucharadas: 'cda',
-  cdta: 'cdta', cdtas: 'cdta', cucharadita: 'cdta', cucharaditas: 'cdta',
-  diente: 'diente', dientes: 'diente',
-  tallo: 'tallo', tallos: 'tallo', rama: 'tallo', ramas: 'tallo',
-  filete: 'filete', filetes: 'filete',
-  rebanada: 'rebanada', rebanadas: 'rebanada',
-  tajada: 'tajada', tajadas: 'tajada',
-  rodaja: 'rodaja', rodajas: 'rodaja',
-  pastilla: 'pastilla', pastillas: 'pastilla',
-  ramita: 'ramita', ramitas: 'ramita',
-  trocito: 'trocito', trocitos: 'trocito',
-  pechuga: 'pechuga', pechugas: 'pechuga',
-  lata: 'lata', latas: 'lata',
-  bolsa: 'bolsa', bolsas: 'bolsa',
-  punado: 'puñado', punados: 'puñado',
-  hoja: 'hoja', hojas: 'hoja',
-  astilla: 'astilla', astillas: 'astilla',
+  '': 'unidad',
+  unidad: 'unidad',
+  unidades: 'unidad',
+  lb: 'lb',
+  libra: 'lb',
+  libras: 'lb',
+  g: 'g',
+  gr: 'g',
+  gramo: 'g',
+  gramos: 'g',
+  kg: 'kg',
+  kilo: 'kg',
+  kilos: 'kg',
+  taza: 'taza',
+  tazas: 'taza',
+  cda: 'cda',
+  cdas: 'cda',
+  cucharada: 'cda',
+  cucharadas: 'cda',
+  cdta: 'cdta',
+  cdtas: 'cdta',
+  cucharadita: 'cdta',
+  cucharaditas: 'cdta',
+  diente: 'diente',
+  dientes: 'diente',
+  tallo: 'tallo',
+  tallos: 'tallo',
+  rama: 'tallo',
+  ramas: 'tallo',
+  filete: 'filete',
+  filetes: 'filete',
+  rebanada: 'rebanada',
+  rebanadas: 'rebanada',
+  tajada: 'tajada',
+  tajadas: 'tajada',
+  rodaja: 'rodaja',
+  rodajas: 'rodaja',
+  pastilla: 'pastilla',
+  pastillas: 'pastilla',
+  ramita: 'ramita',
+  ramitas: 'ramita',
+  trocito: 'trocito',
+  trocitos: 'trocito',
+  pechuga: 'pechuga',
+  pechugas: 'pechuga',
+  lata: 'lata',
+  latas: 'lata',
+  bolsa: 'bolsa',
+  bolsas: 'bolsa',
+  punado: 'puñado',
+  punados: 'puñado',
+  hoja: 'hoja',
+  hojas: 'hoja',
+  astilla: 'astilla',
+  astillas: 'astilla',
 }
 
 export function unidadNormal(unidad) {
@@ -217,9 +250,10 @@ export function armarListaMercado(recetas, productos) {
       return
     }
     const partes = []
-    if (total > 0 || sueltos.size === 0) partes.push(textoUnidad(cantidadDeCompra(total, producto.unidad_compra), producto))
+    if (total > 0 || sueltos.size === 0)
+      partes.push(textoUnidad(cantidadDeCompra(total, producto.unidad_compra), producto))
     sueltos.forEach((cantidad, unidad) =>
-      partes.push(unidad === 'unidad' ? formatCantidad(cantidad) : `${formatCantidad(cantidad)} ${unidad}`)
+      partes.push(unidad === 'unidad' ? formatCantidad(cantidad) : `${formatCantidad(cantidad)} ${unidad}`),
     )
     item.cantidad = partes.join(' + ')
     if (!secciones.has(producto.seccion)) secciones.set(producto.seccion, [])
@@ -244,4 +278,25 @@ export function armarListaMercado(recetas, productos) {
     otros,
     totalPorComprar: listaSecciones.reduce((total, s) => total + s.items.length, 0) + otros.length,
   }
+}
+
+// Los pasillos que se compran, con «Otros» al final.
+export function gruposDeCompra(lista) {
+  return [...lista.secciones, ...(lista.otros.length > 0 ? [{ nombre: 'Otros', items: lista.otros }] : [])]
+}
+
+// Texto para WhatsApp: pasillos en negrita y lo de despensa en una línea.
+// omitir: ids que ya están en el carrito y no hace falta mandar.
+export function textoWhatsapp(lista, titulo, omitir = []) {
+  const lineas = [`*${titulo}*`]
+  gruposDeCompra(lista).forEach((grupo) => {
+    const pendientes = grupo.items.filter((item) => !omitir.includes(item.id))
+    if (pendientes.length === 0) return
+    lineas.push('', `*${grupo.nombre}*`)
+    pendientes.forEach((item) => lineas.push(`- ${item.nombre}${item.cantidad ? `: ${item.cantidad}` : ''}`))
+  })
+  if (lista.despensa.length > 0) {
+    lineas.push('', '*Revisar en la despensa*', lista.despensa.map((item) => item.nombre).join(', '))
+  }
+  return lineas.join('\n')
 }

@@ -4,9 +4,11 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background-color: color-mix(in oklab, var(--paper) 90%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
+  /* Vidrio esmerilado y una línea apenas visible: la barra acompaña, no pesa. */
+  background-color: color-mix(in oklab, var(--paper) 82%, transparent);
+  backdrop-filter: saturate(1.6) blur(16px);
+  -webkit-backdrop-filter: saturate(1.6) blur(16px);
+  border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent);
 }
 
 .header-interior {
@@ -46,15 +48,15 @@
 .header-acciones {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-left: auto;
 }
 
 .header-icono {
   display: inline-grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   background: none;
@@ -74,8 +76,8 @@
 }
 
 .header-usuario-espacio {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 }
 
 .header-usuario {
@@ -84,8 +86,8 @@
 
 .header-usuario-boton {
   display: flex;
-  padding: 2px;
-  border: 2px solid var(--line);
+  padding: 1px;
+  border: 1px solid var(--line);
   border-radius: 50%;
   background-color: var(--paper-raised);
   transition: border-color var(--duration) var(--ease-out);
@@ -167,8 +169,19 @@
 }
 
 @media (max-width: 639px) {
-  .logotipo-texto {
-    font-size: 1.125rem;
+  /* En el teléfono la marca se achica para que la barra sea delgada. */
+  .header .logotipo {
+    gap: 8px;
+  }
+
+  .header .logotipo-marca {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .header .logotipo-texto {
+    font-size: 1.0625rem;
   }
 
   .header-busqueda-form {
@@ -194,4 +207,11 @@
   .header-menu-movil {
     display: none;
   }
+}
+
+/* «Ingresar» proporcionado a la barra delgada. */
+.header .boton-chico {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 0.9375rem;
 }

@@ -1,0 +1,82 @@
+/* Hoja de la lista de mercado: usa la misma hoja que el selector de recetas
+   (sube desde abajo), pero de alto justo para su contenido. */
+.mercado-pdf .selector-receta-hoja {
+  gap: 16px;
+}
+
+.mercado-pdf-opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mercado-pdf-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-raised);
+  text-align: left;
+  color: var(--ink);
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+}
+
+.mercado-pdf-opcion span {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.mercado-pdf-opcion[aria-checked='true'] {
+  border-color: var(--pencil-strong);
+  background-color: color-mix(in oklab, var(--pencil) 14%, var(--paper-raised));
+}
+
+.mercado-pdf-cuenta {
+  margin-top: 6px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mercado-pdf-aviso {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.mercado-pdf-acciones {
+  display: grid;
+  gap: 10px;
+}
+
+/* Botón para abrir la hoja: en el teléfono flota sobre la barra de abajo,
+   siempre a la mano; en escritorio va junto al avance de la semana. */
+.mercado-pdf-abrir {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .mercado-pdf-abrir {
+    position: fixed;
+    right: 16px;
+    bottom: calc(var(--barra-inferior-alto) + env(safe-area-inset-bottom) + 14px);
+    z-index: 90;
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+@media (min-width: 768px) {
+  .mercado-pdf .selector-receta-hoja {
+    max-width: 480px;
+  }
+}
+
+/* Que el botón flotante no tape lo último del menú. */
+@media (max-width: 1023px) {
+  .menu-semanal {
+    padding-bottom: 72px;
+  }
+}

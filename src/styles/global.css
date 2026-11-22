@@ -62,7 +62,7 @@
   --radius-pill: 9999px;
   --control-min: 48px;
   --container-max: 1152px;
-  --header-height: 72px;
+  --header-height: 56px; /* 64 px en escritorio (más abajo) */
 
   /* --- Tipografía --- */
   --font-display: 'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -628,6 +628,12 @@ select.campo-formulario {
 /* --- Con sesión: la barra de pestañas de abajo (móvil y tableta) --- */
 :root {
   --barra-inferior-alto: 64px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 64px;
+  }
 }
 
 .app-con-sesion {

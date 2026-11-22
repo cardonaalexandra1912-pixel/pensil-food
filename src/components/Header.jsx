@@ -14,7 +14,7 @@ const ENLACES = [
 ]
 const ENLACE_FAMILIA = { ruta: '/familia', etiqueta: 'Mi familia' }
 
-// Encabezado fijo (72 px) al estilo de Pensil.Devs: logotipo, navegación en
+// Encabezado fijo (56 px en el teléfono, 64 en escritorio) al estilo de Pensil.Devs: logotipo, navegación en
 // píldoras, búsqueda rápida y la cuenta. En móvil la navegación se despliega.
 function Header() {
   const [busquedaAbierta, setBusquedaAbierta] = useState(false)
@@ -79,7 +79,7 @@ function Header() {
             aria-expanded={busquedaAbierta}
             aria-label={busquedaAbierta ? 'Cerrar búsqueda' : 'Buscar receta'}
           >
-            {busquedaAbierta ? <X size={20} aria-hidden="true" /> : <Search size={20} aria-hidden="true" />}
+            {busquedaAbierta ? <X size={19} aria-hidden="true" /> : <Search size={19} aria-hidden="true" />}
           </button>
           <MenuUsuario />
           {/* Con sesión, en móvil las secciones están en la barra de abajo. */}
@@ -166,7 +166,7 @@ function MenuUsuario() {
         aria-haspopup="menu"
         aria-label={`Tu cuenta: ${nombre}`}
       >
-        <Avatar nombre={nombre} url={perfil?.avatar_url} tamano={36} />
+        <Avatar nombre={nombre} url={perfil?.avatar_url} tamano={30} />
       </button>
       {abierto && (
         <div className="header-usuario-menu" role="menu">
