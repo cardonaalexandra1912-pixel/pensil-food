@@ -5,7 +5,13 @@ import { MOMENTOS } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { mensajeError } from '../lib/supabase'
 import { useRecetas } from '../context/RecetasContext'
-import { DIAS_SEMANA, contarComidasDeSemana, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
+import {
+  DIAS_SEMANA,
+  contarComidasDeSemana,
+  contarComidasLlenas,
+  recetasDelMenu,
+  useMenuSemanal,
+} from '../hooks/useMenuSemanal'
 import { agruparIngredientes } from '../utils/ingredientes'
 import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
@@ -20,7 +26,8 @@ import './MenuSemanal.css'
 const COMIDAS_POR_SEMANA = DIAS_SEMANA.length * MOMENTOS.length
 
 // Página de Menú Semanal: el plan de la familia para una semana (lunes a
-// domingo). Cualquier integrante elige desayuno, almuerzo y cena de cada día;
+// domingo). Cualquier integrante elige desayuno, almuerzo y cena de cada día
+// (cada comida puede tener varios platos, como sopa y plato fuerte);
 // los cambios se ven en vivo y la lista de mercado se arma sola.
 function MenuSemanal() {
   const { familia } = useAuth()
@@ -91,9 +98,12 @@ function PlanSemana({ lunes, esSemanaActual }) {
   const { usuario, familia } = useAuth()
   const { recetaPorId } = useRecetas()
   const { hash } = useLocation()
-  const { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu, copiarSemana } = useMenuSemanal(lunes)
+  const { menuId, menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta, limpiarMenu, copiarSemana } =
+    useMenuSemanal(lunes)
   const [diaActivo, setDiaActivo] = useState(esSemanaActual ? indiceEnSemana(new Date()) : 0)
-  const [eligiendo, setEligiendo] = useState(null) // { dia, momento } mientras la hoja está abierta
+  // { dia, momento, item } mientras la hoja está abierta; item es el plato que
+  // se cambia, o null si se está agregando un plato a la comida.
+  const [eligiendo, setEligiendo] = useState(null)
   const [comidasSemanaPasada, setComidasSemanaPasada] = useState(0)
   const [copiando, setCopiando] = useState(false)
   const [aviso, setAviso] = useState('')
@@ -124,8 +134,8 @@ function PlanSemana({ lunes, esSemanaActual }) {
 
   if (cargando) return <Cargando texto="Cargando el menú de la semana…" />
 
-  const planeadas = recetasSeleccionadas.length
-  const libres = COMIDAS_POR_SEMANA - menu.reduce((total, dia) => total + MOMENTOS.filter(({ clave }) => dia[clave]).length, 0)
+  const planeadas = contarComidasLlenas(menu)
+  const libres = COMIDAS_POR_SEMANA - planeadas
   const puedeRepetir = comidasSemanaPasada > 0 && libres > 0
 
   async function repetirSemanaPasada() {
@@ -162,7 +172,6 @@ function PlanSemana({ lunes, esSemanaActual }) {
     setDiaActivo((actual) => Math.min(DIAS_SEMANA.length - 1, Math.max(0, actual + (dx < 0 ? 1 : -1))))
   }
   const momentoEligiendo = eligiendo && MOMENTOS.find((m) => m.clave === eligiendo.momento)
-  const itemEligiendo = eligiendo && menu[eligiendo.dia][eligiendo.momento]
 
   return (
     <>
@@ -209,7 +218,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
         {DIAS_SEMANA.map((dia, indice) => {
           const fecha = sumarDias(lunes, indice)
           const esHoy = fechaISO(fecha) === fechaISO(new Date())
-          const llenas = MOMENTOS.filter(({ clave }) => menu[indice][clave]).length
+          const llenas = MOMENTOS.filter(({ clave }) => menu[indice][clave].length > 0).length
           return (
             <button
               key={dia}
@@ -223,7 +232,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
               <strong>{fecha.getDate()}</strong>
               <span className="menu-semanal-dia-puntos" aria-hidden="true">
                 {MOMENTOS.map(({ clave }) => (
-                  <i key={clave} className={menu[indice][clave] ? 'lleno' : ''} />
+                  <i key={clave} className={menu[indice][clave].length > 0 ? 'lleno' : ''} />
                 ))}
               </span>
             </button>
@@ -245,19 +254,17 @@ function PlanSemana({ lunes, esSemanaActual }) {
                 {dia} <span className="dia-card-fecha">{fechaDia.getDate()}</span>
                 {esHoy && <span className="dia-card-hoy">Hoy</span>}
               </h2>
-              {MOMENTOS.map((momento) => {
-                const item = menu[indiceDia][momento.clave]
-                return (
-                  <ComidaSlot
-                    key={momento.clave}
-                    momento={momento}
-                    item={item}
-                    receta={item && recetaPorId(item.receta_id)}
-                    usuarioId={usuario?.id}
-                    alAbrir={() => setEligiendo({ dia: indiceDia, momento: momento.clave })}
-                  />
-                )
-              })}
+              {MOMENTOS.map((momento) => (
+                <ComidaSlot
+                  key={momento.clave}
+                  momento={momento}
+                  items={menu[indiceDia][momento.clave]}
+                  recetaPorId={recetaPorId}
+                  usuarioId={usuario?.id}
+                  alAgregar={() => setEligiendo({ dia: indiceDia, momento: momento.clave, item: null })}
+                  alCambiar={(item) => setEligiendo({ dia: indiceDia, momento: momento.clave, item })}
+                />
+              ))}
             </section>
           )
         })}
@@ -294,10 +301,19 @@ function PlanSemana({ lunes, esSemanaActual }) {
       {eligiendo && (
         <SelectorReceta
           momento={eligiendo.momento}
-          titulo={`${momentoEligiendo.etiqueta} del ${DIAS_SEMANA[eligiendo.dia].toLowerCase()} ${sumarDias(lunes, eligiendo.dia).getDate()}`}
-          recetaActualId={itemEligiendo?.receta_id}
-          alElegir={(recetaId) => seleccionarReceta(eligiendo.dia, eligiendo.momento, recetaId)}
-          alQuitar={() => seleccionarReceta(eligiendo.dia, eligiendo.momento, '')}
+          titulo={`${
+            !eligiendo.item && menu[eligiendo.dia][eligiendo.momento].length > 0
+              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()}`
+              : momentoEligiendo.etiqueta
+          } del ${DIAS_SEMANA[eligiendo.dia].toLowerCase()} ${sumarDias(lunes, eligiendo.dia).getDate()}`}
+          recetaActualId={eligiendo.item?.receta_id}
+          otrasIds={menu[eligiendo.dia][eligiendo.momento].map((item) => item.receta_id)}
+          alElegir={(recetaId) =>
+            eligiendo.item
+              ? cambiarReceta(eligiendo.item.id, recetaId)
+              : agregarReceta(eligiendo.dia, eligiendo.momento, recetaId)
+          }
+          alQuitar={() => quitarReceta(eligiendo.item.id)}
           alCerrar={() => setEligiendo(null)}
         />
       )}
@@ -346,7 +362,10 @@ function ListaMercado({ menuId, lunes, menu, items }) {
       dia: `${dia} ${sumarDias(lunes, indice).getDate()}`,
       comidas: MOMENTOS.map(({ clave, etiqueta }) => ({
         momento: etiqueta,
-        nombre: recetaPorId(menu[indice][clave]?.receta_id)?.nombre,
+        nombre: menu[indice][clave]
+          .map((item) => recetaPorId(item.receta_id)?.nombre)
+          .filter(Boolean)
+          .join(' + '),
       })).filter((comida) => comida.nombre),
     })).filter((dia) => dia.comidas.length > 0)
 

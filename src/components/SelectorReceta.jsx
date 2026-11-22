@@ -18,7 +18,10 @@ function normalizar(texto) {
 
 // Hoja (en móvil) o ventana (en escritorio) para elegir la receta de una
 // comida del menú: búsqueda, filtro por categoría y la lista con fotos.
-function SelectorReceta({ momento, titulo, recetaActualId, alElegir, alQuitar, alCerrar }) {
+// Sirve para agregar un plato a la comida o, con recetaActualId, para cambiar
+// o quitar ese plato. Las recetas que ya están en la comida (otrasIds) no se
+// pueden elegir otra vez.
+function SelectorReceta({ momento, titulo, recetaActualId, otrasIds = [], alElegir, alQuitar, alCerrar }) {
   const dialogoRef = useRef(null)
   const { recetas } = useRecetas()
   const { favoritos } = useFavoritos()
@@ -105,12 +108,14 @@ function SelectorReceta({ momento, titulo, recetaActualId, alElegir, alQuitar, a
           {visibles.map((receta) => {
             const Icono = iconoDeCategoria(receta.categoria)
             const esActual = receta.id === Number(recetaActualId)
+            const yaEsta = !esActual && otrasIds.includes(receta.id)
             return (
               <li key={receta.id}>
                 <button
                   type="button"
                   className="selector-receta-opcion"
                   aria-current={esActual ? 'true' : undefined}
+                  disabled={yaEsta}
                   onClick={() => {
                     alElegir(receta.id)
                     dialogoRef.current.close()
@@ -135,6 +140,7 @@ function SelectorReceta({ momento, titulo, recetaActualId, alElegir, alQuitar, a
                     </span>
                   </span>
                   {esActual && <span className="etiqueta etiqueta-dificultad-facil">Elegida</span>}
+                  {yaEsta && <span className="etiqueta etiqueta-categoria">Ya está</span>}
                 </button>
               </li>
             )
@@ -154,7 +160,7 @@ function SelectorReceta({ momento, titulo, recetaActualId, alElegir, alQuitar, a
                 dialogoRef.current.close()
               }}
             >
-              <Trash2 aria-hidden="true" /> Quitar del menú
+              <Trash2 aria-hidden="true" /> Quitar este plato
             </button>
           </div>
         )}

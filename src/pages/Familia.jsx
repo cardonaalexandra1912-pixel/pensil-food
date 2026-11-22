@@ -345,9 +345,11 @@ function Integrantes({ miembros }) {
   const comidasPorPersona = useMemo(() => {
     const conteo = {}
     menu.forEach((dia) =>
-      Object.values(dia).forEach((item) => {
-        if (item?.elegido_por) conteo[item.elegido_por] = (conteo[item.elegido_por] || 0) + 1
-      })
+      Object.values(dia).forEach((platos) =>
+        platos.forEach((item) => {
+          if (item.elegido_por) conteo[item.elegido_por] = (conteo[item.elegido_por] || 0) + 1
+        })
+      )
     )
     return conteo
   }, [menu])

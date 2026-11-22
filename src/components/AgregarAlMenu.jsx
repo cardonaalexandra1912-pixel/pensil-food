@@ -86,7 +86,7 @@ function AgregarAlMenu({ receta, alAgregar, alCerrar }) {
 
 function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
   const { recetaPorId } = useRecetas()
-  const { menu, cargando, error, seleccionarReceta } = useMenuSemanal(lunes)
+  const { menu, cargando, error, agregarReceta } = useMenuSemanal(lunes)
   const [dia, setDia] = useState(esSemanaActual ? indiceEnSemana(new Date()) : 0)
   const [momento, setMomento] = useState(momentoSugerido(receta.categoria))
   const [guardando, setGuardando] = useState(false)
@@ -101,11 +101,11 @@ function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
   const destino = `${articulo} ${cual}` // «el almuerzo del martes 10»
   const agregarA = articulo === 'el' ? `al ${cual}` : `a la ${cual}` // «a el» se contrae en «al»
   const actual = menu[dia][momento]
-  const yaEsta = actual?.receta_id === receta.id
+  const yaEsta = actual.some((item) => item.receta_id === receta.id)
 
   async function agregar() {
     setGuardando(true)
-    const guardado = await seleccionarReceta(dia, momento, receta.id)
+    const guardado = await agregarReceta(dia, momento, receta.id)
     setGuardando(false)
     if (guardado) alAgregar(destino)
   }
@@ -132,7 +132,7 @@ function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
               <strong>{fechaDia.getDate()}</strong>
               <span className="menu-semanal-dia-puntos" aria-hidden="true">
                 {MOMENTOS.map(({ clave }) => (
-                  <i key={clave} className={menu[indice][clave] ? 'lleno' : ''} />
+                  <i key={clave} className={menu[indice][clave].length > 0 ? 'lleno' : ''} />
                 ))}
               </span>
             </button>
@@ -145,8 +145,9 @@ function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
       </p>
       <div className="agregar-menu-momentos" role="radiogroup" aria-labelledby="agregar-menu-momento">
         {MOMENTOS.map(({ clave, etiqueta }) => {
-          const item = menu[dia][clave]
-          const ocupada = item && recetaPorId(item.receta_id)
+          const platos = menu[dia][clave]
+            .map((item) => recetaPorId(item.receta_id)?.nombre)
+            .filter(Boolean)
           return (
             <button
               key={clave}
@@ -157,7 +158,7 @@ function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
               onClick={() => setMomento(clave)}
             >
               <strong>{etiqueta}</strong>
-              <span>{ocupada ? ocupada.nombre : 'Libre'}</span>
+              <span>{platos.length > 0 ? platos.join(' + ') : 'Libre'}</span>
             </button>
           )
         })}
@@ -166,8 +167,8 @@ function Eleccion({ lunes, esSemanaActual, receta, alAgregar }) {
       {error && <p className="mensaje-error">{error}</p>}
 
       <div className="selector-receta-pie">
-        {actual && !yaEsta && (
-          <p className="agregar-menu-aviso">Reemplaza lo que hay ahora en esa comida, para toda la familia.</p>
+        {actual.length > 0 && !yaEsta && (
+          <p className="agregar-menu-aviso">Se suma a lo que ya hay en esa comida, para toda la familia.</p>
         )}
         <button
           type="button"

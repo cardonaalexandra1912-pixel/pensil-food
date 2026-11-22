@@ -6,7 +6,7 @@ import { fechaISO } from '../utils/fechas'
 export const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
 function menuVacio() {
-  return DIAS_SEMANA.map(() => ({ desayuno: null, almuerzo: null, cena: null }))
+  return DIAS_SEMANA.map(() => ({ desayuno: [], almuerzo: [], cena: [] }))
 }
 
 // Menú compartido de la familia para la semana que empieza en `lunes`.
@@ -26,7 +26,7 @@ export function useMenuSemanal(lunes) {
   const cargarItems = useCallback(async (id) => {
     const { data, error: errorConsulta } = await supabase
       .from('menu_items')
-      .select('id, dia, momento, receta_id, elegido_por, actualizado_en, elegido:perfiles(nombre, avatar_url)')
+      .select('id, dia, momento, receta_id, elegido_por, actualizado_en, creado_en, elegido:perfiles(nombre, avatar_url)')
       .eq('menu_id', id)
     if (errorConsulta) {
       setError('No pudimos cargar el menú.')
@@ -84,50 +84,46 @@ export function useMenuSemanal(lunes) {
     }
   }, [menuId, cargarItems])
 
-  // menu[indiceDia][momento] -> item (con receta_id y quién lo eligió) o null
+  // menu[indiceDia][momento] -> lista de platos de esa comida (cada uno con
+  // receta_id y quién lo eligió), en el orden en que se agregaron. Una comida
+  // puede tener varios, por ejemplo sopa y plato fuerte en el almuerzo.
   const menu = useMemo(() => {
     const base = menuVacio()
-    items.forEach((item) => {
-      if (base[item.dia]) base[item.dia][item.momento] = item
-    })
+    ;[...items]
+      .sort((a, b) => String(a.creado_en ?? '').localeCompare(String(b.creado_en ?? '')))
+      .forEach((item) => {
+        if (base[item.dia]) base[item.dia][item.momento].push(item)
+      })
     return base
   }, [items])
 
-  const seleccionarReceta = useCallback(
+  // Agrega una receta a una comida, junto a las que ya tenga.
+  const agregarReceta = useCallback(
     async (dia, momento, recetaId) => {
-      if (!menuId || !userId) return false
+      if (!menuId || !userId || !recetaId) return false
+      const id = Number(recetaId)
+      if (items.some((i) => i.dia === dia && i.momento === momento && i.receta_id === id)) return true
       setError('')
       const anterior = items
-      if (!recetaId) {
-        setItems((actuales) => actuales.filter((i) => !(i.dia === dia && i.momento === momento)))
-        const { error: errorBorrar } = await supabase
-          .from('menu_items')
-          .delete()
-          .eq('menu_id', menuId)
-          .eq('dia', dia)
-          .eq('momento', momento)
-        if (errorBorrar) {
-          setItems(anterior)
-          setError('No se pudo quitar la comida. Intenta de nuevo.')
-          return false
-        }
-        return true
-      }
       setItems((actuales) => [
-        ...actuales.filter((i) => !(i.dia === dia && i.momento === momento)),
-        { id: `temporal-${dia}-${momento}`, dia, momento, receta_id: Number(recetaId), elegido_por: userId, elegido: null },
-      ])
-      const { error: errorGuardar } = await supabase.from('menu_items').upsert(
+        ...actuales,
         {
-          menu_id: menuId,
+          id: `temporal-${dia}-${momento}-${id}`,
           dia,
           momento,
-          receta_id: Number(recetaId),
+          receta_id: id,
           elegido_por: userId,
-          actualizado_en: new Date().toISOString(),
+          elegido: null,
+          creado_en: new Date().toISOString(),
         },
-        { onConflict: 'menu_id,dia,momento' }
-      )
+      ])
+      const { error: errorGuardar } = await supabase.from('menu_items').insert({
+        menu_id: menuId,
+        dia,
+        momento,
+        receta_id: id,
+        elegido_por: userId,
+      })
       if (errorGuardar) {
         setItems(anterior)
         setError('No se pudo guardar la comida. Intenta de nuevo.')
@@ -137,6 +133,51 @@ export function useMenuSemanal(lunes) {
       return true
     },
     [menuId, userId, items, cargarItems]
+  )
+
+  // Cambia un plato de una comida por otra receta (los demás platos quedan igual).
+  const cambiarReceta = useCallback(
+    async (itemId, recetaId) => {
+      const item = items.find((i) => i.id === itemId)
+      if (!menuId || !userId || !item || !recetaId) return false
+      const id = Number(recetaId)
+      if (item.receta_id === id) return true
+      setError('')
+      const anterior = items
+      setItems((actuales) =>
+        actuales.map((i) => (i.id === itemId ? { ...i, receta_id: id, elegido_por: userId, elegido: null } : i))
+      )
+      const { error: errorGuardar } = await supabase
+        .from('menu_items')
+        .update({ receta_id: id, elegido_por: userId, actualizado_en: new Date().toISOString() })
+        .eq('id', itemId)
+      if (errorGuardar) {
+        setItems(anterior)
+        setError('No se pudo cambiar la comida. Intenta de nuevo.')
+        return false
+      }
+      cargarItems(menuId)
+      return true
+    },
+    [menuId, userId, items, cargarItems]
+  )
+
+  // Quita un plato de una comida.
+  const quitarReceta = useCallback(
+    async (itemId) => {
+      if (!menuId) return false
+      setError('')
+      const anterior = items
+      setItems((actuales) => actuales.filter((i) => i.id !== itemId))
+      const { error: errorBorrar } = await supabase.from('menu_items').delete().eq('id', itemId)
+      if (errorBorrar) {
+        setItems(anterior)
+        setError('No se pudo quitar la comida. Intenta de nuevo.')
+        return false
+      }
+      return true
+    },
+    [menuId, items]
   )
 
   const limpiarMenu = useCallback(async () => {
@@ -151,7 +192,8 @@ export function useMenuSemanal(lunes) {
   }, [menuId, items])
 
   // Copia las comidas de otra semana (la pasada) solo en las comidas que aquí
-  // están libres: no pisa lo que ya eligió alguien. Devuelve cuántas copió.
+  // están libres: no pisa lo que ya eligió alguien. Una comida con sopa y
+  // plato fuerte se copia completa. Devuelve cuántas comidas copió.
   const copiarSemana = useCallback(
     async (lunesOrigen) => {
       if (!menuId || !userId || !familiaId) return 0
@@ -166,8 +208,9 @@ export function useMenuSemanal(lunes) {
 
       const { data: comidas, error: errorComidas } = await supabase
         .from('menu_items')
-        .select('dia, momento, receta_id')
+        .select('dia, momento, receta_id, creado_en')
         .eq('menu_id', origen.id)
+        .order('creado_en')
       if (errorComidas) throw errorComidas
 
       const ocupadas = new Set(items.map((i) => `${i.dia}-${i.momento}`))
@@ -179,30 +222,38 @@ export function useMenuSemanal(lunes) {
           momento: c.momento,
           receta_id: c.receta_id,
           elegido_por: userId,
-          actualizado_en: new Date().toISOString(),
         }))
       if (filas.length === 0) return 0
 
       const { error: errorGuardar } = await supabase
         .from('menu_items')
-        .upsert(filas, { onConflict: 'menu_id,dia,momento' })
+        .upsert(filas, { onConflict: 'menu_id,dia,momento,receta_id', ignoreDuplicates: true })
       if (errorGuardar) throw errorGuardar
       await cargarItems(menuId)
-      return filas.length
+      return new Set(filas.map((f) => `${f.dia}-${f.momento}`)).size
     },
     [menuId, userId, familiaId, items, cargarItems]
   )
 
-  return { menuId, menu, cargando, error, seleccionarReceta, limpiarMenu, copiarSemana }
+  return { menuId, menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta, limpiarMenu, copiarSemana }
 }
 
-// Recetas elegidas en la semana (7 días × 3 momentos), en el orden del menú.
+// Recetas elegidas en la semana (7 días × 3 momentos, con todos los platos de
+// cada comida), en el orden del menú. Una comida puede venir como lista de
+// platos o como un solo plato (la semana de ejemplo de la portada).
 export function recetasDelMenu(menu, recetaPorId) {
   return menu
-    .flatMap((dia) => ['desayuno', 'almuerzo', 'cena'].map((momento) => dia[momento]?.receta_id))
+    .flatMap((dia) => ['desayuno', 'almuerzo', 'cena'].flatMap((momento) => [].concat(dia[momento] ?? [])))
+    .map((item) => recetaPorId(item.receta_id))
     .filter(Boolean)
-    .map((id) => recetaPorId(id))
-    .filter(Boolean)
+}
+
+// Cuántas comidas (desayuno, almuerzo o cena de un día) tienen al menos un plato.
+export function contarComidasLlenas(menu) {
+  return menu.reduce(
+    (total, dia) => total + ['desayuno', 'almuerzo', 'cena'].filter((momento) => dia[momento]?.length > 0).length,
+    0
+  )
 }
 
 // Cuántas comidas tiene el menú de otra semana (sin crearlo si no existe).
@@ -214,9 +265,6 @@ export async function contarComidasDeSemana(familiaId, lunes) {
     .eq('semana_inicio', fechaISO(lunes))
     .maybeSingle()
   if (!menu) return 0
-  const { count } = await supabase
-    .from('menu_items')
-    .select('id', { count: 'exact', head: true })
-    .eq('menu_id', menu.id)
-  return count ?? 0
+  const { data: comidas } = await supabase.from('menu_items').select('dia, momento').eq('menu_id', menu.id)
+  return new Set((comidas ?? []).map((c) => `${c.dia}-${c.momento}`)).size
 }

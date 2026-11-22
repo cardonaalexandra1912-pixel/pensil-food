@@ -15,7 +15,8 @@ comentarios. React + Vite en el frontend (publicado en GitHub Pages) y
   administrador e invita a los demás con un código de 6 letras o un enlace.
 - **Menú semanal compartido**: un plan por familia y por semana (lunes a
   domingo). Cualquier integrante elige desayuno, almuerzo y cena desde una hoja
-  con buscador, fotos y filtros; se ve quién eligió cada comida y los cambios
+  con buscador, fotos y filtros; cada comida puede tener varios platos (por
+  ejemplo sopa y plato fuerte en el almuerzo) y la lista de mercado los suma todos; se ve quién eligió cada comida y los cambios
   aparecen en vivo para todos. En móvil se ve un día a la vez (tira de días con
   el avance de cada uno); en escritorio, la semana completa como planeador.
 - **Inicio con sesión**: en vez de la portada, un panel con lo que hay hoy en

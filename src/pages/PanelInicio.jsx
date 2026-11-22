@@ -5,7 +5,7 @@ import { CATEGORIAS, MOMENTOS, iconoDeCategoria } from '../data/catalogo'
 import { useAuth } from '../context/AuthContext'
 import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
-import { DIAS_SEMANA, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
+import { DIAS_SEMANA, contarComidasLlenas, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
 import { agruparIngredientes } from '../utils/ingredientes'
 import { indiceEnSemana, lunesDe, textoDia } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
@@ -50,8 +50,9 @@ function HoyEnCasa({ hoy }) {
   const { usuario, familia } = useAuth()
   const { recetaPorId } = useRecetas()
   const lunes = useMemo(() => lunesDe(hoy), [hoy])
-  const { menu, cargando, error, seleccionarReceta } = useMenuSemanal(lunes)
-  const [eligiendo, setEligiendo] = useState(null) // clave del momento mientras la hoja está abierta
+  const { menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta } = useMenuSemanal(lunes)
+  // { momento, item } mientras la hoja está abierta (item null = agregar un plato).
+  const [eligiendo, setEligiendo] = useState(null)
   const dia = indiceEnSemana(hoy)
 
   const recetasSemana = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
@@ -62,8 +63,8 @@ function HoyEnCasa({ hoy }) {
 
   if (cargando) return <Cargando texto="Cargando el menú de hoy…" />
 
-  const planeadas = recetasSemana.length
-  const momentoEligiendo = MOMENTOS.find((m) => m.clave === eligiendo)
+  const planeadas = contarComidasLlenas(menu)
+  const momentoEligiendo = eligiendo && MOMENTOS.find((m) => m.clave === eligiendo.momento)
 
   return (
     <>
@@ -74,19 +75,17 @@ function HoyEnCasa({ hoy }) {
         </div>
         {error && <p className="mensaje-error">{error}</p>}
         <div className="panel-hoy-comidas">
-          {MOMENTOS.map((momento) => {
-            const item = menu[dia][momento.clave]
-            return (
-              <ComidaSlot
-                key={momento.clave}
-                momento={momento}
-                item={item}
-                receta={item && recetaPorId(item.receta_id)}
-                usuarioId={usuario?.id}
-                alAbrir={() => setEligiendo(momento.clave)}
-              />
-            )
-          })}
+          {MOMENTOS.map((momento) => (
+            <ComidaSlot
+              key={momento.clave}
+              momento={momento}
+              items={menu[dia][momento.clave]}
+              recetaPorId={recetaPorId}
+              usuarioId={usuario?.id}
+              alAgregar={() => setEligiendo({ momento: momento.clave, item: null })}
+              alCambiar={(item) => setEligiendo({ momento: momento.clave, item })}
+            />
+          ))}
         </div>
       </section>
 
@@ -126,11 +125,18 @@ function HoyEnCasa({ hoy }) {
 
       {eligiendo && (
         <SelectorReceta
-          momento={eligiendo}
-          titulo={`${momentoEligiendo.etiqueta} de hoy`}
-          recetaActualId={menu[dia][eligiendo]?.receta_id}
-          alElegir={(recetaId) => seleccionarReceta(dia, eligiendo, recetaId)}
-          alQuitar={() => seleccionarReceta(dia, eligiendo, '')}
+          momento={eligiendo.momento}
+          titulo={
+            !eligiendo.item && menu[dia][eligiendo.momento].length > 0
+              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de hoy`
+              : `${momentoEligiendo.etiqueta} de hoy`
+          }
+          recetaActualId={eligiendo.item?.receta_id}
+          otrasIds={menu[dia][eligiendo.momento].map((item) => item.receta_id)}
+          alElegir={(recetaId) =>
+            eligiendo.item ? cambiarReceta(eligiendo.item.id, recetaId) : agregarReceta(dia, eligiendo.momento, recetaId)
+          }
+          alQuitar={() => quitarReceta(eligiendo.item.id)}
           alCerrar={() => setEligiendo(null)}
         />
       )}

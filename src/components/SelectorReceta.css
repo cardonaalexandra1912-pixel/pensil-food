@@ -142,6 +142,13 @@
   background-color: var(--paper-sunken);
 }
 
+/* Ya está en esta comida: se ve, pero no se puede elegir otra vez. */
+.selector-receta-opcion:disabled {
+  background: none;
+  opacity: 0.55;
+  cursor: default;
+}
+
 .selector-receta-opcion img,
 .selector-receta-opcion .mosaico {
   flex-shrink: 0;

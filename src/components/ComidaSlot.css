@@ -38,6 +38,26 @@
   color: var(--ink);
 }
 
+/* Debajo de los platos: un renglón discreto para sumar sopa, plato fuerte, etc. */
+.comida-slot-otro {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  transition: color var(--duration) var(--ease-out);
+}
+
+.comida-slot-otro:hover {
+  color: var(--ink);
+}
+
 .comida-slot-receta {
   display: flex;
   align-items: stretch;
