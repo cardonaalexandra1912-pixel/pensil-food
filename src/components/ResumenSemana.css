@@ -1,0 +1,117 @@
+/* «Cómo vamos esta semana»: dos cifras grandes y cuatro indicadores. El color
+   de la barra dice el estado: verde llegó, amarillo le falta, tomate se pasó. */
+.resumen-semana {
+  margin-top: 56px;
+  max-width: 640px;
+  padding: 24px;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.resumen-semana h2 {
+  font-size: 1.5rem;
+}
+
+.resumen-semana-nota {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.resumen-semana-cifras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 18px 0 8px;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.resumen-semana-cifras strong {
+  margin-right: 2px;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.resumen-indicadores {
+  margin: 8px 0 12px;
+}
+
+.resumen-indicador {
+  display: grid;
+  gap: 6px;
+  padding: 14px 0;
+}
+
+.resumen-indicador + .resumen-indicador {
+  border-top: 1px solid var(--line);
+}
+
+.resumen-indicador-fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resumen-indicador-titulo {
+  font-weight: 600;
+}
+
+.resumen-indicador-valor {
+  flex-shrink: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumen-barra {
+  display: block;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: color-mix(in oklab, var(--paper-raised) 90%, var(--ink));
+  overflow: hidden;
+}
+
+.resumen-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 400ms var(--ease-out);
+}
+
+.resumen-bien .resumen-barra span {
+  background-color: var(--leaf);
+}
+
+.resumen-falta .resumen-barra span {
+  background-color: var(--pencil);
+}
+
+.resumen-pasado .resumen-barra span {
+  background-color: var(--tomato);
+}
+
+.resumen-pasado .resumen-indicador-valor {
+  color: var(--tomato-text);
+}
+
+.resumen-indicador-detalle {
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+/* Al pie de cada día del menú: lo que suma ese día por persona. */
+.dia-card-nutricion {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}

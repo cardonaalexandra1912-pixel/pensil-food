@@ -13,12 +13,14 @@ import {
   useMenuSemanal,
 } from '../hooks/useMenuSemanal'
 import { armarListaMercado } from '../utils/listaMercado'
+import { resumenDelMenu } from '../utils/nutricion'
 import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
 import ComidaSlot, { CATEGORIA_BEBIDAS } from '../components/ComidaSlot'
 import Comentarios from '../components/Comentarios'
+import ResumenSemana from '../components/ResumenSemana'
 import EstadoVacio from '../components/EstadoVacio'
 import SelectorReceta from '../components/SelectorReceta'
 import './MenuSemanal.css'
@@ -126,6 +128,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
     () => armarListaMercado(recetasSeleccionadas, productos),
     [recetasSeleccionadas, productos],
   )
+  const resumen = useMemo(() => resumenDelMenu(menu, recetaPorId, productos), [menu, recetaPorId, productos])
 
   // Desde el inicio se puede llegar directo a la lista (/menu-semanal#lista-mercado).
   useEffect(() => {
@@ -269,6 +272,12 @@ function PlanSemana({ lunes, esSemanaActual }) {
                   alCambiar={(item) => setEligiendo({ dia: indiceDia, momento: momento.clave, item })}
                 />
               ))}
+              {resumen.dias[indiceDia] && productos.length > 0 && (
+                <p className="dia-card-nutricion">
+                  ≈ {Math.round(resumen.dias[indiceDia].kcal).toLocaleString('es-CO')} kcal ·{' '}
+                  {Math.round(resumen.dias[indiceDia].proteina)} g de proteína por persona
+                </p>
+              )}
             </section>
           )
         })}
@@ -292,6 +301,8 @@ function PlanSemana({ lunes, esSemanaActual }) {
           </button>
         </div>
       )}
+
+      {productos.length > 0 && <ResumenSemana resumen={resumen} />}
 
       <ListaMercado menuId={menuId} lunes={lunes} menu={menu} lista={listaMercado} />
 

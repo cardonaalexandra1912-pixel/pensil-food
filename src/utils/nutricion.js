@@ -31,8 +31,27 @@ function gramosDe(producto, cantidad, unidad) {
   return peso != null ? cantidad * Number(peso) : null
 }
 
+// Lo que la OMS cuenta como «frutas y verduras» deja fuera los tubérculos y
+// el plátano, que son almidón (como el arroz).
+const FECULENTOS = new Set(['Papa pastusa', 'Papa criolla', 'Yuca', 'Plátano verde', 'Plátano maduro', 'Batata'])
+const SECCIONES_FRUTAS_VERDURAS = new Set(['Frutas y verduras', 'Congelados'])
+// Azúcar que se le agrega a la comida (no la que traen la fruta o la leche).
+const AZUCARES_ANADIDOS = new Set(['Azúcar', 'Miel', 'Panela', 'Cola granulada', 'Chocolate de mesa'])
+
+function esFrutaOVerdura(producto) {
+  return (
+    SECCIONES_FRUTAS_VERDURAS.has(producto.seccion) &&
+    !FECULENTOS.has(producto.nombre) &&
+    producto.nombre !== 'Papas a la francesa'
+  )
+}
+
+// Además de los nutrientes, cada receta cuenta gramos de frutas y verduras y
+// gramos de azúcar añadida, para el resumen de la semana.
+const EXTRAS = ['frutasVerduras', 'azucarAnadida']
+
 function vacio() {
-  return Object.fromEntries(CLAVES.map((clave) => [clave, 0]))
+  return Object.fromEntries([...CLAVES, ...EXTRAS].map((clave) => [clave, 0]))
 }
 
 // Devuelve { porPorcion, total, medidos, sinDatos } para una receta.
@@ -58,9 +77,75 @@ export function nutricionDeReceta(receta, productos, reconocer = crearReconocedo
     CLAVES.forEach((clave) => {
       total[clave] += (Number(producto.nutricion[clave]) || 0) * (gramos / 100)
     })
+    if (esFrutaOVerdura(producto)) total.frutasVerduras += gramos
+    if (AZUCARES_ANADIDOS.has(producto.nombre)) {
+      total.azucarAnadida += (Number(producto.nutricion.azucar) || 0) * (gramos / 100)
+    }
   })
 
   const porciones = Number(receta.porciones) || 1
-  const porPorcion = Object.fromEntries(CLAVES.map((clave) => [clave, total[clave] / porciones]))
+  const porPorcion = Object.fromEntries([...CLAVES, ...EXTRAS].map((clave) => [clave, total[clave] / porciones]))
   return { porPorcion, total, medidos, sinDatos }
+}
+
+// Referencias para una persona adulta (OMS): sirven de guía, no de meta
+// personal. Las metas de cada quien llegan con su perfil.
+export const REFERENCIAS = {
+  proteinaPorComida: 20, // g en almuerzo y cena
+  frutasVerduras: 400, // g al día
+  fibra: 25, // g al día
+  azucarAnadida: 25, // g al día, como máximo
+}
+
+const MOMENTOS_PRINCIPALES = ['almuerzo', 'cena']
+
+// Resumen de la semana para una persona (una porción de cada receta).
+// menu: menu[dia][momento] = [items con receta_id].
+// Devuelve { dias: [{ kcal, proteina, ... } | null], promedio, diasPlaneados,
+//            comidasConProteina, comidasPrincipales }.
+export function resumenDelMenu(menu, recetaPorId, productos) {
+  const reconocer = crearReconocedor(productos ?? [])
+  const cache = new Map()
+  function porPorcion(receta) {
+    if (!cache.has(receta.id)) cache.set(receta.id, nutricionDeReceta(receta, productos, reconocer).porPorcion)
+    return cache.get(receta.id)
+  }
+
+  let comidasConProteina = 0
+  let comidasPrincipales = 0
+
+  const dias = menu.map((dia) => {
+    const suma = vacio()
+    let recetas = 0
+    Object.entries(dia).forEach(([momento, items]) => {
+      const comida = vacio()
+      items.forEach((item) => {
+        const receta = recetaPorId(item.receta_id)
+        if (!receta) return
+        recetas += 1
+        const valores = porPorcion(receta)
+        Object.keys(comida).forEach((clave) => {
+          comida[clave] += valores[clave] || 0
+        })
+      })
+      if (MOMENTOS_PRINCIPALES.includes(momento) && items.length > 0) {
+        comidasPrincipales += 1
+        if (comida.proteina >= REFERENCIAS.proteinaPorComida) comidasConProteina += 1
+      }
+      Object.keys(suma).forEach((clave) => {
+        suma[clave] += comida[clave]
+      })
+    })
+    return recetas > 0 ? suma : null
+  })
+
+  const planeados = dias.filter(Boolean)
+  const promedio = vacio()
+  planeados.forEach((dia) => {
+    Object.keys(promedio).forEach((clave) => {
+      promedio[clave] += dia[clave] / planeados.length
+    })
+  })
+
+  return { dias, promedio, diasPlaneados: planeados.length, comidasConProteina, comidasPrincipales }
 }
