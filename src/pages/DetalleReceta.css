@@ -430,10 +430,28 @@
     font-size: 3rem;
   }
 
+  /* Escritorio: ingredientes y nutrición a la izquierda, pasos a la derecha. */
   .detalle-cuerpo {
     grid-template-columns: 0.85fr 1.15fr;
-    gap: 56px;
+    grid-template-areas:
+      'ingredientes pasos'
+      'nutricion pasos';
+    grid-template-rows: auto 1fr;
+    column-gap: 56px;
+    row-gap: 32px;
     margin-top: 64px;
+  }
+
+  .detalle-ingredientes {
+    grid-area: ingredientes;
+  }
+
+  .nutricion-receta {
+    grid-area: nutricion;
+  }
+
+  .detalle-pasos {
+    grid-area: pasos;
   }
 }
 
@@ -491,5 +509,12 @@
 @media (min-width: 768px) {
   .detalle-meta {
     align-self: flex-start;
+  }
+}
+
+/* En una sola columna la nutrición va al final: primero se cocina. */
+@media (max-width: 1023px) {
+  .nutricion-receta {
+    order: 1;
   }
 }

@@ -63,9 +63,11 @@ const UNIDADES = {
   lata: 'lata', latas: 'lata',
   bolsa: 'bolsa', bolsas: 'bolsa',
   punado: 'puñado', punados: 'puñado',
+  hoja: 'hoja', hojas: 'hoja',
+  astilla: 'astilla', astillas: 'astilla',
 }
 
-function unidadNormal(unidad) {
+export function unidadNormal(unidad) {
   const u = normalizar(unidad).replace(/\.$/, '')
   return UNIDADES[u] ?? u
 }

@@ -25,6 +25,7 @@ import AgregarAlMenu from '../components/AgregarAlMenu'
 import Cargando from '../components/Cargando'
 import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
+import NutricionReceta from '../components/NutricionReceta'
 import './DetalleReceta.css'
 
 // Límites razonables para el selector de porciones.
@@ -314,6 +315,8 @@ function Receta({ receta }) {
               ))}
             </ul>
           </section>
+
+          <NutricionReceta receta={receta} />
 
           <section className="detalle-pasos" aria-labelledby="titulo-preparacion">
             <div className="detalle-pasos-cabecera">

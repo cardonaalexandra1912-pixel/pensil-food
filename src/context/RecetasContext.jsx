@@ -19,7 +19,11 @@ export function RecetasProvider({ children }) {
   const recargar = useCallback(async () => {
     const [{ data, error: errorConsulta }, { data: catalogo }] = await Promise.all([
       supabase.from('recetas').select('*').order('id'),
-      supabase.from('productos').select('id, nombre, seccion, unidad_compra, unidad_compra_plural, despensa, se_compra, equivalencias, alias'),
+      supabase
+        .from('productos')
+        .select(
+          'id, nombre, seccion, unidad_compra, unidad_compra_plural, despensa, se_compra, equivalencias, alias, nutricion, gramos',
+        ),
     ])
     // Sin catálogo la lista de mercado igual sale, con los ingredientes tal cual.
     if (catalogo) setProductos(catalogo)
@@ -42,7 +46,7 @@ export function RecetasProvider({ children }) {
 
   const valor = useMemo(
     () => ({ recetas, productos, cargando, error, recargar, recetaPorId }),
-    [recetas, productos, cargando, error, recargar, recetaPorId]
+    [recetas, productos, cargando, error, recargar, recetaPorId],
   )
 
   return <RecetasContext.Provider value={valor}>{children}</RecetasContext.Provider>
