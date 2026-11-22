@@ -7,7 +7,7 @@ import { useFavoritos } from '../context/FavoritosContext'
 import { useRecetas } from '../context/RecetasContext'
 import { DIAS_SEMANA, contarComidasLlenas, recetasDelMenu, useMenuSemanal } from '../hooks/useMenuSemanal'
 import { armarListaMercado } from '../utils/listaMercado'
-import { indiceEnSemana, lunesDe, textoDia } from '../utils/fechas'
+import { fechaISO, indiceEnSemana, lunesDe, sumarDias, textoDia } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
 import ComidaSlot from '../components/ComidaSlot'
@@ -17,7 +17,14 @@ import './PanelInicio.css'
 
 const COMIDAS_POR_SEMANA = DIAS_SEMANA.length * MOMENTOS.length
 
-// Inicio con sesión: lo que hay hoy en casa, cómo va la semana y atajos a
+// ¿Qué día conviene ver al abrir la app? De noche, o el domingo desde las 2 de
+// la tarde, lo útil ya es planear mañana (y el domingo, la semana que viene).
+function empiezaEnManana(ahora) {
+  const hora = ahora.getHours()
+  return hora >= 20 || (ahora.getDay() === 0 && hora >= 14)
+}
+
+// Inicio con sesión: lo que hay hoy (o mañana) en casa, cómo va la semana y atajos a
 // lo que la familia usa a diario. El catálogo completo queda en «Recetas».
 function PanelInicio() {
   const { perfil, usuario, familia } = useAuth()
@@ -47,21 +54,25 @@ function PanelInicio() {
 }
 
 function HoyEnCasa({ hoy }) {
-  const { usuario, familia } = useAuth()
+  const { usuario } = useAuth()
   const { recetaPorId, productos } = useRecetas()
-  const lunes = useMemo(() => lunesDe(hoy), [hoy])
+  const [esManana, setEsManana] = useState(() => empiezaEnManana(hoy))
+  const fecha = useMemo(() => (esManana ? sumarDias(hoy, 1) : hoy), [esManana, hoy])
+  const lunes = useMemo(() => lunesDe(fecha), [fecha])
   const { menu, cargando, error, agregarReceta, cambiarReceta, quitarReceta } = useMenuSemanal(lunes)
   // { momento, item } mientras la hoja está abierta (item null = agregar un plato).
   const [eligiendo, setEligiendo] = useState(null)
-  const dia = indiceEnSemana(hoy)
+  const dia = indiceEnSemana(fecha)
+  const cuando = esManana ? 'mañana' : 'hoy'
+  // Si mañana ya es otra semana, los atajos llevan a esa semana.
+  const esOtraSemana = fechaISO(lunes) !== fechaISO(lunesDe(hoy))
+  const rutaMenu = esOtraSemana ? `/menu-semanal?semana=${fechaISO(lunes)}` : '/menu-semanal'
 
   const recetasSemana = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
   const ingredientes = useMemo(
     () => armarListaMercado(recetasSemana, productos).totalPorComprar,
-    [recetasSemana, productos]
+    [recetasSemana, productos],
   )
-
-  if (cargando) return <Cargando texto="Cargando el menú de hoy…" />
 
   const planeadas = contarComidasLlenas(menu)
   const momentoEligiendo = eligiendo && MOMENTOS.find((m) => m.clave === eligiendo.momento)
@@ -70,71 +81,87 @@ function HoyEnCasa({ hoy }) {
     <>
       <section className="panel-hoy" aria-labelledby="panel-hoy-titulo">
         <div className="panel-hoy-cabecera">
-          <h2 id="panel-hoy-titulo">Hoy en casa</h2>
-          <span>{familia.nombre}</span>
+          <h2 id="panel-hoy-titulo">En casa</h2>
+          <div className="panel-hoy-dias" role="group" aria-label="Ver las comidas de">
+            <button type="button" aria-pressed={!esManana} onClick={() => setEsManana(false)}>
+              Hoy
+            </button>
+            <button type="button" aria-pressed={esManana} onClick={() => setEsManana(true)}>
+              Mañana
+            </button>
+          </div>
         </div>
+        {esManana && <p className="panel-hoy-fecha">{textoDia(fecha)}</p>}
         {error && <p className="mensaje-error">{error}</p>}
-        <div className="panel-hoy-comidas">
-          {MOMENTOS.map((momento) => (
-            <ComidaSlot
-              key={momento.clave}
-              momento={momento}
-              items={menu[dia][momento.clave]}
-              recetaPorId={recetaPorId}
-              usuarioId={usuario?.id}
-              alAgregar={() => setEligiendo({ momento: momento.clave, item: null })}
-              alCambiar={(item) => setEligiendo({ momento: momento.clave, item })}
-            />
-          ))}
-        </div>
+        {cargando ? (
+          <Cargando texto={`Cargando el menú de ${cuando}…`} />
+        ) : (
+          <div className="panel-hoy-comidas" key={cuando}>
+            {MOMENTOS.map((momento) => (
+              <ComidaSlot
+                key={momento.clave}
+                momento={momento}
+                items={menu[dia][momento.clave]}
+                recetaPorId={recetaPorId}
+                usuarioId={usuario?.id}
+                alAgregar={() => setEligiendo({ momento: momento.clave, item: null })}
+                alCambiar={(item) => setEligiendo({ momento: momento.clave, item })}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
-      <div className="panel-atajos">
-        <Link to="/menu-semanal" className="panel-atajo">
-          <span className="mosaico" aria-hidden="true">
-            <CalendarDays />
-          </span>
-          <span className="panel-atajo-texto">
-            <strong>Menú de la semana</strong>
-            <span>
-              {planeadas === 0
-                ? 'Todavía no hay comidas elegidas'
-                : `${planeadas} de ${COMIDAS_POR_SEMANA} comidas planeadas`}
+      {!cargando && (
+        <div className="panel-atajos">
+          <Link to={rutaMenu} className="panel-atajo">
+            <span className="mosaico" aria-hidden="true">
+              <CalendarDays />
             </span>
-            <span className="barra-progreso" aria-hidden="true">
-              <span style={{ width: `${(planeadas / COMIDAS_POR_SEMANA) * 100}%` }} />
+            <span className="panel-atajo-texto">
+              <strong>{esOtraSemana ? 'Menú de la semana que viene' : 'Menú de la semana'}</strong>
+              <span>
+                {planeadas === 0
+                  ? 'Todavía no hay comidas elegidas'
+                  : `${planeadas} de ${COMIDAS_POR_SEMANA} comidas planeadas`}
+              </span>
+              <span className="barra-progreso" aria-hidden="true">
+                <span style={{ width: `${(planeadas / COMIDAS_POR_SEMANA) * 100}%` }} />
+              </span>
             </span>
-          </span>
-          <ArrowRight className="panel-atajo-flecha" aria-hidden="true" />
-        </Link>
-        <Link to="/menu-semanal#lista-mercado" className="panel-atajo">
-          <span className="mosaico" aria-hidden="true">
-            <ShoppingBasket />
-          </span>
-          <span className="panel-atajo-texto">
-            <strong>Lista de mercado</strong>
-            <span>
-              {ingredientes === 0
-                ? 'Se arma sola cuando elijan comidas'
-                : `${ingredientes} ${ingredientes === 1 ? 'producto' : 'productos'} por comprar`}
+            <ArrowRight className="panel-atajo-flecha" aria-hidden="true" />
+          </Link>
+          <Link to={`${rutaMenu}#lista-mercado`} className="panel-atajo">
+            <span className="mosaico" aria-hidden="true">
+              <ShoppingBasket />
             </span>
-          </span>
-          <ArrowRight className="panel-atajo-flecha" aria-hidden="true" />
-        </Link>
-      </div>
+            <span className="panel-atajo-texto">
+              <strong>Lista de mercado</strong>
+              <span>
+                {ingredientes === 0
+                  ? 'Se arma sola cuando elijan comidas'
+                  : `${ingredientes} ${ingredientes === 1 ? 'producto' : 'productos'} por comprar`}
+              </span>
+            </span>
+            <ArrowRight className="panel-atajo-flecha" aria-hidden="true" />
+          </Link>
+        </div>
+      )}
 
       {eligiendo && (
         <SelectorReceta
           momento={eligiendo.momento}
           titulo={
             !eligiendo.item && menu[dia][eligiendo.momento].length > 0
-              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de hoy`
-              : `${momentoEligiendo.etiqueta} de hoy`
+              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de ${cuando}`
+              : `${momentoEligiendo.etiqueta} de ${cuando}`
           }
           recetaActualId={eligiendo.item?.receta_id}
           otrasIds={menu[dia][eligiendo.momento].map((item) => item.receta_id)}
           alElegir={(recetaId) =>
-            eligiendo.item ? cambiarReceta(eligiendo.item.id, recetaId) : agregarReceta(dia, eligiendo.momento, recetaId)
+            eligiendo.item
+              ? cambiarReceta(eligiendo.item.id, recetaId)
+              : agregarReceta(dia, eligiendo.momento, recetaId)
           }
           alQuitar={() => quitarReceta(eligiendo.item.id)}
           alCerrar={() => setEligiendo(null)}

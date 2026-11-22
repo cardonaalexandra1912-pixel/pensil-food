@@ -26,7 +26,7 @@
 
 .panel-hoy-cabecera {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
@@ -36,14 +36,43 @@
   font-size: 1.5rem;
 }
 
-.panel-hoy-cabecera span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* Hoy / Mañana: un interruptor pequeño, del mismo amarillo de la pestaña activa. */
+.panel-hoy-dias {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background-color: color-mix(in oklab, var(--paper-raised) 93%, var(--ink));
+}
+
+.panel-hoy-dias button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--tomato-text);
+  color: var(--ink-muted);
+  transition:
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.panel-hoy-dias button[aria-pressed='true'] {
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+}
+
+.panel-hoy-fecha {
+  margin: -8px 0 16px;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+/* Al cambiar entre hoy y mañana, las comidas del otro día entran suave. */
+.panel-hoy-comidas {
+  animation: entrada-pagina 220ms var(--ease-out);
 }
 
 .panel-hoy-comidas {
