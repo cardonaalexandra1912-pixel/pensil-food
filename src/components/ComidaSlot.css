@@ -13,29 +13,65 @@
   color: var(--ink-muted);
 }
 
-/* Vacía: un renglón punteado por llenar, como en una libreta. */
+/* Vacía: una fila suave, sin borde, con el nombre de la comida y un «+».
+   Varias comidas vacías seguidas se leen como una lista por llenar, no como
+   una columna de recuadros. */
 .comida-slot-vacio {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  min-height: 64px;
-  padding: 0 16px;
-  border: 1.5px dashed var(--line);
+  min-height: 56px;
+  padding: 0 10px 0 16px;
+  border: none;
   border-radius: var(--radius-tile);
-  background-color: transparent;
+  /* Un velo de tinta sobre la tarjeta: más claro en modo oscuro, más oscuro en claro. */
+  background-color: color-mix(in oklab, var(--paper-raised) 93%, var(--ink));
+  color: var(--ink);
+  text-align: left;
+  transition: background-color var(--duration) var(--ease-out);
+}
+
+.comida-slot-vacio-icono {
+  flex-shrink: 0;
+  color: var(--ink-muted);
+}
+
+.comida-slot-vacio-texto {
+  flex: 1;
   font-size: 0.9375rem;
   font-weight: 600;
+}
+
+.comida-slot-vacio-pista {
+  font-size: 0.875rem;
   color: var(--ink-muted);
-  text-align: left;
+}
+
+.comida-slot-vacio-mas {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
   transition:
-    border-color var(--duration) var(--ease-out),
-    color var(--duration) var(--ease-out);
+    background-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
 }
 
 .comida-slot-vacio:hover {
-  border-color: var(--ink);
-  color: var(--ink);
+  background-color: color-mix(in oklab, var(--paper-raised) 88%, var(--ink));
+}
+
+.comida-slot-vacio:hover .comida-slot-vacio-mas,
+.comida-slot-vacio:active .comida-slot-vacio-mas {
+  background-color: var(--pencil);
+  color: var(--on-pencil);
+  box-shadow: none;
 }
 
 /* Debajo de los platos: un renglón discreto para sumar sopa, plato fuerte, etc. */

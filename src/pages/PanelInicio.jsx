@@ -68,7 +68,7 @@ function HoyEnCasa({ hoy }) {
 
   return (
     <>
-      <section className="panel-hoy ficha-receta" aria-labelledby="panel-hoy-titulo">
+      <section className="panel-hoy" aria-labelledby="panel-hoy-titulo">
         <div className="panel-hoy-cabecera">
           <h2 id="panel-hoy-titulo">Hoy en casa</h2>
           <span>{familia.nombre}</span>

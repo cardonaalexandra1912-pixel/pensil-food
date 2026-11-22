@@ -585,6 +585,22 @@ select.campo-formulario {
   }
 }
 
+/* --- Transición entre secciones ---
+   Un fundido corto al cambiar de página. Solo opacidad: un transform aquí
+   movería los elementos fijos de las páginas mientras dura. */
+.pagina-entrada {
+  animation: entrada-pagina 240ms var(--ease-out) both;
+}
+
+@keyframes entrada-pagina {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* --- Accesibilidad --- */
 .solo-lectores {
   position: absolute;

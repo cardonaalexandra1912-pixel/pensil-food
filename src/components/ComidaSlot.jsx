@@ -6,13 +6,29 @@ import './ComidaSlot.css'
 
 const ICONOS_MOMENTO = { desayuno: Sunrise, almuerzo: Sun, cena: Moon }
 
-// Una comida del menú (desayuno, almuerzo o cena de un día). Vacía, invita a
-// elegir; con platos (puede haber varios, como sopa y plato fuerte), muestra
+// Una comida del menú (desayuno, almuerzo o cena de un día). Vacía, es una
+// fila discreta que invita a elegir; con platos (puede haber varios, como sopa y plato fuerte), muestra
 // cada uno con su foto y quién lo eligió, deja cambiarlo y agregar otro.
 function ComidaSlot({ momento, items = [], recetaPorId, usuarioId, alAgregar, alCambiar }) {
   const IconoMomento = ICONOS_MOMENTO[momento.clave]
   const etiqueta = momento.etiqueta.toLowerCase()
   const platos = items.map((item) => ({ item, receta: recetaPorId(item.receta_id) })).filter((p) => p.receta)
+
+  // Vacía: una sola fila con la comida y el botón para elegir, sin título aparte.
+  if (platos.length === 0) {
+    return (
+      <div className="comida-slot">
+        <button type="button" className="comida-slot-vacio" onClick={alAgregar} aria-label={`Elegir ${etiqueta}`}>
+          <IconoMomento size={18} aria-hidden="true" className="comida-slot-vacio-icono" />
+          <span className="comida-slot-vacio-texto">{momento.etiqueta}</span>
+          <span className="comida-slot-vacio-pista">Elegir</span>
+          <span className="comida-slot-vacio-mas" aria-hidden="true">
+            <Plus size={16} />
+          </span>
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="comida-slot">
@@ -20,29 +36,21 @@ function ComidaSlot({ momento, items = [], recetaPorId, usuarioId, alAgregar, al
         <IconoMomento size={16} aria-hidden="true" />
         {momento.etiqueta}
       </span>
-      {platos.length === 0 ? (
-        <button type="button" className="comida-slot-vacio" onClick={alAgregar}>
-          <Plus size={18} aria-hidden="true" />
-          Elegir {etiqueta}
-        </button>
-      ) : (
-        <>
-          {platos.map(({ item, receta }) => (
-            <Plato
-              key={item.id}
-              momento={momento}
-              item={item}
-              receta={receta}
-              usuarioId={usuarioId}
-              alCambiar={() => alCambiar(item)}
-            />
-          ))}
-          <button type="button" className="comida-slot-otro" onClick={alAgregar}>
-            <Plus size={16} aria-hidden="true" />
-            Agregar otro plato
-          </button>
-        </>
-      )}
+
+      {platos.map(({ item, receta }) => (
+        <Plato
+          key={item.id}
+          momento={momento}
+          item={item}
+          receta={receta}
+          usuarioId={usuarioId}
+          alCambiar={() => alCambiar(item)}
+        />
+      ))}
+      <button type="button" className="comida-slot-otro" onClick={alAgregar}>
+        <Plus size={16} aria-hidden="true" />
+        Agregar otro plato
+      </button>
     </div>
   )
 }

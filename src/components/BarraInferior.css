@@ -27,6 +27,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--ink-muted);
+  transition: color var(--duration) var(--ease-out);
 }
 
 .barra-inferior-icono {
@@ -45,6 +46,19 @@
 .barra-inferior-pestana.active .barra-inferior-icono {
   background-color: var(--pencil);
   color: var(--on-pencil);
+  animation: pestana-activa 260ms var(--ease-out);
+}
+
+/* La píldora amarilla crece desde el ícono al tocar la pestaña. */
+@keyframes pestana-activa {
+  from {
+    transform: scaleX(0.6);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 
 @media (min-width: 1024px) {

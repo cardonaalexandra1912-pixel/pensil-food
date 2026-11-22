@@ -242,6 +242,7 @@
 
 .dia-card.activo {
   display: flex;
+  animation: entrada-dia 220ms var(--ease-out);
 }
 
 .dia-card.es-hoy {
@@ -520,5 +521,17 @@
 @media (max-width: 479px) {
   .lista-mercado-acciones .boton {
     flex: 1 1 100%;
+  }
+}
+
+/* Al pasar de un día a otro en el teléfono, el día nuevo entra suave. */
+@keyframes entrada-dia {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

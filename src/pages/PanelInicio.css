@@ -48,7 +48,7 @@
 
 .panel-hoy-comidas {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* --- Atajos: la semana y el mercado --- */
@@ -174,7 +174,7 @@
   }
 
   .panel-hoy {
-    padding: 28px 32px 32px 80px;
+    padding: 28px 32px 32px;
   }
 
   .panel-hoy-comidas {
