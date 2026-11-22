@@ -10,7 +10,7 @@ import { armarListaMercado } from '../utils/listaMercado'
 import { fechaISO, indiceEnSemana, lunesDe, sumarDias, textoDia } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
-import ComidaSlot from '../components/ComidaSlot'
+import ComidaSlot, { CATEGORIA_BEBIDAS } from '../components/ComidaSlot'
 import SelectorReceta from '../components/SelectorReceta'
 import './Inicio.css'
 import './PanelInicio.css'
@@ -105,6 +105,7 @@ function HoyEnCasa({ hoy }) {
                 recetaPorId={recetaPorId}
                 usuarioId={usuario?.id}
                 alAgregar={() => setEligiendo({ momento: momento.clave, item: null })}
+                alAgregarBebida={() => setEligiendo({ momento: momento.clave, item: null, bebida: true })}
                 alCambiar={(item) => setEligiendo({ momento: momento.clave, item })}
               />
             ))}
@@ -152,10 +153,13 @@ function HoyEnCasa({ hoy }) {
         <SelectorReceta
           momento={eligiendo.momento}
           titulo={
-            !eligiendo.item && menu[dia][eligiendo.momento].length > 0
-              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de ${cuando}`
-              : `${momentoEligiendo.etiqueta} de ${cuando}`
+            eligiendo.bebida
+              ? `Bebida para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de ${cuando}`
+              : !eligiendo.item && menu[dia][eligiendo.momento].length > 0
+                ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()} de ${cuando}`
+                : `${momentoEligiendo.etiqueta} de ${cuando}`
           }
+          filtroInicial={eligiendo.bebida ? CATEGORIA_BEBIDAS : undefined}
           recetaActualId={eligiendo.item?.receta_id}
           otrasIds={menu[dia][eligiendo.momento].map((item) => item.receta_id)}
           alElegir={(recetaId) =>

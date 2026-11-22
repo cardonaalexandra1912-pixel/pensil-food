@@ -74,6 +74,47 @@
   box-shadow: none;
 }
 
+/* La bebida: una fila baja con el ícono del vaso, debajo de los platos. */
+.comida-slot-bebida {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-tile);
+  background-color: var(--paper-raised);
+  overflow: hidden;
+}
+
+.comida-slot-bebida-cambiar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: left;
+  color: var(--ink);
+}
+
+.comida-slot-bebida-cambiar svg {
+  flex-shrink: 0;
+  color: var(--ink-muted);
+}
+
+.comida-slot-bebida-cambiar:hover {
+  background-color: var(--paper-sunken);
+}
+
+.comida-slot-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
 /* Debajo de los platos: un renglón discreto para sumar sopa, plato fuerte, etc. */
 .comida-slot-otro {
   display: inline-flex;

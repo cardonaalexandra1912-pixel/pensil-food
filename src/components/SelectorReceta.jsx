@@ -10,10 +10,7 @@ const FAVORITAS = 'Favoritas'
 
 // Quita tildes y mayúsculas para que «arepa» encuentre «Arepita».
 function normalizar(texto) {
-  return texto
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
 
 // Hoja (en móvil) o ventana (en escritorio) para elegir la receta de una
@@ -21,12 +18,21 @@ function normalizar(texto) {
 // Sirve para agregar un plato a la comida o, con recetaActualId, para cambiar
 // o quitar ese plato. Las recetas que ya están en la comida (otrasIds) no se
 // pueden elegir otra vez.
-function SelectorReceta({ momento, titulo, recetaActualId, otrasIds = [], alElegir, alQuitar, alCerrar }) {
+function SelectorReceta({
+  momento,
+  titulo,
+  filtroInicial,
+  recetaActualId,
+  otrasIds = [],
+  alElegir,
+  alQuitar,
+  alCerrar,
+}) {
   const dialogoRef = useRef(null)
   const { recetas } = useRecetas()
   const { favoritos } = useFavoritos()
   const [texto, setTexto] = useState('')
-  const [filtro, setFiltro] = useState(momento === 'desayuno' ? 'Desayunos' : TODAS)
+  const [filtro, setFiltro] = useState(filtroInicial || (momento === 'desayuno' ? 'Desayunos' : TODAS))
 
   useEffect(() => {
     const dialogo = dialogoRef.current

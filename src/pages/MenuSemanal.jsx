@@ -17,7 +17,7 @@ import { descargarListaMercadoPdf } from '../utils/listaMercadoPdf'
 import { desdeISO, fechaISO, indiceEnSemana, lunesDe, sumarDias, textoSemana } from '../utils/fechas'
 import AvisoSinFamilia from '../components/AvisoSinFamilia'
 import Cargando from '../components/Cargando'
-import ComidaSlot from '../components/ComidaSlot'
+import ComidaSlot, { CATEGORIA_BEBIDAS } from '../components/ComidaSlot'
 import Comentarios from '../components/Comentarios'
 import EstadoVacio from '../components/EstadoVacio'
 import SelectorReceta from '../components/SelectorReceta'
@@ -37,7 +37,7 @@ function MenuSemanal() {
   const semanaURL = parametros.get('semana')
   const lunes = useMemo(
     () => lunesDe(semanaURL && /^\d{4}-\d{2}-\d{2}$/.test(semanaURL) ? desdeISO(semanaURL) : new Date()),
-    [semanaURL]
+    [semanaURL],
   )
   const esSemanaActual = fechaISO(lunes) === fechaISO(lunesDe(new Date()))
 
@@ -124,7 +124,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
   const recetasSeleccionadas = useMemo(() => recetasDelMenu(menu, recetaPorId), [menu, recetaPorId])
   const listaMercado = useMemo(
     () => armarListaMercado(recetasSeleccionadas, productos),
-    [recetasSeleccionadas, productos]
+    [recetasSeleccionadas, productos],
   )
 
   // Desde el inicio se puede llegar directo a la lista (/menu-semanal#lista-mercado).
@@ -139,7 +139,8 @@ function PlanSemana({ lunes, esSemanaActual }) {
   const puedeRepetir = comidasSemanaPasada > 0 && libres > 0
 
   async function repetirSemanaPasada() {
-    if (planeadas > 0 && !window.confirm('Copiamos la semana pasada solo en las comidas que están libres. ¿Seguimos?')) return
+    if (planeadas > 0 && !window.confirm('Copiamos la semana pasada solo en las comidas que están libres. ¿Seguimos?'))
+      return
     setAviso('')
     setCopiando(true)
     try {
@@ -147,7 +148,7 @@ function PlanSemana({ lunes, esSemanaActual }) {
       setAviso(
         copiadas === 0
           ? 'No había nada nuevo que copiar: esas comidas ya estaban elegidas.'
-          : `Listo: copiamos ${copiadas} ${copiadas === 1 ? 'comida' : 'comidas'} de la semana pasada.`
+          : `Listo: copiamos ${copiadas} ${copiadas === 1 ? 'comida' : 'comidas'} de la semana pasada.`,
       )
     } catch (e) {
       setAviso(mensajeError(e))
@@ -262,6 +263,9 @@ function PlanSemana({ lunes, esSemanaActual }) {
                   recetaPorId={recetaPorId}
                   usuarioId={usuario?.id}
                   alAgregar={() => setEligiendo({ dia: indiceDia, momento: momento.clave, item: null })}
+                  alAgregarBebida={() =>
+                    setEligiendo({ dia: indiceDia, momento: momento.clave, item: null, bebida: true })
+                  }
                   alCambiar={(item) => setEligiendo({ dia: indiceDia, momento: momento.clave, item })}
                 />
               ))}
@@ -302,10 +306,13 @@ function PlanSemana({ lunes, esSemanaActual }) {
         <SelectorReceta
           momento={eligiendo.momento}
           titulo={`${
-            !eligiendo.item && menu[eligiendo.dia][eligiendo.momento].length > 0
-              ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()}`
-              : momentoEligiendo.etiqueta
+            eligiendo.bebida
+              ? `Bebida para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()}`
+              : !eligiendo.item && menu[eligiendo.dia][eligiendo.momento].length > 0
+                ? `Otro plato para ${eligiendo.momento === 'cena' ? 'la' : 'el'} ${momentoEligiendo.etiqueta.toLowerCase()}`
+                : momentoEligiendo.etiqueta
           } del ${DIAS_SEMANA[eligiendo.dia].toLowerCase()} ${sumarDias(lunes, eligiendo.dia).getDate()}`}
+          filtroInicial={eligiendo.bebida ? CATEGORIA_BEBIDAS : undefined}
           recetaActualId={eligiendo.item?.receta_id}
           otrasIds={menu[eligiendo.dia][eligiendo.momento].map((item) => item.receta_id)}
           alElegir={(recetaId) =>
@@ -417,7 +424,13 @@ function ListaMercado({ menuId, lunes, menu, lista }) {
       ) : (
         <>
           {grupos.map((grupo) => (
-            <GrupoMercado key={grupo.nombre} titulo={grupo.nombre} items={grupo.items} comprados={comprados} alternar={alternar} />
+            <GrupoMercado
+              key={grupo.nombre}
+              titulo={grupo.nombre}
+              items={grupo.items}
+              comprados={comprados}
+              alternar={alternar}
+            />
           ))}
           {lista.despensa.length > 0 && (
             <GrupoMercado
@@ -446,9 +459,7 @@ function ListaMercado({ menuId, lunes, menu, lista }) {
 // Un pasillo del mercado: cada producto con su cantidad de compra y para qué
 // recetas es. Lo que ya está en el carrito baja al final del pasillo.
 function GrupoMercado({ titulo, descripcion, items, comprados, alternar }) {
-  const ordenados = [...items].sort(
-    (a, b) => Number(comprados.includes(a.id)) - Number(comprados.includes(b.id))
-  )
+  const ordenados = [...items].sort((a, b) => Number(comprados.includes(a.id)) - Number(comprados.includes(b.id)))
   const id = `mercado-${titulo.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
   return (
     <div className="lista-mercado-grupo">

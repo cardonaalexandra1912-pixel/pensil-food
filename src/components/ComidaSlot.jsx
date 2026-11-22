@@ -1,21 +1,32 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Moon, Plus, Sun, Sunrise } from 'lucide-react'
+import { ChevronRight, CupSoda, Moon, Plus, Sun, Sunrise } from 'lucide-react'
 import { iconoDeCategoria } from '../data/catalogo'
 import Avatar from './Avatar'
 import './ComidaSlot.css'
 
 const ICONOS_MOMENTO = { desayuno: Sunrise, almuerzo: Sun, cena: Moon }
 
+// Las recetas de esta categoría son la bebida de la comida, no un plato.
+export const CATEGORIA_BEBIDAS = 'Jugos y Bebidas'
+
+export function esBebida(receta) {
+  return receta?.categoria === CATEGORIA_BEBIDAS
+}
+
 // Una comida del menú (desayuno, almuerzo o cena de un día). Vacía, es una
-// fila discreta que invita a elegir; con platos (puede haber varios, como sopa y plato fuerte), muestra
-// cada uno con su foto y quién lo eligió, deja cambiarlo y agregar otro.
-function ComidaSlot({ momento, items = [], recetaPorId, usuarioId, alAgregar, alCambiar }) {
+// fila discreta que invita a elegir; con platos (puede haber varios, como sopa
+// y plato fuerte), muestra cada uno con su foto y quién lo eligió, y debajo la
+// bebida en una fila más pequeña. Todo se puede cambiar y se puede agregar otro
+// plato o la bebida.
+function ComidaSlot({ momento, items = [], recetaPorId, usuarioId, alAgregar, alAgregarBebida, alCambiar }) {
   const IconoMomento = ICONOS_MOMENTO[momento.clave]
   const etiqueta = momento.etiqueta.toLowerCase()
-  const platos = items.map((item) => ({ item, receta: recetaPorId(item.receta_id) })).filter((p) => p.receta)
+  const todos = items.map((item) => ({ item, receta: recetaPorId(item.receta_id) })).filter((p) => p.receta)
+  const platos = todos.filter((p) => !esBebida(p.receta))
+  const bebidas = todos.filter((p) => esBebida(p.receta))
 
   // Vacía: una sola fila con la comida y el botón para elegir, sin título aparte.
-  if (platos.length === 0) {
+  if (todos.length === 0) {
     return (
       <div className="comida-slot">
         <button type="button" className="comida-slot-vacio" onClick={alAgregar} aria-label={`Elegir ${etiqueta}`}>
@@ -47,10 +58,41 @@ function ComidaSlot({ momento, items = [], recetaPorId, usuarioId, alAgregar, al
           alCambiar={() => alCambiar(item)}
         />
       ))}
-      <button type="button" className="comida-slot-otro" onClick={alAgregar}>
-        <Plus size={16} aria-hidden="true" />
-        Agregar otro plato
+      {bebidas.map(({ item, receta }) => (
+        <Bebida key={item.id} momento={momento} receta={receta} alCambiar={() => alCambiar(item)} />
+      ))}
+      <div className="comida-slot-acciones">
+        <button type="button" className="comida-slot-otro" onClick={alAgregar}>
+          <Plus size={16} aria-hidden="true" />
+          {platos.length === 0 ? 'Plato' : 'Otro plato'}
+        </button>
+        {bebidas.length === 0 && alAgregarBebida && (
+          <button type="button" className="comida-slot-otro" onClick={alAgregarBebida}>
+            <CupSoda size={16} aria-hidden="true" />
+            Bebida
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// La bebida va en una fila más baja que los platos: acompaña, no protagoniza.
+function Bebida({ momento, receta, alCambiar }) {
+  return (
+    <div className="comida-slot-bebida">
+      <button
+        type="button"
+        className="comida-slot-bebida-cambiar"
+        onClick={alCambiar}
+        aria-label={`Bebida del ${momento.etiqueta.toLowerCase()}: ${receta.nombre}. Cambiar`}
+      >
+        <CupSoda size={18} aria-hidden="true" />
+        <span>{receta.nombre}</span>
       </button>
+      <Link to={`/recetas/${receta.id}`} className="comida-slot-ver" aria-label={`Ver la receta de ${receta.nombre}`}>
+        <ChevronRight size={18} aria-hidden="true" />
+      </Link>
     </div>
   )
 }
