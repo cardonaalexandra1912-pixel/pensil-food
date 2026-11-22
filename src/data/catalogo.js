@@ -1,4 +1,4 @@
-import { CookingPot, Croissant, CupSoda, Egg, Moon, Salad, Soup, Utensils, UtensilsCrossed } from 'lucide-react'
+import { CookingPot, Croissant, CupSoda, Droplets, Egg, Moon, Salad, Soup, Utensils, UtensilsCrossed } from 'lucide-react'
 
 // ============================================================================
 // CATÁLOGO: CATEGORÍAS, DIFICULTADES Y FORMA DE UNA RECETA
@@ -26,6 +26,7 @@ export const CATEGORIAS = [
   'Ensaladas',
   'Comidas Caseras',
   'Jugos y Bebidas',
+  'Salsas',
 ]
 
 // Niveles de dificultad posibles para una receta.
@@ -43,6 +44,7 @@ export const ICONOS_CATEGORIA = {
   Ensaladas: Salad,
   'Comidas Caseras': CookingPot,
   'Jugos y Bebidas': CupSoda,
+  Salsas: Droplets,
 }
 
 export function iconoDeCategoria(categoria) {
